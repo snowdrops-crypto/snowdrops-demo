@@ -1,0 +1,24 @@
+{
+  "name": "snowdrops-blockchain",
+  "version": "1.0.0",
+  "description": "Housing the demo contracts for snowdrops application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx hardhat test",
+    "test-local": "npx hardhat --network local test"
+  },
+  "author": "Vahram Shahbazian",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@openzeppelin/contracts": "^4.3.2",
+    "@openzeppelin/hardhat-upgrades": "^1.10.0",
+    "chai": "^4.3.4",
+    "dotenv": "^10.0.0",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.4.7",
+    "hardhat": "^2.6.5",
+    "mocha": "^9.1.2"
+  }
+}

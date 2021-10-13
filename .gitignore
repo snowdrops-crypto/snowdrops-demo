@@ -1,0 +1,8 @@
+client/node_modules
+client/dist
+client/.env
+
+blockchain/node_modules
+blockchain/artifacts
+blockchain/cache
+blockchain/.env
