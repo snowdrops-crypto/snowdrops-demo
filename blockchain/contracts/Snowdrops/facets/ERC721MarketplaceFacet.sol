@@ -23,5 +23,6 @@ contract ERC721MarketplaceFacet is Modifiers {
     SnowdropsInfo snowdropsInfo_;
   }
 
-  
+  function getOwnerSnowdropsListings(address _owner, uint256 _category);
+
 }

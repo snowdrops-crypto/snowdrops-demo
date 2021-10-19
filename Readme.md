@@ -10,6 +10,8 @@ Test Contracts: `npm run test`
 
 #### Run the client
 Install Dependencies: `npm i`
+Run local: `npm run serve`
+Build: `npm run build`
 
 ## Sources
 - [Aavegotchi Github](https://github.com/aavegotchi)
