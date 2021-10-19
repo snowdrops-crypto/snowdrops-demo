@@ -7,6 +7,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as actions from './store/actions'
 
+import Home from './components/pages/Home'
+
 // css
 import './scss/styles.scss'
 
@@ -18,6 +20,7 @@ const App = () => {
 
   useEffect(() => {
     appState({...rstate.main, status: 'landing'})
+    console.log('hi')
     return () => {
     }
   }, []) //empty array causes this effect to only run on mount
@@ -27,7 +30,7 @@ const App = () => {
       <BrowserRouter>
         <Switch>
           <Route exact path='/'>
-            <div>Welcome to Snowdrops!</div>
+            <Home />
           </Route>
         </Switch>
       </BrowserRouter>

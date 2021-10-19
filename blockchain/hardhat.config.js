@@ -2,7 +2,10 @@
 
 require('@nomiclabs/hardhat-waffle')
 require('@nomiclabs/hardhat-ethers')
+require('hardhat-contract-sizer')
 require('@openzeppelin/hardhat-upgrades')
+require('solidity-coverage')
+
 require('dotenv').config()
 const PRIVATE_KEY = process.env.PRIVATE_KEY
 const ALCHEMY_KEY = process.env.ALCHEMY_KEY
@@ -28,9 +31,18 @@ module.exports = {
   networks: {
     hardhat: {
       forking: {
-        url: `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`
-      }
+        url: process.env.MATIC_URL,
+        timeout: 120000000,
+      },
+      blockGasLimit: 20000000,
+      timeout: 120000,
+      gas: "auto",
     },
+    // hardhat: {
+    //   forking: {
+    //     url: `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`
+    //   }
+    // },
     // alchemyPolygon: {
 
     // },
@@ -66,6 +78,16 @@ module.exports = {
     //   accounts: [PRIVATE_KEY]
     // }
   },
+  gasReporter: {
+    currency: "USD",
+    gasPrice: 100,
+    enabled: false,
+  },
+  contractSizer: {
+    alphaSort: false,
+    runOnCompile: false,
+    disambiguatePaths: true,
+  },
   solidity: {
     version: '0.8.4',
     settings: {
@@ -77,7 +99,7 @@ module.exports = {
   },
   paths: {
     sources: "./contracts",
-    tests: "./test",
+    tests: "./tests",
     cache: "./cache",
     artifacts: "./artifacts"
   },

@@ -1,10 +1,14 @@
-pragma solidity =0.8.4;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.4;
 
 contract Snowdrops {
   string name = "Snowdrops";
   string symbol = "SNOW";
   string description = "NFT greeting cards.";
   uint public totalSupply = 100000;
+  address public owner;
+  mapping(address => uint) balances;
+
   uint value;
 
   event ValueChanged(uint newValue);

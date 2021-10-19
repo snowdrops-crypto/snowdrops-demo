@@ -1,6 +1,5 @@
 /* eslint-disable */
 const path = require('path')
-const WorkboxPlugin = require('workbox-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
@@ -56,7 +55,7 @@ var config = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './src/index.html'),
-      favicon: path.resolve(__dirname, './src/assets/battleship.png'),
+      favicon: path.resolve(__dirname, './src/assets/snowdrops-logo-1.png'),
       title: 'Some Kinda Crypto'
     }),
     new MiniCssExtractPlugin({ filename: '[name].css' }),

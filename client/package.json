@@ -4,7 +4,14 @@
   "description": "Greeting Card NFTs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "NODE_ENV=development webpack serve --mode development --config ./webpack-env.config.js",
+    "nodeserved": "NODE_ENV=development PORT=8080 nodemon dev-server.js",
+    "nodeservep": "NODE_ENV=production PORT=3001 node dev-server.js",
+    "stage": "npm run build && nodemon ./stage/server.js",
+    "build": "webpack --mode production --config ./webpack.config.js",
+    "build-local": "npm run clean && webpack --mode production --config ./webpack.config.js && cp ./dist/* ./stage/public",
+    "clean": "rm -rf ./stage/public/* && rm -f ./dist/*",
+    "watch": "webpack --watch"
   },
   "repository": {
     "type": "git",

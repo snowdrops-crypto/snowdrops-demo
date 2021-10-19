@@ -16,7 +16,8 @@ describe('Snowdrops', () => {
     
     const tx = await snowdrops.store(10)
     const storeTx = await tx.wait()
-    console.log(storeTx.events?.filter((x) => {return x.event == "ValueChanged"}))
+    const eventTx = storeTx.events?.filter((x) => {return x.event == "ValueChanged"})
+    console.log(eventTx)
 
     expect(await snowdrops.retrieve()).to.equal(10)
   })
