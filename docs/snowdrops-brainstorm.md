@@ -13,4 +13,11 @@ SmartWeave's: "Lazy Evaluation" computation is pushed to the users of the smart 
 - The user evaluates each prior transaction on the Dapp until they reach the end of the chain of valide state transitions.
 - This eliminates the need for GAS
 - Enables heavy computations
+- Can pay users to run the node for you
+- Bad actors can be removed and their staked tokens can be slashed
+- DAO controlled compute systems (Communities, staking/slashing/electing to run node)
 
+#### ERC 1155 Items as Token
+- Have card assets be items that can then be sold to through packs.
+- These asset cards will then be available to select when creating/modifying a custom card.
+- Assets include card trims, images, gifs, 3D objects, animations

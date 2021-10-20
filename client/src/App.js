@@ -32,6 +32,16 @@ const App = () => {
           <Route exact path='/'>
             <Home />
           </Route>
+          <Route path='/landing'>
+
+          </Route>
+          <Route path='/mint-card'>
+
+          </Route>
+          <Route path='/view-owned'>
+
+          </Route>
+          
         </Switch>
       </BrowserRouter>
     </div>

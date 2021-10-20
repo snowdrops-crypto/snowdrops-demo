@@ -8,7 +8,7 @@ import { store } from './store/store'
 import { createBrowserHistory } from 'history';
 
 import App from './App'
-// import ThreeD from './lib/ThreeD'
+import InitScene from './lib/initScene.js'
 
 ReactDom.render(
   <React.StrictMode>
@@ -21,7 +21,7 @@ ReactDom.render(
   document.getElementById('root')
 )
 
-// document.addEventListener('DOMContentLoaded', () => {
-//   const threed = new ThreeD()
-//   threed.init()
-// })
+document.addEventListener('DOMContentLoaded', () => {
+  const initScene = new InitScene()
+  initScene.init()
+})
