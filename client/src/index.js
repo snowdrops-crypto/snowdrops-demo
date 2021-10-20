@@ -8,7 +8,7 @@ import { store } from './store/store'
 import { createBrowserHistory } from 'history';
 
 import App from './App'
-import InitScene from './lib/initScene.js'
+import InitScene from './lib/three/initScene.js'
 
 ReactDom.render(
   <React.StrictMode>
