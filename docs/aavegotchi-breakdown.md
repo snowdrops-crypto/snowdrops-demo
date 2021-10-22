@@ -10,3 +10,7 @@ implementation is because of their use of the Diamonds Multi-Facet Proxy in conj
 - ghst-staking
 - aavegotchi-realm-diamond
 - aavegotchi-installation-diamond
+
+EIP-165(Utility): Creates a standard method to publish and detect what interfaces a smart contract implements.
+
+EIP-173(Utility): Standard interface to handle ownership of contract. 

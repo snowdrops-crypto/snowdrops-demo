@@ -4,6 +4,9 @@ pragma solidity 0.8.4;
 import {AppStorage} from "./libraries/LibAppStorage.sol";
 
 struct Args {
+  address swdpContract;
+  address linkAddress;
+  address childChainManager;
   string name;
   string symbol;
 }

@@ -6,12 +6,12 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { AsyncForEach } from '../../utils'
 
 /**
- * Loads an array of GLTF or GLB files. GLB loading is prefferable since GLTFs require multiple file types that are not
- * currently supported with this webpack config file.
+ * Loads an array of GLTF or GLB files. GLB loading is prefferable since GLTFs
+ * require multiple file types that are not currently supported with this webpack config file.
  * 
  * @param {GLTFLoader} GLTFLoader
  * @param {Scene} scene 
- * @param {GLTF, GLB} gltfs/glbs 
+ * @param {Array[GLTF] || Array[GLB]} gltfs/glbs 
  * @param {Object(x, y, z)} initPos 
  * @param {Object} style Arrangement of gltfs onto scene 
  */

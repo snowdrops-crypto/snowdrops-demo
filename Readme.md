@@ -4,19 +4,19 @@ Snowdrops Demo is an NFT application used to demo the functionality of Snowdrops
 
 ## Installation
 #### Build the contracts
-Install Dependencies: `npm i`
-Create a `.env` file from `.env.config`
-Test Contracts: `npm run test`
+- Install Dependencies: `npm i`
+- Create a `.env` file from `.env.config`
+- Test Contracts: `npm run test`
 
 #### Run the client
-Install Dependencies: `npm i`
-Run local: `npm run serve`
-Build: `npm run build`
+- Install Dependencies: `npm i`
+- Run local: `npm run serve`
+- Build: `npm run build`
 
 ## Sources
 - [Aavegotchi Github](https://github.com/aavegotchi)
 - [Diamond Facet EIP-2535](https://eips.ethereum.org/EIPS/eip-2535)
 - [Non Fungible Token EIP-721](https://eips.ethereum.org/EIPS/eip-721)
-= [ERC-1155](https://eips.ethereum.org/EIPS/eip-1155)
+- [ERC-1155](https://eips.ethereum.org/EIPS/eip-1155)
 - [ArGo](https://argoapp.net/)
 - [Restone](https://smartweave.redstone.finance/)

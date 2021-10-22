@@ -9,10 +9,27 @@ import {LibERC721Marketplace, ERC721Listing} from "../libraries/LibERC721Marketp
 import {Modifiers, ListingListItem} from "../libraries/LibAppStorage.sol";
 
 contract ERC721MarketplaceFacet is Modifiers {
-  event ERC721ListingAdd();
-  event ERC721ExecutedListing();
+  event ERC721ListingAdd(
+    uint256 indexed listingId,
+    address indexed seller,
+    address erc721TokenAddress,
+    uint256 erc721TokenId,
+    uint256 indexed category,
+    uint256 time
+  );
 
-  function getSnowdropListing();
+  event ERC721ExecutedListing(
+    uint256 indexed listingId,
+    address indexed seller,
+    address buyer,
+    address erc721TokenAddress,
+    uint256 erc721TokenId,
+    uint256 indexed category,
+    uint256 priceInWei,
+    uint256 time
+  );
+
+  function getSnowdropListing(uint256 _listingId) external view returns (ERC721Listing memory listing_, );
   function getERC721Listing();
 
   function getERC721ListingFromToken();
