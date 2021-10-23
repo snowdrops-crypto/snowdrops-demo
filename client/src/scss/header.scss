@@ -1,7 +1,50 @@
 #header-container {
-  width: 100vw;
-  height: 5vh;
+  width: 100%;
+  height: 50px;
+  background: #eee;
+}
+
+#header-items-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.header-items-left {
+  width: 20%;
+  height: 50px;
+  display: flex;
+  justify-content: left;
+}
+
+.header-items-right {
+  width: 20%;
+  height: 50px;
+  display: flex;
+  justify-content: right;
+}
+
+#header-wallet {
+  margin: 5px;
+  width: 80px;
+  height: 40px;
+  background: #ccc;
+  pointer-events: all;
+}
+
+#header-wallet:hover {
   background: red;
+  cursor: pointer;
+}
+
+#header-title {
+  padding: 5px;
+  font-size: 1.95em;
+}
+
+#header-logo {
+  padding: 5px;
+  width: 40px;
+  height: 40px;
 }
 
 .header {

@@ -27,23 +27,25 @@ import snowdropsLogoRedBgWhite1024 from '../../assets/snowdrops-logo-1024-bg-whi
 
 export default class InitScene {
   constructor() {
-    this.renderer = new THREE.WebGLRenderer({antialias: true})
+    this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: "high-performance"})
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize( window.innerWidth, window.innerHeight )
 
     document.body.appendChild( this.renderer.domElement )
     const canvas = document.body.children[1]
+    canvas.style.id = 'canvas-el'
     canvas.style.width = '100%'
     canvas.style.height = '100%'
     canvas.style.position = 'fixed'
     canvas.style.top = '0px'
     canvas.style.zIndex = '-1'
+    canvas.style.pointerEvents = 'all'
     
     this.scene = new THREE.Scene()
     this.scene.background = new THREE.Color( '#BBBBBB' )
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
-    this.camera.position.z = 10
+    this.camera.position.z = -10
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.target.set( 0, 0, 0 )

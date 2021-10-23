@@ -9,6 +9,7 @@ import { createBrowserHistory } from 'history';
 
 import App from './App'
 import InitScene from './lib/three/initScene.js'
+import './scss/styles.scss'
 
 ReactDom.render(
   <React.StrictMode>

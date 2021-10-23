@@ -14,9 +14,6 @@ import Settings from './components/pages/Settings'
 import ViewItems from './components/pages/ViewItems'
 import ViewNFTs from './components/pages/ViewNFTs'
 
-// css
-import './scss/styles.scss'
-
 const App = () => {
   const history = useHistory()
   const rstate = useSelector((rstate) => rstate)

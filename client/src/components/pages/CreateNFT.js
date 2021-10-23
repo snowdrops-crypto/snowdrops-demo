@@ -21,3 +21,5 @@ const CreateNFT = () => {
     </div>
   )
 }
+
+export default CreateNFT
