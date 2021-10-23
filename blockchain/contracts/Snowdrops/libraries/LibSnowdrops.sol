@@ -2,7 +2,7 @@
 pragma solidity 0.8.4;
 
 import {IERC20} from "../../shared/interfaces/IERC20.sol";
-import {LibAppStorage, AppStorage, Snowdrops, ItemType, EQUIPPED_ITEM_SLOTS} from "./LibAppStorage.sol";
+import {LibAppStorage, AppStorage, Snowdrops, ItemType, PAGE_SLOTS, EQUIPPED_ITEM_SLOTS} from "./LibAppStorage.sol";
 import {LibERC20} from "../../shared/libraries/LibERC20.sol";
 import {LibMeta} from "../../shared/libraries/LibMeta.sol";
 import {IERC721} from "../../shared/interfaces/IERC721.sol";
@@ -15,7 +15,7 @@ struct SnowdropsInfo {
   address owner;
   uint256 randomNumber;
   uint256 status;
-  uint16[EQUIPPED_ITEM_SLOTS] equippedItems;
+  uint8[PAGE_SLOTS][EQUIPPED_ITEM_SLOTS] equippedItems;
   bool locked;
   ItemTypeIO[] items;
 }

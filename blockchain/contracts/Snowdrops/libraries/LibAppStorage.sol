@@ -7,7 +7,8 @@ import {ILink} from "../interfaces/ILink.sol";
 //import "../interfaces/IERC20.sol";
 // import "hardhat/console.sol";
 
-uint256 constant EQUIPPED_ITEM_SLOTS = 16;
+uint8 constant PAGE_SLOTS = 4;
+uint8 constant EQUIPPED_ITEM_SLOTS = 16;
 // Birthday / Mother's Day / Father's Day / Christmas / Hanukkah
 uint256 constant NUMERIC_TYPE_NUM = 6;
 uint256 constant ITEMS_PACK_NUM = 10;
@@ -16,11 +17,8 @@ struct Snowdrops {
     string name;
     address owner;
     bool locked;
-
-    uint16[EQUIPPED_ITEM_SLOTS] equippedItems; //The currently equipped items of the Greeting Card
-    
+    uint16[PAGE_SLOTS][EQUIPPED_ITEM_SLOTS] equippedItems; //The currently equipped items of the Greeting Card
     uint256 randomNumber;
-    uint256 minimumStake; //The minimum amount of collateral that must be staked. Set upon creation.
     uint40 claimTime; //The block timestamp when this snowdrops was claimed
     uint40 lastInteracted; //The last time this Snowdrop was interacted with
 }
@@ -38,13 +36,26 @@ struct SvgLayer {
     uint16 size;
 }
 
+
+struct ItemDimensions {
+    uint8 positionX;
+    uint8 positionY;
+    uint8 positionZ;
+
+    uint8 scaleX;
+    uint8 scaleY;
+    uint8 scaleZ;
+}
+
 struct ItemType {
     string name;
     string description;
     string author;
 
+    ItemDimensions itemDimensions;
+
     uint8 category; // is Birthday 0, is Mother's Day 1, is Father's Day 2
-    uint8 itemType; // Trim / Image / Messages / Background
+    uint8 itemType; // Image SVG GLB
     
     // SVG x,y,width,height
     Dimensions dimensions;
@@ -64,110 +75,118 @@ struct ItemType {
 }
 
 struct ERC1155Listing {
-    uint256 listingId;
-    address seller;
-    address erc1155TokenAddress;
-    uint256 erc1155TypeId;
-    uint256 category; // is Birthday 0, is Mother's Day 1, is Father's Day 2
-    uint256 quantity;
-    uint256 priceInWei;
-    uint256 timeCreated;
-    uint256 timeLastPurchased;
-    uint256 sourceListingId;
-    bool sold;
-    bool cancelled;
+  uint256 listingId;
+  address seller;
+  address erc1155TokenAddress;
+  uint256 erc1155TypeId;
+  uint256 category; // is Birthday 0, is Mother's Day 1, is Father's Day 2
+  uint256 itemType; // Image, SVG, GLB...
+  uint256 quantity;
+  uint256 priceInWei;
+  uint256 timeCreated;
+  uint256 timeLastPurchased;
+  uint256 sourceListingId;
+  bool sold;
+  bool cancelled;
 }
 
 struct ERC721Listing {
-    uint256 listingId;
-    address seller;
-    address erc721TokenAddress;
-    uint256 erc721TokenId;
-    uint256 priceInWei;
-    uint256 timeCreated;
-    uint256 timePurchased;
-    bool cancelled;
+  uint256 listingId;
+  address seller;
+  address erc721TokenAddress;
+  uint256 erc721TokenId;
+  uint256 priceInWei;
+  uint256 timeCreated;
+  uint256 timePurchased;
+  bool cancelled;
 }
 
 struct ListingListItem {
-    uint256 parentListingId;
-    uint256 listingId;
-    uint256 childListingId;
+  uint256 parentListingId;
+  uint256 listingId;
+  uint256 childListingId;
 }
 
 struct AppStorage {
-    string name;
-    string symbol;
+  string name;
+  string symbol;
 
-    mapping(bytes32 => SvgLayer[]) svgLayers;
-    mapping(address => mapping(uint256 => mapping(uint256 => uint256))) nftItemBalances;
-    mapping(address => mapping(uint256 => uint256[])) nftItems;
-    // indexes are stored 1 higher so that 0 means no items in items array
-    mapping(address => mapping(uint256 => mapping(uint256 => uint256))) nftItemIndexes;
-    ItemType[] itemTypes;
-    mapping(address => mapping(uint256 => uint256)) ownerItemBalances;
-    mapping(address => uint256[]) ownerItems;
-    // indexes are stored 1 higher so that 0 means no items in items array
-    mapping(address => mapping(uint256 => uint256)) ownerItemIndexes;
-    mapping(uint256 => uint256) tokenIdToRandomNumber;
-    mapping(uint256 => Snowdrops) snowdrops;
-    mapping(address => uint32[]) ownerTokenIds;
-    mapping(address => mapping(uint256 => uint256)) ownerTokenIdIndexes;
-    uint32[] tokenIds;
-    mapping(uint256 => uint256) tokenIdIndexes;
-    mapping(address => mapping(address => bool)) operators; // ??
-    mapping(uint256 => address) approved;
-    mapping(address => uint256) metaNonces;
-    uint32 tokenIdCounter;
-    
-    //Addresses
-    address swdpContract;
-    address childChainManager;
-    address dao;
-    address daoTreasury;
-    string itemsBaseUri;
-    bytes32 domainSeparator;
+  // Snowdrops
+  uint32[] tokenIds;
+  uint32 tokenIdCounter;
+  mapping(uint256 => Snowdrops) snowdrops;
+  mapping(uint256 => uint256) tokenIdIndexes;
+  mapping(uint256 => uint256) tokenIdToRandomNumber;
+  mapping(address => uint32[]) ownerTokenIds;
+  mapping(address => mapping(uint256 => uint256)) ownerTokenIdIndexes;
+  mapping(address => mapping(address => bool)) operators; // ?? who, other than the owner, is allowed to use this token?
+  mapping(uint256 => address) approved;
+  mapping(address => uint256) metaNonces;
+  
 
-    //VRF
-    mapping(bytes32 => uint256) vrfRequestIdToTokenId;
-    mapping(bytes32 => uint256) vrfNonces;
-    bytes32 keyHash;
-    uint144 fee;
-    address vrfCoordinator;
-    ILink link;
-    // Marketplace
-    uint256 nextERC1155ListingId;
-    // erc1155 category => erc1155Order
-    //ERC1155Order[] erc1155MarketOrders;
-    mapping(uint256 => ERC1155Listing) erc1155Listings;
-    // category => ("listed" or purchased => first listingId)
-    //mapping(uint256 => mapping(string => bytes32[])) erc1155MarketListingIds;
-    mapping(uint256 => mapping(string => uint256)) erc1155ListingHead;
-    // "listed" or purchased => (listingId => ListingListItem)
-    mapping(string => mapping(uint256 => ListingListItem)) erc1155ListingListItem;
-    mapping(address => mapping(uint256 => mapping(string => uint256))) erc1155OwnerListingHead;
-    // "listed" or purchased => (listingId => ListingListItem)
-    mapping(string => mapping(uint256 => ListingListItem)) erc1155OwnerListingListItem;
-    mapping(address => mapping(uint256 => mapping(address => uint256))) erc1155TokenToListingId;
-    uint256 listingFeeInWei;
-    // erc1155Token => (erc1155TypeId => category)
-    mapping(address => mapping(uint256 => uint256)) erc1155Categories;
-    uint256 nextERC721ListingId;
-    //ERC1155Order[] erc1155MarketOrders;
-    mapping(uint256 => ERC721Listing) erc721Listings;
-    // listingId => ListingListItem
-    mapping(uint256 => ListingListItem) erc721ListingListItem;
-    mapping(uint256 => mapping(string => uint256)) erc721ListingHead;
-    // user address => category => sort => listingId => ListingListItem
-    mapping(uint256 => ListingListItem) erc721OwnerListingListItem;
-    mapping(address => mapping(uint256 => mapping(string => uint256))) erc721OwnerListingHead;
-    // erc721 token address, erc721 tokenId, user address => listingId
-    mapping(address => mapping(uint256 => mapping(address => uint256))) erc721TokenToListingId;
-    mapping(uint256 => uint256) sleeves;
-    mapping(address => bool) itemManagers;
-    // itemTypeId => (sideview => Dimensions)
-    mapping(uint256 => mapping(bytes => Dimensions)) sideViewDimensions;
-    mapping(address => mapping(address => bool)) petOperators; //Pet operators for a token
+  // SVG
+  mapping(bytes32 => SvgLayer[]) svgLayers;
+  mapping(address => mapping(uint256 => mapping(uint256 => uint256))) nftItemBalances;
+  mapping(address => mapping(uint256 => uint256[])) nftItems;
+  // indexes are stored 1 higher so that 0 means no items in items array
+  mapping(address => mapping(uint256 => mapping(uint256 => uint256))) nftItemIndexes;
+  
+  // Items
+  ItemType[] itemTypes;
+  mapping(address => mapping(uint256 => uint256)) ownerItemBalances;
+  mapping(address => uint256[]) ownerItems;
+  // indexes are stored 1 higher so that 0 means no items in items array
+  mapping(address => mapping(uint256 => uint256)) ownerItemIndexes;
+
+  //Addresses
+  address swdpContract;
+  address childChainManager;
+  address dao;
+  address daoTreasury;
+  string itemsBaseUri;
+  bytes32 domainSeparator;
+
+  //VRF
+  mapping(bytes32 => uint256) vrfRequestIdToTokenId;
+  mapping(bytes32 => uint256) vrfNonces;
+  bytes32 keyHash;
+  uint144 fee;
+  address vrfCoordinator;
+  ILink link;
+
+  // Marketplace
+  uint256 nextERC1155ListingId;
+  // erc1155 category => erc1155Order
+  //ERC1155Order[] erc1155MarketOrders;
+  mapping(uint256 => ERC1155Listing) erc1155Listings;
+  // category => ("listed" or purchased => first listingId)
+  //mapping(uint256 => mapping(string => bytes32[])) erc1155MarketListingIds;
+  mapping(uint256 => mapping(string => uint256)) erc1155ListingHead;
+  // "listed" or purchased => (listingId => ListingListItem)
+  mapping(string => mapping(uint256 => ListingListItem)) erc1155ListingListItem;
+  mapping(address => mapping(uint256 => mapping(string => uint256))) erc1155OwnerListingHead;
+  // "listed" or purchased => (listingId => ListingListItem)
+  mapping(string => mapping(uint256 => ListingListItem)) erc1155OwnerListingListItem;
+  mapping(address => mapping(uint256 => mapping(address => uint256))) erc1155TokenToListingId;
+  uint256 listingFeeInWei;
+  // erc1155Token => (erc1155TypeId => category)
+  mapping(address => mapping(uint256 => uint256)) erc1155Categories;
+  uint256 nextERC721ListingId;
+  //ERC1155Order[] erc1155MarketOrders;
+  mapping(uint256 => ERC721Listing) erc721Listings;
+  // listingId => ListingListItem
+  mapping(uint256 => ListingListItem) erc721ListingListItem;
+  mapping(uint256 => mapping(string => uint256)) erc721ListingHead;
+  // user address => category => sort => listingId => ListingListItem
+  mapping(uint256 => ListingListItem) erc721OwnerListingListItem;
+  mapping(address => mapping(uint256 => mapping(string => uint256))) erc721OwnerListingHead;
+  // erc721 token address, erc721 tokenId, user address => listingId
+  mapping(address => mapping(uint256 => mapping(address => uint256))) erc721TokenToListingId;
+  mapping(uint256 => uint256) sleeves;
+  mapping(address => bool) itemManagers;
+  // itemTypeId => (sideview => Dimensions)
+  mapping(uint256 => mapping(bytes => Dimensions)) sideViewDimensions;
+  mapping(address => mapping(address => bool)) petOperators; //Pet operators for a token
 }
 
 library LibAppStorage {

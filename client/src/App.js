@@ -7,7 +7,12 @@ import { useSelector, useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as actions from './store/actions'
 
-import Home from './components/pages/Home'
+import Landing from './components/pages/Landing'
+import CreateNFT from './components/pages/CreateNFT'
+import Marketplace from './components/pages/Marketplace'
+import Settings from './components/pages/Settings'
+import ViewItems from './components/pages/ViewItems'
+import ViewNFTs from './components/pages/ViewNFTs'
 
 // css
 import './scss/styles.scss'
@@ -30,16 +35,22 @@ const App = () => {
       <BrowserRouter>
         <Switch>
           <Route exact path='/'>
-            <Home />
+            <Landing />
           </Route>
-          <Route path='/landing'>
-
+          <Route path='/create-card'>
+            <CreateNFT />
           </Route>
-          <Route path='/mint-card'>
-
+          <Route path='/marketplace'>
+            <Marketplace />
           </Route>
-          <Route path='/view-owned'>
-
+          <Route path='/view-owned-cards'>
+            <ViewNFTs />
+          </Route>
+          <Route path='/view-owned-items'>
+            <ViewItems />
+          </Route>
+          <Route path='/settings'>
+            <Settings />
           </Route>
           
         </Switch>

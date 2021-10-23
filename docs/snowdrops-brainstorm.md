@@ -25,7 +25,7 @@ SmartWeave's: "Lazy Evaluation" computation is pushed to the users of the smart 
 
 #### Storing and Accessing Assets
 - Inital thoughts on storing and accessing assets is through an address to asset mapping stored on Arweave.
-- The address of the asset is store within the ERC721 and/or ERC1155 tokens.
+- The address of the asset is store within the ERC1155 tokens.
 - Then upon returning the address of the asset from the token to the client, use ArweaveJS to return the data
   on the asset.
 - This can be a use case for an arweave smart contract. The contract will facilitate the adding, removing, modifying the data stored on
@@ -51,3 +51,9 @@ arweave.
 #### Inital Distribution
 - First time use, free card creation and 1 free ERC1155 pack
 - ERC1155 pack contains 10 random Items.
+
+#### NFT Structure
+- Each NFT has 4 pages; Front of Card(front), Back of Card(back), Inner Left Page(left), Inner Right Page(right)
+- ERC1155 Slots for pages: There will be 4 slots, one for each page. Each page slot will also have 16 additional slots.
+- The slot itsself is a struct, this struct contains the address to the ERC1155 token, the position and the scale.
+- Rotation of object is determined by by which slot the token is in.

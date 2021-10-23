@@ -4,6 +4,11 @@ pragma solidity 0.8.4;
 import {LibAppStorage, AppStorage, ItemType, Snowdrops, EQUIPPED_ITEM_SLOTS} from "./LibAppStorage.sol";
 import {LibERC1155} from "../../shared/libraries/LibERC1155.sol";
 
+/*
+    This contract is built to handle the adding and removing of an ERC1155 token
+    to/from an NFT or Owner.
+*/
+
 struct ItemTypeIO {
   uint256 balance;
   uint256 itemId;
@@ -11,12 +16,11 @@ struct ItemTypeIO {
 }
 
 library LibItems {
-  uint8 internal constant ITEM_SLOT_FRONT = 0;
-  uint8 internal constant ITEM_SLOT_LEFT = 1;
-  uint8 internal constant ITEM_SLOT_RIGHT = 2;
-  uint8 internal constant ITEM_SLOT_BACK = 4;
-
-  uint8 internal constant ITEM_SLOTS_TOTAL = 4;
+  uint8 internal constant ITEM_SLOT_FRONT   = 0;
+  uint8 internal constant ITEM_SLOT_LEFT    = 1;
+  uint8 internal constant ITEM_SLOT_RIGHT   = 2;
+  uint8 internal constant ITEM_SLOT_BACK    = 3;
+  uint8 internal constant ITEM_SLOTS_TOTAL  = 4;
 
   function itemBalancesOfTokenWithTypes(address _tokenContract, uint256 _tokenId)
     internal
@@ -39,7 +43,7 @@ library LibItems {
       address _toContract,
       uint256 _toTokenId,
       uint256 _id,
-      uint256 _value
+      uint256 _value // number of same item to add
   ) internal {
       AppStorage storage s = LibAppStorage.diamondStorage();
       s.nftItemBalances[_toContract][_toTokenId][_id] += _value;
@@ -52,7 +56,7 @@ library LibItems {
   function addToOwner(
       address _to,
       uint256 _id,
-      uint256 _value
+      uint256 _value // number of same item to add
   ) internal {
       AppStorage storage s = LibAppStorage.diamondStorage();
       s.ownerItemBalances[_to][_id] += _value;
@@ -65,7 +69,7 @@ library LibItems {
   function removeFromOwner(
       address _from,
       uint256 _id,
-      uint256 _value
+      uint256 _value // number of same item to remove
   ) internal {
       AppStorage storage s = LibAppStorage.diamondStorage();
       uint256 bal = s.ownerItemBalances[_from][_id];
