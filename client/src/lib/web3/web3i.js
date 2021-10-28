@@ -5,6 +5,8 @@ const web3i = async () => {
   // check metamask is running
   if (typeof window.ethereum !== 'undefined') {
     console.log('MetaMask is installed!');
+  } else {
+    console.log('Metamask is not installed :(')
   }
 
   // connect metamask

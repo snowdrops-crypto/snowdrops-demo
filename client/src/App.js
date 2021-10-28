@@ -13,6 +13,7 @@ import Marketplace from './components/pages/Marketplace'
 import Settings from './components/pages/Settings'
 import ViewItems from './components/pages/ViewItems'
 import ViewNFTs from './components/pages/ViewNFTs'
+import ClaimNFT from './components/pages/ClaimNFT'
 
 const App = () => {
   const history = useHistory()
@@ -45,6 +46,15 @@ const App = () => {
           </Route>
           <Route path='/view-owned-items'>
             <ViewItems />
+          </Route>
+          <Route path='/claim-nft'>
+            <ClaimNFT />
+          </Route>
+          <Route path='/view-card/:addr'>
+
+          </Route>
+          <Route path='/view-item/:addr'>
+
           </Route>
           <Route path='/settings'>
             <Settings />
