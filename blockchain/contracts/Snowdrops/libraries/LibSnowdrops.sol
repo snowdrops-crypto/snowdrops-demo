@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.4;
+pragma solidity 0.8.7;
 
 import {IERC20} from "../../shared/interfaces/IERC20.sol";
 import {LibAppStorage, AppStorage, Snowdrops, ItemType, PAGE_SLOTS, EQUIPPED_ITEM_SLOTS} from "./LibAppStorage.sol";

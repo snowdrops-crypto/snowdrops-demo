@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.4;
+pragma solidity 0.8.7;
 
 import {LibAppStorage, AppStorage, ItemType, Snowdrops, EQUIPPED_ITEM_SLOTS} from "./LibAppStorage.sol";
 import {LibERC1155} from "../../shared/libraries/LibERC1155.sol";

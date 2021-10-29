@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.4;
+pragma solidity 0.8.7;
 
 import {Modifiers, EQUIPPED_ITEM_SLOTS, Snowdrops} from "../libraries/LibAppStorage.sol";
 import {IERC721} from "../../shared/interfaces/IERC721.sol";

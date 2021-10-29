@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.4;
+pragma solidity 0.8.7;
 
 import {Modifiers, AppStorage, ItemType} from "../libraries/LibAppStorage.sol";
 import {LibSnowdrops} from "../libraries/LibSnowdrops.sol";
