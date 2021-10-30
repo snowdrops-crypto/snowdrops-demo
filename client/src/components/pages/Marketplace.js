@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as actions from '../../store/actions'
 
+import MarketNav from '../layouts/MarketNav'
 import Header from '../layouts/Header'
 import Footer from '../layouts/Footer'
 
@@ -26,16 +27,9 @@ const Marketplace = () => {
   return (
     <div id='marketplace-page' onScroll={(e) => handleScroll(e)}>
       <Header />
-      <div>
-        <div className='marketplace-title'>Marketplace</div>
-        <div>
-          <button>NFT Market</button>
-          <button>Items Market</button>
-          <button>Activity</button>
-          <button>My Listings</button>
-          <button>My Sales</button>
-          <button>My Purchases</button>
-        </div>
+      <div className='marketplace-title'>Marketplace</div>
+      <div id='markplace-content'>
+        <MarketNav />
       </div>
       <Footer />
     </div>

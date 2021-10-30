@@ -1,23 +1,25 @@
 #nav {
-  height: 50px;
+  margin-top: 4px;
+  height: 45px;
   display: flex;
   width: 60%;
   justify-content: space-evenly;
 }
 
 .nav-link {
-  height: 45px;
+  height: 40px;
   pointer-events: all;
   text-decoration: none;
-  color: green;
-  font-size: 1.4em;
+  color: rgb(53, 53, 53);
+  background: rgb(255, 255, 255);
+  font-size: 1.1em;
   box-shadow: 2px 2px #aaa;
-  border: 2px solid black;
   line-height: 45px;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 18px;
+  padding-right: 18px;
+  border-radius: 5px;
 }
 
 .nav-link:hover {
-  background: red;
+  background: rgb(66, 255, 192);;
 }

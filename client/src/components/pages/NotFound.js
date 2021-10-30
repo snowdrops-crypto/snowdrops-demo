@@ -1,5 +1,3 @@
-'use strict'
-
 import React, { useEffect } from 'react'
 
 import { useSelector, useDispatch } from 'react-redux'
@@ -9,12 +7,17 @@ import * as actions from '../../store/actions'
 import Header from '../layouts/Header'
 import Footer from '../layouts/Footer'
 
-const ClaimNFT = () => {
+import '../../scss/not-found.scss'
+
+const NotFound = () => {
+
   return (
-    <div>
-      <div>ClaimNFT</div>
+    <div id='not-found-page'>
+      <Header />
+      404
+      <Footer />
     </div>
   )
 }
 
-export default ClaimNFT
+export default NotFound

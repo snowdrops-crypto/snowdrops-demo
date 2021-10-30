@@ -1,4 +1,6 @@
+'use strict'
 import React, { useEffect } from 'react'
+import { useParams } from "react-router-dom";
 
 import { useSelector, useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -7,12 +9,16 @@ import * as actions from '../../store/actions'
 import Header from '../layouts/Header'
 import Footer from '../layouts/Footer'
 
-const ViewOwnedNFTs = () => {
+// Need to also trigger scene change with threejs
+const ViewItem = () => {
+  let { addr } = useParams()
   return (
-    <div>
-      <div>View Owned NFTs</div>
-    </div>
+    <>
+      <Header />
+      <div>{addr}</div>
+      <Footer />
+    </>
   )
 }
 
-export default ViewOwnedNFTs
+export default ViewItem

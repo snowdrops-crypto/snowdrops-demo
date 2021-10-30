@@ -24,9 +24,11 @@ import snowdropsLogo1 from '../../assets/snowdrops-logo-1.png'
 import snowdropsLogoRed from '../../assets/snowdrops-logo-red.png'
 import snowdropsLogoRed1024 from '../../assets/snowdrops-logo-1024.png'
 import snowdropsLogoRedBgWhite1024 from '../../assets/snowdrops-logo-1024-bg-white.png'
-
+// rotation: https://codepen.io/mjurczyk/pen/XWKJojR
 export default class InitScene {
   constructor() {
+    this.loopCount
+
     this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: "high-performance"})
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize( window.innerWidth, window.innerHeight )
@@ -42,13 +44,17 @@ export default class InitScene {
     canvas.style.pointerEvents = 'all'
     
     this.scene = new THREE.Scene()
-    this.scene.background = new THREE.Color( '#BBBBBB' )
+    this.scene.background = new THREE.Color( '#444444' )
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
     this.camera.position.z = -10
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.target.set( 0, 0, 0 )
+
+    this.mouse = new THREE.Vector2()
+    this.raycaster = new THREE.Raycaster()
+    this.raycaster.params.Line.threshold = 0.1
 
     this.GLTFloader = new GLTFLoader()
     this.fonter = new Font(font_caviar)
@@ -57,6 +63,13 @@ export default class InitScene {
 
     window.addEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
     window.addEventListener('keydown', (e) => this.keydown(e), 10)
+    window.addEventListener('wheel', e => this.wheelScroll(e), false)
+    window.addEventListener('mousemove', e => this.mouseMove(e), false)
+    window.addEventListener('mousedown', e => this.mouseDown(e), false)
+    window.addEventListener('mouseup', e => this.mouseUp(e), false)
+
+    document.body.addEventListener('pause-animation', () => this.stopAnimate())
+    document.body.addEventListener('start-animation', () => this.animate())
   }
 
   async init() {
@@ -86,25 +99,83 @@ export default class InitScene {
     this.animate()
   }
 
-  keydown(e) {
-    console.log(e.key)
-  }
-
-  destroy() {
-    window.removeEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
-    window.removeEventListener('keydown', (e) => this.keydown(e))
-  }
-
   animate() {
     this.renderer.setAnimationLoop(() => {
       const cube = this.scene.getObjectByName('cube')
       cube.rotation.x += 0.01
       cube.rotation.y += 0.01
+
+      const intersects = this.raycaster.intersectObjects( this.scene.children )
+
+      if (intersects.length > 0 && !intersects[0].object.name.includes('axis')) {
+        // console.log(intersects[0].object.name)
+        const hexValues = [0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F'];
+        if (this.loopCount % 15 === 0) {
+          let hex = ''
+          for(let i = 0; i < 6; i++){
+            const index = Math.floor(Math.random() * hexValues.length)
+            hex += hexValues[index];
+          }
+          intersects[0].object.material.color.set(`#${hex}`)
+        }
+      }
+
       this.renderer.render(this.scene, this.camera)
     })
   }
 
   stopAnimate() {
     this.renderer.setAnimationLoop(null)
+  }
+
+  keydown(e) {
+    console.log(e.key)
+  }
+
+  wheelScroll(e) {
+    if (e.deltaY > 0) {
+      this.camera.z += 1
+    } else {
+      this.camera.z -= 1
+    }
+  }
+
+  mouseDown(e) {
+    e.preventDefault()
+    // this.mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
+    // this.mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
+
+    // this.raycaster.setFromCamera( this.mouse, this.camera )
+    const intersects = this.raycaster.intersectObjects( this.scene.children )
+    if (intersects.length > 0) {
+      if (intersects[0].object.name === 'cube_0') {
+        console.log('cube 0 clicked')
+        const evt_cube_click = new Event('cube-click')
+        document.body.dispatchEvent(evt_cube_click)
+      }
+
+    }
+  }
+
+  mouseUp(e) {
+    e.preventDefault()
+  }
+
+  mouseMove(e) {
+    e.preventDefault()
+    this.mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
+    this.mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
+
+    this.raycaster.setFromCamera( this.mouse, this.camera )
+  }
+
+
+  destroy() {
+    window.removeEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
+    window.removeEventListener('keydown', (e) => this.keydown(e))
+    window.removeEventListener('wheel', e => this.wheelScroll(e))
+    window.removeEventListener('mousemove', e => this.mouseMove(e))
+    window.removeEventListener('mousedown', e => this.mouseDown(e))
+    window.removeEventListener('mouseup', e => this.mouseUp(e))
   }
 }

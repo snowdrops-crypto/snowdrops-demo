@@ -1,18 +1,19 @@
 'use strict'
-
 import React, { useEffect } from 'react'
-import web3i from '../../lib/web3/web3i'
+import { useSelector } from 'react-redux'
+
 import snowdrops_logo from '../../assets/snowdrops-logo-1.png'
 import '../../scss/header.scss'
 import Nav from './Nav'
 
-const Header = (props) => {
+const Header = () => {
+  const rstate = useSelector((rstate) => rstate)
+
   useEffect(async () => {
-    await web3i()
   }, [])
 
   const handleButton = () => {
-    if (props.connected === true) {
+    if (rstate.main.connected === true) {
       console.log('connected')
     } else {
       console.log('disconnected')

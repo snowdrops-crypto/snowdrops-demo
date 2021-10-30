@@ -26,10 +26,8 @@ const Landing = () => {
   return (
     <div id='landing-page' onScroll={(e) => handleScroll(e)}>
       <Header />
-      <div>
-        <div className='landing-title'>Welcome to Snowdrops!</div>
-        <div className='landing-description'>Snowdrops are NFT greeting cards.</div>
-      </div>
+      <div className='landing-title'>Welcome to Snowdrops!</div>
+      <div className='landing-description'>Snowdrops are NFT greeting cards.</div>
       <Footer />
     </div>
   )

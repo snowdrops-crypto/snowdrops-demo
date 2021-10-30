@@ -1,6 +1,9 @@
 'use strict'
-
 import React from 'react'
+
+import { useSelector, useDispatch } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import * as actions from '../../store/actions'
 
 /*
   Pass in 
@@ -8,9 +11,11 @@ import React from 'react'
 
 const Settings = () => {
   return (
-    <div>
+    <>
+      <Header />
       <div>Settings</div>
-    </div>
+      <Footer />
+    </>
   )
 }
 

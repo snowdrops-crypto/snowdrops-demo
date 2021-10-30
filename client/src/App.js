@@ -7,13 +7,20 @@ import { useSelector, useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as actions from './store/actions'
 
+import web3i from './lib/web3/web3i'
+
 import Landing from './components/pages/Landing'
-import CreateNFT from './components/pages/CreateNFT'
+import CreateCard from './components/pages/CreateCard'
 import Marketplace from './components/pages/Marketplace'
-import Settings from './components/pages/Settings'
+import ViewTokens from './components/pages/ViewTokens'
+import ViewCards from './components/pages/ViewCards'
+import ViewCard from './components/pages/ViewCard'
 import ViewItems from './components/pages/ViewItems'
-import ViewNFTs from './components/pages/ViewNFTs'
-import ClaimNFT from './components/pages/ClaimNFT'
+import ViewItem from './components/pages/ViewItem'
+import ClaimCard from './components/pages/ClaimCard'
+import Settings from './components/pages/Settings'
+import Wiki from './components/pages/Wiki'
+import NotFound from './components/pages/NotFound'
 
 const App = () => {
   const history = useHistory()
@@ -21,44 +28,34 @@ const App = () => {
   const dispatch = useDispatch()
   const { appState } = bindActionCreators(actions, dispatch)
 
-  useEffect(() => {
+  useEffect(async () => {
+    await web3i()
     appState({...rstate.main, status: 'landing'})
     console.log('hi')
     return () => {
     }
-  }, []) //empty array causes this effect to only run on mount
+  }, [])
 
   return (
     <div>
       <BrowserRouter>
         <Switch>
-          <Route exact path='/'>
-            <Landing />
-          </Route>
-          <Route path='/create-card'>
-            <CreateNFT />
-          </Route>
-          <Route path='/marketplace'>
-            <Marketplace />
-          </Route>
-          <Route path='/view-owned-cards'>
-            <ViewNFTs />
-          </Route>
-          <Route path='/view-owned-items'>
-            <ViewItems />
-          </Route>
-          <Route path='/claim-nft'>
-            <ClaimNFT />
-          </Route>
-          <Route path='/view-card/:addr'>
+          <Route exact path='/'><Landing connected={false}/></Route>
+          <Route exact path='*'><NotFound /></Route>
 
-          </Route>
-          <Route path='/view-item/:addr'>
+          <Route path='/create-card'><CreateCard /></Route>
+          <Route path='/marketplace'><Marketplace /></Route>
+          <Route path='/claim-card/:addr' children={<ClaimCard />} />
 
-          </Route>
-          <Route path='/settings'>
-            <Settings />
-          </Route>
+          <Route path='/view-tokens' children={<ViewTokens />} />
+          <Route path='/view-cards' children={<ViewCards />} />
+          <Route path='/view-items' children={<ViewItems />} />
+          
+          <Route path='/view-card/:addr' children={<ViewCard />} />
+          <Route path='/view-item/:addr' children={<ViewItem />} />
+          
+          <Route path='/settings'><Settings /></Route>
+          <Route path='/wiki'><Wiki /></Route>
           
         </Switch>
       </BrowserRouter>
