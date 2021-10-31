@@ -9,31 +9,23 @@ import Header from '../layouts/Header'
 import Footer from '../layouts/Footer'
 
 import '../../scss/marketplace.scss'
+import '../../scss/my-listings.scss'
 
-const Marketplace = () => {
+const MyListings = () => {
   useEffect(() => {
 
   }, [])
 
-  const handleScroll = (e) => {
-    e.preventDefault()
-    console.log('scrolling')
-    let element = e.target
-    if (e.scrollHeight - element.scrollTop === element.clientHeight) {
-      console.log('end of scroll')
-    }
-  }
-
   return (
-    <div id='marketplace-page' onScroll={(e) => handleScroll(e)}>
+    <div id='marketplace-page'>
       <Header />
       <div className='marketplace-title'>Marketplace</div>
-        <MarketNav />
       <div id='markplace-content'>
+        <MarketNav />
       </div>
       <Footer />
     </div>
   )
 }
 
-export default Marketplace
+export default MyListings

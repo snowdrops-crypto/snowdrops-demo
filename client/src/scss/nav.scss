@@ -1,23 +1,31 @@
 #nav {
-  margin-top: 4px;
-  height: 45px;
-  display: flex;
   width: 60%;
-  justify-content: space-evenly;
+  height: 4vh;
+  margin-top: 4px;
+}
+
+#nav-link-container {
+  margin: 0 auto;
+  width: 75%;
+  display: flex;
+  justify-content: space-between;
 }
 
 .nav-link {
   height: 40px;
   pointer-events: all;
   text-decoration: none;
-  color: rgb(53, 53, 53);
   background: rgb(255, 255, 255);
   font-size: 1.1em;
   box-shadow: 2px 2px #aaa;
-  line-height: 45px;
   padding-left: 18px;
   padding-right: 18px;
   border-radius: 5px;
+}
+
+.nav-link-text {
+  line-height: 40px;
+  color: rgb(53, 53, 53);
 }
 
 .nav-link:hover {

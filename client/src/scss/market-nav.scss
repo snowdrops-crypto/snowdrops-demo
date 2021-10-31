@@ -1,19 +1,28 @@
 #market-nav {
-  height: 100%;
-  display: flex;
+  height: 80vh;
   width: 10%;
+  background:rgb(46, 46, 46);
+  padding: 1vh;
+}
+
+#market-nav-link-container {
+  display: flex;
   flex-direction: column;
 }
 
 .market-nav-link {
+  background:rgb(255, 255, 255);
   pointer-events: all;
   text-decoration: none;
-  color: green;
+  text-align: center;
+  color: rgb(46, 46, 46);
   font-size: 1.0em;
   box-shadow: 2px 2px #aaa;
   line-height: 45px;
   padding-left: 5px;
   padding-right: 5px;
+  margin-bottom: 1vh;
+  border-radius: 2px;
 }
 
 .market-nav-link:hover {

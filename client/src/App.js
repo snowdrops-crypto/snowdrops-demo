@@ -10,14 +10,24 @@ import * as actions from './store/actions'
 import web3i from './lib/web3/web3i'
 
 import Landing from './components/pages/Landing'
+
 import CreateCard from './components/pages/CreateCard'
+import ClaimCard from './components/pages/ClaimCard'
+
 import Marketplace from './components/pages/Marketplace'
+import MarketplaceCards from './components/pages/MarketplaceCards'
+import MarketplaceItems from './components/pages/MarketplaceItems'
+import Activity from './components/pages/Activity'
+import MyListings from './components/pages/MyListings'
+import MySales from './components/pages/MySales'
+import MyPurchases from './components/pages/MyPurchases'
+
 import ViewTokens from './components/pages/ViewTokens'
 import ViewCards from './components/pages/ViewCards'
 import ViewCard from './components/pages/ViewCard'
 import ViewItems from './components/pages/ViewItems'
 import ViewItem from './components/pages/ViewItem'
-import ClaimCard from './components/pages/ClaimCard'
+
 import Settings from './components/pages/Settings'
 import Wiki from './components/pages/Wiki'
 import NotFound from './components/pages/NotFound'
@@ -41,12 +51,18 @@ const App = () => {
       <BrowserRouter>
         <Switch>
           <Route exact path='/'><Landing connected={false}/></Route>
-          <Route exact path='*'><NotFound /></Route>
 
           <Route path='/create-card'><CreateCard /></Route>
-          <Route path='/marketplace'><Marketplace /></Route>
           <Route path='/claim-card/:addr' children={<ClaimCard />} />
 
+          <Route path='/marketplace'><Marketplace /></Route>
+          <Route path='/marketplace-cards'><MarketplaceCards /></Route>
+          <Route path='/marketplace-items'><MarketplaceItems /></Route>
+          <Route path='/activity'><Activity /></Route>
+          <Route path='/my-listings'><MyListings /></Route>
+          <Route path='/my-sales'><MySales /></Route>
+          <Route path='/my-purchases'><MyPurchases /></Route>
+          
           <Route path='/view-tokens' children={<ViewTokens />} />
           <Route path='/view-cards' children={<ViewCards />} />
           <Route path='/view-items' children={<ViewItems />} />
@@ -56,6 +72,8 @@ const App = () => {
           
           <Route path='/settings'><Settings /></Route>
           <Route path='/wiki'><Wiki /></Route>
+
+          <Route exact path='*'><NotFound /></Route>
           
         </Switch>
       </BrowserRouter>
