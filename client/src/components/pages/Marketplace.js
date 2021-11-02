@@ -28,8 +28,11 @@ const Marketplace = () => {
     <div id='marketplace-page' onScroll={(e) => handleScroll(e)}>
       <Header />
       <div className='marketplace-title'>Marketplace</div>
-        <MarketNav />
       <div id='markplace-content'>
+        <MarketNav />
+        <div id='marketplace-inner'>
+          hi
+        </div>
       </div>
       <Footer />
     </div>
