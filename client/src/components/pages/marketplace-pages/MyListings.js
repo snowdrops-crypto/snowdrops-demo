@@ -2,16 +2,16 @@ import React, { useEffect } from 'react'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import * as actions from '../../store/actions'
+import * as actions from '../../../store/actions'
 
-import MarketNav from '../layouts/MarketNav'
-import Header from '../layouts/Header'
-import Footer from '../layouts/Footer'
+import MarketNav from '../../layouts/MarketNav'
+import Header from '../../layouts/Header'
+import Footer from '../../layouts/Footer'
 
-import '../../scss/marketplace.scss'
-import '../../scss/my-purchases.scss'
+import '../../../scss/marketplace.scss'
+import '../../../scss/my-listings.scss'
 
-const MyPurchases = () => {
+const MyListings = () => {
   useEffect(() => {
 
   }, [])
@@ -28,4 +28,4 @@ const MyPurchases = () => {
   )
 }
 
-export default MyPurchases
+export default MyListings

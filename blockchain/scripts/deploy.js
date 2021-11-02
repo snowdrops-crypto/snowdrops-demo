@@ -21,7 +21,6 @@ function strDisplay (str) {
 async function main(scriptName) {
   console.log('SCRIPT NAME:', scriptName)
 
-
   const accounts = await ethers.getSigners()
   const account = await accounts[0].getAddress()
   const secondAccount= await accounts[1].getAddress()
@@ -161,5 +160,5 @@ async function main(scriptName) {
   erc1155MarketplaceFacet = await ethers.getContractAt('ERC1155MarketplaceFacet', snowdropsDiamond.address)
   erc721MarketplaceFacet = await ethers.getContractAt('ERC721MarketplaceFacet', snowdropsDiamond.address)
 
-  
+
 }
