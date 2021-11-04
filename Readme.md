@@ -17,6 +17,6 @@ Snowdrops Demo is an NFT application used to demo the functionality of Snowdrops
 - [Aavegotchi Github](https://github.com/aavegotchi)
 - [Diamond Facet EIP-2535](https://eips.ethereum.org/EIPS/eip-2535)
 - [Non Fungible Token EIP-721](https://eips.ethereum.org/EIPS/eip-721)
+- [ERC-998](https://eips.ethereum.org/EIPS/eip-998)
 - [ERC-1155](https://eips.ethereum.org/EIPS/eip-1155)
 - [ArGo](https://argoapp.net/)
-- [Restone](https://smartweave.redstone.finance/)

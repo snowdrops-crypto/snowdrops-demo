@@ -1,5 +1,8 @@
 **/.DS_Store
 
+asset-uploader/node_modules
+asset-uploader/.env
+
 client/node_modules
 client/dist
 client/.env

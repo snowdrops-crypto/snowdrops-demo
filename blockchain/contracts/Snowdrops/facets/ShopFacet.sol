@@ -41,7 +41,7 @@ contract ShopFacet is Modifiers {
       require(itemType.canPurchaseWithSwdp, "ShopFacet: Can't purchase item type with SWDP");
       uint256 totalQuantity = itemType.totalQuantity + quantity;
     }
-    uint256 swdpBalance = IREC20(s.swdpContract).balanceOf(sender);
+    uint256 swdpBalance = IERC20(s.swdpContract).balanceOf(sender);
     require(swdpBalance >= totalPrice, "ShopFacet: Not enough SWDP!");
     emit PurchaseItemsWithSwdp(sender, _to, _itemIds, _quantities, totalPrice);
     emit LibERC1155.TransferBatch(sender, address(0), _to, _itemIds, _quantities);

@@ -14,64 +14,63 @@ uint256 constant NUMERIC_TYPE_NUM = 6;
 uint256 constant ITEMS_PACK_NUM = 10;
 
 struct Snowdrops {
-    string name;
-    address owner;
-    bool locked;
-    uint16[PAGE_SLOTS][EQUIPPED_ITEM_SLOTS] equippedItems; //The currently equipped items of the Greeting Card
-    uint256 randomNumber;
-    uint40 claimTime; //The block timestamp when this snowdrops was claimed
-    uint40 lastInteracted; //The last time this Snowdrop was interacted with
+  string name;
+  address owner;
+  bool locked;
+  uint16[PAGE_SLOTS][EQUIPPED_ITEM_SLOTS] equippedItems; //The currently equipped items of the Greeting Card
+  uint256 randomNumber;
+  uint40 claimTime; //The block timestamp when this snowdrops was claimed
+  uint40 lastInteracted; //The last time this Snowdrop was interacted with
 }
 
 struct Dimensions {
-    uint8 x;
-    uint8 y;
-    uint8 width;
-    uint8 height;
+  uint8 x;
+  uint8 y;
+  uint8 width;
+  uint8 height;
 }
 
 struct SvgLayer {
-    address svgLayersContract;
-    uint16 offset;
-    uint16 size;
+  address svgLayersContract;
+  uint16 offset;
+  uint16 size;
 }
 
-
 struct ItemDimensions {
-    uint8 positionX;
-    uint8 positionY;
-    uint8 positionZ;
+  uint8 positionX;
+  uint8 positionY;
+  uint8 positionZ;
 
-    uint8 scaleX;
-    uint8 scaleY;
-    uint8 scaleZ;
+  uint8 scaleX;
+  uint8 scaleY;
+  uint8 scaleZ;
 }
 
 struct ItemType {
-    string name;
-    string description;
-    string author;
+  string name;
+  string description;
+  string author;
 
-    ItemDimensions itemDimensions;
+  ItemDimensions itemDimensions;
 
-    uint8 category; // is Birthday 0, is Mother's Day 1, is Father's Day 2
-    uint8 itemType; // Image SVG GLB
-    
-    // SVG x,y,width,height
-    Dimensions dimensions;
-    uint32 svgId; //The svgId of the item
-    
-    // Each bit is a slot position. 1 is true, 0 is false
-    bool[EQUIPPED_ITEM_SLOTS] slotPositions;
-    
-    uint8 rarityScoreModifier; //Number from 1-50.
+  uint8 category; // is Birthday 0, is Mother's Day 1, is Father's Day 2
+  uint8 itemType; // Image SVG GLB
+  
+  // SVG x,y,width,height
+  Dimensions dimensions;
+  uint32 svgId; //The svgId of the item
+  
+  // Each bit is a slot position. 1 is true, 0 is false
+  bool[EQUIPPED_ITEM_SLOTS] slotPositions;
+  
+  uint8 rarityScoreModifier; //Number from 1-50.
 
-    uint256 swdpPrice; //How much GHST this item costs
-    uint256 maxQuantity; //Total number that can be minted of this item.
-    uint256 totalQuantity; //The total quantity of this item minted so far
-    
-    bool canPurchaseWithSWDP;
-    bool canBeTransferred;
+  uint256 swdpPrice; //How much GHST this item costs
+  uint256 maxQuantity; //Total number that can be minted of this item.
+  uint256 totalQuantity; //The total quantity of this item minted so far
+  
+  bool canPurchaseWithSWDP;
+  bool canBeTransferred;
 }
 
 struct ERC1155Listing {
@@ -123,7 +122,6 @@ struct AppStorage {
   mapping(uint256 => address) approved;
   mapping(address => uint256) metaNonces;
   
-
   // SVG
   mapping(bytes32 => SvgLayer[]) svgLayers;
   mapping(address => mapping(uint256 => mapping(uint256 => uint256))) nftItemBalances;
@@ -190,15 +188,15 @@ struct AppStorage {
 }
 
 library LibAppStorage {
-    function diamondStorage() internal pure returns (AppStorage storage ds) {
-        assembly {
-            ds.slot := 0
-        }
+  function diamondStorage() internal pure returns (AppStorage storage ds) {
+    assembly {
+      ds.slot := 0
     }
+  }
 
-    function abs(int256 x) internal pure returns (uint256) {
-        return uint256(x >= 0 ? x : -x);
-    }
+  function abs(int256 x) internal pure returns (uint256) {
+    return uint256(x >= 0 ? x : -x);
+  }
 }
 
 contract Modifiers {

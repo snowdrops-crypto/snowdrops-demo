@@ -26,69 +26,69 @@ library LibSnowdrops {
     snowdropsInfo_.tokenId = _tokenId;
     snowdropsInfo_.owner = s.snowdrops[_tokenId].owner;
     snowdropsInfo_.randomNumber = s.snowdrops[_tokenId].randomNumber;
-    snowdropsInfo_.status = s.snowdrops[_tokenId].status;
+    // snowdropsInfo_.status = s.snowdrops[_tokenId].status;
     snowdropsInfo_.name = s.snowdrops[_tokenId].name;
 
-    snowdropsInfo_.equippedItems = s.snowdrops[_tokenId].equippedItems;
+    // snowdropsInfo_.equippedItems = s.snowdrops[_tokenId].equippedItems;
     snowdropsInfo_.locked = s.snowdrops[_tokenId].locked;
-    snowdropsInfo_.items = LibItems.itemBalanceOfTokenWithTypes(addres(this), _tokenId);
+    // snowdropsInfo_.items = LibItems.itemBalanceOfTokenWithTypes(address(this), _tokenId);
   }
 
-  // Need to ensure there is no overflow of _ghst
-  function purchase(address _from, uint256 _ghst) internal {
-      AppStorage storage s = LibAppStorage.diamondStorage();
-      //33% to burn address
-      uint256 burnShare = (_swdp * 33) / 100;
+  // Need to ensure there is no overflow of _swdp
+  function purchase(address _from, uint256 _swdp) internal {
+    AppStorage storage s = LibAppStorage.diamondStorage();
+    //33% to burn address
+    uint256 burnShare = (_swdp * 33) / 100;
 
-      //33% to Snowdrops Crypto wallet
-      uint256 companyShare = (_swdp * 33) / 100;
+    //33% to Snowdrops Crypto wallet
+    uint256 companyShare = (_swdp * 33) / 100;
 
-      //10% to DAO
-      uint256 daoShare = (100 - companyShare + burnShare);
+    //10% to DAO
+    uint256 daoShare = (100 - companyShare + burnShare);
 
-      // Using 0xFFFfffFFFFfffFFfFFFfFfFfffFfFffffFFFfFFf as burn address.
-      // SWDP token contract does not allow transferring to address(0) address: https://etherscan.io/address/0x3F382DbD960E3a9bbCeaE22651E88158d2791550#code
-      address swdpContract = s.swdpContract;
-      LibERC20.transferFrom(ghstContract, _from, address(0xFFFfffFFFFfffFFfFFFfFfFfffFfFffffFFFfFFf), burnShare);
-      LibERC20.transferFrom(ghstContract, _from, s.snowdropsWallet, companyShare);
-      LibERC20.transferFrom(ghstContract, _from, s.dao, daoShare);
+    // Using 0xFFFfffFFFFfffFFfFFFfFfFfffFfFffffFFFfFFf as burn address.
+    // SWDP token contract does not allow transferring to address(0) address: https://etherscan.io/address/0x3F382DbD960E3a9bbCeaE22651E88158d2791550#code
+    address swdpContract = s.swdpContract;
+    LibERC20.transferFrom(swdpContract, _from, address(0xFFFfffFFFFfffFFfFFFfFfFfffFfFffffFFFfFFf), burnShare);
+    LibERC20.transferFrom(swdpContract, _from, s.snowdropsWallet, companyShare);
+    LibERC20.transferFrom(swdpContract, _from, s.dao, daoShare);
   }
 
   // This method will be used for Marketplace and Claiming through key.
   function transfer(
-      address _from,
-      address _to,
-      uint256 _tokenId
+    address _from,
+    address _to,
+    uint256 _tokenId
   ) internal {
-      AppStorage storage s = LibAppStorage.diamondStorage();
+    AppStorage storage s = LibAppStorage.diamondStorage();
 
-      // remove
-      uint256 index = s.ownerTokenIdIndexes[_from][_tokenId];
-      uint256 lastIndex = s.ownerTokenIds[_from].length - 1;
-      if (index != lastIndex) {
-          uint32 lastTokenId = s.ownerTokenIds[_from][lastIndex];
-          s.ownerTokenIds[_from][index] = lastTokenId;
-          s.ownerTokenIdIndexes[_from][lastTokenId] = index;
-      }
-      s.ownerTokenIds[_from].pop();
-      delete s.ownerTokenIdIndexes[_from][_tokenId];
-      if (s.approved[_tokenId] != address(0)) {
-          delete s.approved[_tokenId];
-          emit LibERC721.Approval(_from, address(0), _tokenId);
-      }
-      // add
-      s.snowdrops[_tokenId].owner = _to;
-      s.ownerTokenIdIndexes[_to][_tokenId] = s.ownerTokenIds[_to].length;
-      s.ownerTokenIds[_to].push(uint32(_tokenId));
-      emit LibERC721.Transfer(_from, _to, _tokenId);
+    // remove
+    uint256 index = s.ownerTokenIdIndexes[_from][_tokenId];
+    uint256 lastIndex = s.ownerTokenIds[_from].length - 1;
+    if (index != lastIndex) {
+      uint32 lastTokenId = s.ownerTokenIds[_from][lastIndex];
+      s.ownerTokenIds[_from][index] = lastTokenId;
+      s.ownerTokenIdIndexes[_from][lastTokenId] = index;
+    }
+    s.ownerTokenIds[_from].pop();
+    delete s.ownerTokenIdIndexes[_from][_tokenId];
+    if (s.approved[_tokenId] != address(0)) {
+      delete s.approved[_tokenId];
+      emit LibERC721.Approval(_from, address(0), _tokenId);
+    }
+    // add
+    s.snowdrops[_tokenId].owner = _to;
+    s.ownerTokenIdIndexes[_to][_tokenId] = s.ownerTokenIds[_to].length;
+    s.ownerTokenIds[_to].push(uint32(_tokenId));
+    emit LibERC721.Transfer(_from, _to, _tokenId);
   }
 
   function sqrt(uint256 x) internal pure returns (uint256 y) {
-      uint256 z = (x + 1) / 2;
-      y = x;
-      while (z < y) {
-          y = z;
-          z = (x / z + z) / 2;
-      }
+    uint256 z = (x + 1) / 2;
+    y = x;
+    while (z < y) {
+      y = z;
+      z = (x / z + z) / 2;
+    }
   }
 }
