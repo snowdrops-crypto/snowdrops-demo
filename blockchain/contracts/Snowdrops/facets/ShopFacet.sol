@@ -19,6 +19,7 @@ contract ShopFacet is Modifiers {
     address indexed _buyer, address indexed _to, uint256[] _itemIds, uint256[] _quantities, uint256 _totalPrice
   );
 
+// TODO: Move VRF HERE
   function buyPacks(address _to, uint256 _swdp, uint256 _quantity) external {
     address sender = LibMeta.msgSender();
     uint256 totalPrice;

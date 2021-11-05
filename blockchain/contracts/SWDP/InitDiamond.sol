@@ -9,15 +9,15 @@ import {IERC165} from "../shared/interfaces/IERC165.sol";
 import {IERC173} from "../shared/interfaces/IERC173.sol";
 
 contract InitDiamond {
-    AppStorage internal s;
+  AppStorage internal s;
 
-    function init() external {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+  function init() external {
+    LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
-        ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
-        ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
+    ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
+    ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
 
-        ds.supportedInterfaces[type(IERC165).interfaceId] = true;
-        ds.supportedInterfaces[type(IERC173).interfaceId] = true;
-    }
+    ds.supportedInterfaces[type(IERC165).interfaceId] = true;
+    ds.supportedInterfaces[type(IERC173).interfaceId] = true;
+  }
 }

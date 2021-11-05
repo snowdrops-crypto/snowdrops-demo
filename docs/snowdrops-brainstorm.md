@@ -41,10 +41,16 @@ SmartWeave's: "Lazy Evaluation" computation is pushed to the users of the smart 
   - What is Max and Min Scale?
 - zIndex: the layering of ERC1155 assets
 
-#### Rating System Through Token Based Voting
-- Users can upvote the design of a card on the market to be entered into a lottery each week where they have a chance of winning that Item.
+#### Marketplace Rating System
+- Users can upvote the design of a card on the market to be entered into a lottery each week where they have a chance of winning Snowdrops
 - The upvote is added to the card creator's rating.
 - Card creator rating is used to determine position of listing on market.
+
+#### Adding Assets to Asset Pool
+- Anyone can submit a new asset to the asset pool
+- After an asset is added, it is vetted and put if approved, put up for voting
+- Users vote on which assets will be added to the asset pool
+- If an asset is added to the pool, the users who voted for that asset will be reward with that ERC1155 token
 
 #### Inital Distribution
 - First time use, free card creation and 1 free ERC1155 pack
