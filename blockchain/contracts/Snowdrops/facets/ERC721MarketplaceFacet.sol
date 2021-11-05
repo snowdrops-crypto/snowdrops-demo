@@ -99,7 +99,7 @@ contract ERC721MarketplaceFacet is Modifiers {
   ///@param _owner Creator of the listings to query
   ///@param _category Category of listings to query  // 0 == portal, 1 == vrf pending, 1 == open portal, 2 == Snowdrops.
   ///@param _sort Sortings of listings to query // "listed" or "purchased"
-  ///@param _length How many aavegotchi listings to return
+  ///@param _length How many snowdrops listings to return
   ///@return listings_ An array of structs, each struct containing details about each listing being returned
   function getOwnerSnowdropsListings(
     address _owner,
@@ -113,7 +113,7 @@ contract ERC721MarketplaceFacet is Modifiers {
     for (; listingId != 0 && listIndex < _length; listIndex++) {
       ERC721Listing memory listing = s.erc721Listings[listingId];
       listings_[listIndex].listing_ = listing;
-      listings_[listIndex].aavegotchiInfo_ = LibSnowdrops.getSnowdrops(listing.erc721TokenId);
+      listings_[listIndex].snowdropsInfo_ = LibSnowdrops.getSnowdrops(listing.erc721TokenId);
       listingId = s.erc721OwnerListingListItem[listingId].childListingId;
     }
     assembly {
@@ -122,12 +122,12 @@ contract ERC721MarketplaceFacet is Modifiers {
   }
 
   ///@notice Query a certain amount of ERC721 listings
-  ///@param _category Category of listings to query // 0 == portal, 1 == vrf pending, 1 == open portal, 2 == Aavegotchi.
+  ///@param _category Category of listings to query // 0 == Birthday
   ///@param _sort Sortings of listings to query  // "listed" or "purchased"
   ///@param _length How many listings to return
   ///@return listings_ An array of structs, each struct containing details about each listing being returned
   function getERC721Listings(
-    uint256 _category, // 0 == portal, 1 == vrf pending, 1 == open portal, 2 == Aavegotchi.
+    uint256 _category, // 0 == Birthday
     string memory _sort, // "listed" or "purchased"
     uint256 _length // how many items to get back or the rest available
   ) external view returns (ERC721Listing[] memory listings_) {
@@ -143,23 +143,23 @@ contract ERC721MarketplaceFacet is Modifiers {
     }
   }
 
-  ///@notice Query a certain amount of aavegotchi listings
-  ///@param _category Category of listings to query // 0 == portal, 1 == vrf pending, 1 == open portal, 2 == Aavegotchi.
+  ///@notice Query a certain amount of snowdrops listings
+  ///@param _category Category of listings to query // 0 == Birthday
   ///@param _sort Sortings of listings to query
   ///@param _length How many listings to return
   ///@return listings_ An array of structs, each struct containing details about each listing being returned
-  function getAavegotchiListings(
-    uint256 _category, // 0 == portal, 1 == vrf pending, 1 == open portal, 2 == Aavegotchi
+  function getSnowdropsListings(
+    uint256 _category, // 0 == Birthday
     string memory _sort, // "listed" or "purchased"
     uint256 _length // how many items to get back or the rest available
-  ) external view returns (AavegotchiListing[] memory listings_) {
+  ) external view returns (SnowdropsListing[] memory listings_) {
     uint256 listingId = s.erc721ListingHead[_category][_sort];
-    listings_ = new AavegotchiListing[](_length);
+    listings_ = new SnowdropsListing[](_length);
     uint256 listIndex;
     for (; listingId != 0 && listIndex < _length; listIndex++) {
       ERC721Listing memory listing = s.erc721Listings[listingId];
       listings_[listIndex].listing_ = listing;
-      listings_[listIndex].aavegotchiInfo_ = LibAavegotchi.getAavegotchi(listing.erc721TokenId);
+      listings_[listIndex].snowdropsInfo_ = LibSnowdrops.getSnowdrops(listing.erc721TokenId);
       listingId = s.erc721ListingListItem[listingId].childListingId;
     }
     assembly {
@@ -170,10 +170,11 @@ contract ERC721MarketplaceFacet is Modifiers {
   ///@notice Query the category of an NFT
   ///@param _erc721TokenAddress The contract address of the NFT to query
   ///@param _erc721TokenId The identifier of the NFT to query
-  ///@return category_ Category of the NFT // 0 == portal, 1 == vrf pending, 1 == open portal, 2 == Aavegotchi.
+  ///@return category_ Category of the NFT // 0 == Birthday.
   function getERC721Category(address _erc721TokenAddress, uint256 _erc721TokenId) public view returns (uint256 category_) {
     require(_erc721TokenAddress == address(this), "ERC721Marketplace: ERC721 category does not exist");
-    category_ = s.aavegotchis[_erc721TokenId].status; // 0 == portal, 1 == vrf pending, 2 == open portal, 3 == Aavegotchi
+    // category_ = s.snowdrops[_erc721TokenId].status;
+    category_ = 0;
   }
 
   ///@notice Allow an ERC721 owner to list his NFT for sale
@@ -202,7 +203,7 @@ contract ERC721MarketplaceFacet is Modifiers {
     uint256 listingId = s.nextERC721ListingId;
 
     uint256 category = getERC721Category(_erc721TokenAddress, _erc721TokenId);
-    require(category != LibAavegotchi.STATUS_VRF_PENDING, "ERC721Marketplace: Cannot list a portal that is pending VRF");
+    // require(category != LibSnowdrops.STATUS_VRF_PENDING, "ERC721Marketplace: Cannot list a portal that is pending VRF");
 
     uint256 oldListingId = s.erc721TokenToListingId[_erc721TokenAddress][_erc721TokenId][owner];
     if (oldListingId != 0) {
@@ -223,12 +224,12 @@ contract ERC721MarketplaceFacet is Modifiers {
 
     LibERC721Marketplace.addERC721ListingItem(owner, category, "listed", listingId);
     emit ERC721ListingAdd(listingId, owner, _erc721TokenAddress, _erc721TokenId, category, _priceInWei);
-    s.aavegotchis[_erc721TokenId].locked = true;
+    s.snowdrops[_erc721TokenId].locked = true;
     // Check if there's a publication fee and
     // transfer the amount to burn address
     if (s.listingFeeInWei > 0) {
-      // burn address: address(0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF)
-      LibERC20.transferFrom(s.ghstContract, owner, address(0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF), s.listingFeeInWei);
+      // burn address: address(xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF)
+      LibERC20.transferFrom(s.swdpContract, owner, address(0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF), s.listingFeeInWei);
     }
   }
 
@@ -257,29 +258,29 @@ contract ERC721MarketplaceFacet is Modifiers {
     address buyer = LibMeta.msgSender();
     address seller = listing.seller;
     require(seller != buyer, "ERC721Marketplace: buyer can't be seller");
-    require(IERC20(s.ghstContract).balanceOf(buyer) >= priceInWei, "ERC721Marketplace: not enough GHST");
+    require(IERC20(s.swdpContract).balanceOf(buyer) >= priceInWei, "ERC721Marketplace: not enough GHST");
 
     listing.timePurchased = block.timestamp;
     LibERC721Marketplace.removeERC721ListingItem(_listingId, seller);
     LibERC721Marketplace.addERC721ListingItem(seller, listing.category, "purchased", _listingId);
 
     uint256 daoShare = priceInWei / 100;
-    uint256 pixelCraftShare = (priceInWei * 2) / 100;
+    uint256 companyNameShare = (priceInWei * 2) / 100;
     //AGIP6 adds on 0.5%
     uint256 playerRewardsShare = priceInWei / 200;
 
-    uint256 transferAmount = priceInWei - (daoShare + pixelCraftShare + playerRewardsShare);
-    LibERC20.transferFrom(s.ghstContract, buyer, s.pixelCraft, pixelCraftShare);
-    LibERC20.transferFrom(s.ghstContract, buyer, s.daoTreasury, daoShare);
-    LibERC20.transferFrom(s.ghstContract, buyer, seller, transferAmount);
+    uint256 transferAmount = priceInWei - (daoShare + companyNameShare + playerRewardsShare);
+    LibERC20.transferFrom(s.swdpContract, buyer, s.companyName, companyNameShare);
+    LibERC20.transferFrom(s.swdpContract, buyer, s.daoTreasury, daoShare);
+    LibERC20.transferFrom(s.swdpContract, buyer, seller, transferAmount);
     //AGIP6 adds on 0.5%
-    LibERC20.transferFrom((s.ghstContract), buyer, s.rarityFarming, playerRewardsShare);
+    // LibERC20.transferFrom((s.swdpContract), buyer, s.rarityFarming, playerRewardsShare);
 
-    s.aavegotchis[listing.erc721TokenId].locked = false;
+    s.snowdrops[listing.erc721TokenId].locked = false;
 
     //To do (Nick) -- Explain why this is necessary
     if (listing.erc721TokenAddress == address(this)) {
-      LibAavegotchi.transfer(seller, buyer, listing.erc721TokenId);
+      LibSnowdrops.transfer(seller, buyer, listing.erc721TokenId);
     } else {
       // GHSTStakingDiamond
       IERC721(listing.erc721TokenAddress).safeTransferFrom(seller, buyer, listing.erc721TokenId);

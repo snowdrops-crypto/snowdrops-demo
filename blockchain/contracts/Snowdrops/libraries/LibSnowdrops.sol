@@ -9,24 +9,39 @@ import {IERC721} from "../../shared/interfaces/IERC721.sol";
 import {LibERC721} from "../../shared/libraries/LibERC721.sol";
 import {LibItems, ItemTypeIO} from "../libraries/LibItems.sol";
 
+struct positions {
+  uint256 x;
+  uint256 y;
+  uint256 z;
+}
+
 struct SnowdropsInfo {
   uint256 tokenId;
   string name;
+  string message;
   address owner;
   uint256 randomNumber;
   uint256 status;
-  uint8[PAGE_SLOTS][EQUIPPED_ITEM_SLOTS] equippedItems;
+
+  address[] equippedItems;
+  uint8[] equippedPage;
+  positions[] equippedPositions;
+  uint256[] equippedScales;
+  uint32[] equippedZIndex;
+  
   bool locked;
   ItemTypeIO[] items;
 }
 
 library LibSnowdrops {
+  uint8 constant STATUS_VRF_PENDING = 1;
+  
   function getSnowdrops(uint256 _tokenId) internal view returns (SnowdropsInfo memory snowdropsInfo_) {
     AppStorage storage s = LibAppStorage.diamondStorage();
     snowdropsInfo_.tokenId = _tokenId;
     snowdropsInfo_.owner = s.snowdrops[_tokenId].owner;
     snowdropsInfo_.randomNumber = s.snowdrops[_tokenId].randomNumber;
-    // snowdropsInfo_.status = s.snowdrops[_tokenId].status;
+    snowdropsInfo_.status = s.snowdrops[_tokenId].status;
     snowdropsInfo_.name = s.snowdrops[_tokenId].name;
 
     // snowdropsInfo_.equippedItems = s.snowdrops[_tokenId].equippedItems;
@@ -46,11 +61,11 @@ library LibSnowdrops {
     //10% to DAO
     uint256 daoShare = (100 - companyShare + burnShare);
 
-    // Using 0xFFFfffFFFFfffFFfFFFfFfFfffFfFffffFFFfFFf as burn address.
+    // Using 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF as burn address.
     // SWDP token contract does not allow transferring to address(0) address: https://etherscan.io/address/0x3F382DbD960E3a9bbCeaE22651E88158d2791550#code
     address swdpContract = s.swdpContract;
-    LibERC20.transferFrom(swdpContract, _from, address(0xFFFfffFFFFfffFFfFFFfFfFfffFfFffffFFFfFFf), burnShare);
-    LibERC20.transferFrom(swdpContract, _from, s.snowdropsWallet, companyShare);
+    LibERC20.transferFrom(swdpContract, _from, address(0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF), burnShare);
+    LibERC20.transferFrom(swdpContract, _from, s.companyName, companyShare);
     LibERC20.transferFrom(swdpContract, _from, s.dao, daoShare);
   }
 

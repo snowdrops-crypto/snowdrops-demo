@@ -28,20 +28,18 @@ SmartWeave's: "Lazy Evaluation" computation is pushed to the users of the smart 
 - The address of the asset is store within the ERC1155 tokens.
 - Then upon returning the address of the asset from the token to the client, use ArweaveJS to return the data
   on the asset.
-- This can be a use case for an arweave smart contract. The contract will facilitate the adding, removing, modifying the data stored on
-arweave.
-
-#### Aavegotchi to Snowdrops
-- Aavegotchi utilizes ERC1155 tokens by making them count as "Power Ups" towards the Aavegotchi NFT traits. This limits the creativity a user has towards customizing their Aavegotchi to premade items and pre-set positions such as hands/head/feet...
-- Snowdrops will add an extra dimension to customization by allowing the user to choose where they would like to place an ERC1155 item on the greeting card.
+- This can be a use case for an arweave smart contract. The contract will facilitate the adding, removing,
+  modifying the data stored on arweave.
 
 #### 3D Parameter Storage
 - Postition/Rotation(determined by page)/Scale of each ERC1155 attached to NFT are stored as parameters in each NFT.
 - What is default size of ERC1155 image asset? { Width, Height }
 - Position = struct uint256 x, y, z
+  - What is the max and min position?
 - Rotation = struct uint256 x, y, z: Which page the ERC1155 token is stored on determines the direction of the Normal Vector.
 - Scale = struct uint256 x, y, z
   - What is Max and Min Scale?
+- zIndex: the layering of ERC1155 assets
 
 #### Rating System Through Token Based Voting
 - Users can upvote the design of a card on the market to be entered into a lottery each week where they have a chance of winning that Item.
@@ -57,3 +55,62 @@ arweave.
 - ERC1155 Slots for pages: There will be 4 slots, one for each page. Each page slot will also have 16 additional slots.
 - The slot itsself is a struct, this struct contains the address to the ERC1155 token, the position and the scale.
 - Rotation of object is determined by by which slot the token is in.
+
+#### Custom Message
+- The custom message stored on an NFT will typically be set before it is sent as a gift to someone.
+- Before token is put on sale on the marketplace, the message is set to an empty string.
+
+#### Economics Model v0.1
+Rough Draft
+-----------
+
+The pricing of the tokens needs to reflect the cost of handing out enough tokens on initial signup to
+allow someone to create an entire card. This would mean that the cost of creating a card, and the cost
+of having enough items to fully customize your card would be added to the user's wallet when signing up
+for the first time.
+
+This will inevitably cause the problem of having using try and signup over and over again in order to
+collect as many tokens as possible.
+
+:Token Minting in phases
+- What is the timeline for minting new tokens?
+  - Automated?
+  - DAO controlled?
+  - More tokens are released the more users signup for app.
+    - Signup is confirmed when user receives Tokens
+- How will these minted tokens be distributed?
+  - Given out for free on first signup.
+
+The price of a creating the card must be the minimum price of a card on the market.
+This means that if it costs $30 to create a card, the cheapest card available on the
+market is ($30 + gas fees).
+
+A method must also be put in place to restrict the price of the card getting too high.
+This means that the value for creating a card, selling a card, and buying a card, need to
+be pegged to USD. That means that if the price of a snowdrop token rises or falls, the price
+of minting an NFT says the same in relation to USD.
+
+:Attaching Claimable Tokens
+Any ERC20 token can be attached to a card. A claim code for that card will then be generated and
+returned to the person that attached the claim. Sending the claim code to anyone will allow them
+to claim that token into their etheruem account.
+- Requires adding addresses or allowing users to input the addresses of ERC20 tokens
+- Chainlink VRF will be requires to generate a random 
+- Key is hashed with user's address that created the claim
+- Creating a claim and creating an NFT are separate events but can be executed at the same time
+https://stackoverflow.com/questions/68717362/aes-decryption-in-solidity-contract
+- Alternate, key is generated on user's end, then that key is hashed, the hash is stored in contract.
+- User sends the key to 
+
+:Use of bonding curve
+- requires kyc
+- 
+
+#### Sign On Verification
+
+- Users will be able to claim free tokens on signup. A mechanism must be devised in order to pervent
+users from creating new ethereum addresses to continuously claim more tokens.
+- Verification can have 2 parameters. One is the ethereum address and another is an email address.
+- An email verification link will be sent on signup.
+
+This is the proposed idea and not necessarily possible in a decentralized manner.

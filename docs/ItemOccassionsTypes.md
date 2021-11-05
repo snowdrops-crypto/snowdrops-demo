@@ -8,10 +8,16 @@
 - Christmas
 - Hnukkah
 - Kwanza
+- Easter
+- New Years
+- Thanksgiving
+- Halloween
+- 4th of July
 
 #### Types
-
-- Border Image
-- Background Image
 - Image
-- Message
+  - Image Categories
+    - Frame
+    - Clip
+- 3D
+  - GLB

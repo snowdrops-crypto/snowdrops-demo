@@ -13,4 +13,69 @@ implementation is because of their use of the Diamonds Multi-Facet Proxy in conj
 
 EIP-165(Utility): Creates a standard method to publish and detect what interfaces a smart contract implements.
 
-EIP-173(Utility): Standard interface to handle ownership of contract. 
+EIP-173(Utility): Standard interface to handle ownership of contract.
+
+[Aavegotchi Contracts](https://github.com/aavegotchi/aavegotchi-contracts/tree/0b223bbf1b535bf500c4fe67e39363cd6f5c6069/contracts)
+Of the folder structure below, the folder names market with a star hold the implementation for Aavegotchi
+- *Aavegotchi
+  - facets
+    - AavegotchiFacet.sol
+    - AavegotchiGameFacet.sol
+    - BridgeFacet.sol
+    - CollateralFacet.sol
+    - DAOFacet.sol
+    - ERC1155Marketplace.sol
+    - ERC721Marketplace.sol
+    - EscrowFacet.sol
+    - ItemsFacet.sol
+    - ItemsTransferFacet.sol
+    - ShopFacet.sol
+    - SvgFacet.sol
+    - SvgViewsFacet.sol
+    - VRFFacet.sol
+    - VoucherMigrationFacet.sol
+  - interfaces
+    - ILink.sol
+  - libraries
+    - LibAavegotchi.sol
+    - LibAppStorage.sol
+    - LibERC1155Marketplace.sol
+    - LibERC721Marketplace.sol
+    - LibItems.sol
+    - LibSvg.sol
+  - CollateralEscrow.sol
+  - InitDiamond.sol
+- Ethereum
+- *GHST
+  - facets
+    - GHSTFacet.sol
+  - interfaces
+    - IGHSTDiamond.sol
+  - libraries
+    - LibAppStorage.sol
+  - InitDiamond.sol
+- raffle
+- *shared
+  - facets
+    - DiamondCutFacet.sol
+    - DiamondLoupeFacet.sol
+    - OwnershipFacet.sol
+  - interfaces
+    - IDiamondCut.sol
+    - IDiamondLoupe.sol
+    - IERC1155.sol
+    - IERC1155TokenReceiver.sol
+    - IERC165.sol
+    - IERC173.sol
+    - IERC721.sol
+    - IERC721TokenReceiver.sol
+  - libraries
+    - LibDiamond.sol
+    - LibERC1155.sol
+    - LibERC20.sol
+    - LibERC721.sol
+    - LibMeta.sol
+    - LibStrings.sol
+    - RLPReader.sol
+  - Diamond.sol
+- test

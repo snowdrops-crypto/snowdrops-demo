@@ -4,7 +4,6 @@ pragma solidity 0.8.7;
 import {Modifiers, ItemType} from "../libraries/LibAppStorage.sol";
 import {LibERC1155} from "../../shared/libraries/LibERC1155.sol";
 import {LibItems} from "../libraries/LibItems.sol";
-import {LibSvg} from "../libraries/LibSvg.sol";
 import {LibMeta} from "../../shared/libraries/LibMeta.sol";
 
 contract DAOFacet is Modifiers {
@@ -97,18 +96,18 @@ contract DAOFacet is Modifiers {
     insertItemTypes(_itemTypes);
   }
 
-  ///@notice Allow an item manager to add item types and their svgs
-  ///@param _itemTypes An array of structs where each struct contains details about each item to be added
-  ///@param _svg The svg to be added
-  ///@param _typesAndSizes An array of structs, each struct containing details about the item types and sizes
-  function addItemTypesAndSvgs(
-    ItemType[] memory _itemTypes,
-    string calldata _svg,
-    LibSvg.SvgTypeAndSizes[] calldata _typesAndSizes
-  ) external onlyItemManager {
-    insertItemTypes(_itemTypes);
-    LibSvg.storeSvg(_svg, _typesAndSizes);
-  }
+  // /@notice Allow an item manager to add item types and their svgs
+  // /@param _itemTypes An array of structs where each struct contains details about each item to be added
+  // /@param _svg The svg to be added
+  // /@param _typesAndSizes An array of structs, each struct containing details about the item types and sizes
+  // function addItemTypesAndSvgs(
+  //   ItemType[] memory _itemTypes,
+  //   string calldata _svg,
+  //   LibSvg.SvgTypeAndSizes[] calldata _typesAndSizes
+  // ) external onlyItemManager {
+  //   insertItemTypes(_itemTypes);
+  //   LibSvg.storeSvg(_svg, _typesAndSizes);
+  // }
 
   function insertItemTypes(ItemType[] memory _itemTypes) internal {
     uint256 itemTypesLength = s.itemTypes.length;

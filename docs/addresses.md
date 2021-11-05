@@ -1,0 +1,3 @@
+# Addresses
+
+Burn Address: xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF

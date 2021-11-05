@@ -18,9 +18,11 @@ struct Snowdrops {
   address owner;
   bool locked;
   uint16[PAGE_SLOTS][EQUIPPED_ITEM_SLOTS] equippedItems; //The currently equipped items of the Greeting Card
+  uint256[] scale;
   uint256 randomNumber;
   uint40 claimTime; //The block timestamp when this snowdrops was claimed
   uint40 lastInteracted; //The last time this Snowdrop was interacted with
+  uint8 status;
 }
 
 struct Dimensions {
@@ -69,7 +71,7 @@ struct ItemType {
   uint256 maxQuantity; //Total number that can be minted of this item.
   uint256 totalQuantity; //The total quantity of this item minted so far
   
-  bool canPurchaseWithSWDP;
+  bool canPurchaseWithSwdp;
   bool canBeTransferred;
 }
 
@@ -79,7 +81,6 @@ struct ERC1155Listing {
   address erc1155TokenAddress;
   uint256 erc1155TypeId;
   uint256 category; // is Birthday 0, is Mother's Day 1, is Father's Day 2
-  uint256 itemType; // Image, SVG, GLB...
   uint256 quantity;
   uint256 priceInWei;
   uint256 timeCreated;
@@ -94,6 +95,7 @@ struct ERC721Listing {
   address seller;
   address erc721TokenAddress;
   uint256 erc721TokenId;
+  uint256 category;
   uint256 priceInWei;
   uint256 timeCreated;
   uint256 timePurchased;
@@ -143,6 +145,7 @@ struct AppStorage {
   address daoTreasury;
   string itemsBaseUri;
   bytes32 domainSeparator;
+  address companyName;
 
   //VRF
   mapping(bytes32 => uint256) vrfRequestIdToTokenId;

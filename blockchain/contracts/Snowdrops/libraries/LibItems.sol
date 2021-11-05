@@ -5,23 +5,21 @@ import {LibAppStorage, AppStorage, ItemType, Snowdrops, EQUIPPED_ITEM_SLOTS} fro
 import {LibERC1155} from "../../shared/libraries/LibERC1155.sol";
 
 /*
-    This contract is built to handle the adding and removing of an ERC1155 token
-    to/from an NFT or Owner.
+  This contract is built to handle the adding and removing of an ERC1155 token
+  to/from an NFT or Owner.
 */
-
 struct ItemTypeIO {
   uint256 balance;
   uint256 itemId;
   ItemType itemType;
 }
 
-library LibItems {
-  uint8 internal constant ITEM_SLOT_FRONT   = 0;
-  uint8 internal constant ITEM_SLOT_LEFT    = 1;
-  uint8 internal constant ITEM_SLOT_RIGHT   = 2;
-  uint8 internal constant ITEM_SLOT_BACK    = 3;
-  uint8 internal constant ITEM_SLOTS_TOTAL  = 4;
+struct ItemIdIO {
+  uint256 itemId;
+  uint256 balance;
+}
 
+library LibItems {
   function itemBalancesOfTokenWithTypes(address _tokenContract, uint256 _tokenId)
     internal
     view
@@ -89,6 +87,7 @@ library LibItems {
     }
   }
 
+  // Update function to remove erc1155 dimensions from within the NFT 
   function removeFromParent(
     address _fromContract,
     uint256 _fromTokenId,
@@ -101,34 +100,34 @@ library LibItems {
     bal -= _value;
     s.nftItemBalances[_fromContract][_fromTokenId][_id] = bal;
     if (bal == 0) {
-        uint256 index = s.nftItemIndexes[_fromContract][_fromTokenId][_id] - 1;
-        uint256 lastIndex = s.nftItems[_fromContract][_fromTokenId].length - 1;
-        if (index != lastIndex) {
-            uint256 lastId = s.nftItems[_fromContract][_fromTokenId][lastIndex];
-            s.nftItems[_fromContract][_fromTokenId][index] = uint16(lastId);
-            s.nftItemIndexes[_fromContract][_fromTokenId][lastId] = index + 1;
-        }
-        s.nftItems[_fromContract][_fromTokenId].pop();
-        delete s.nftItemIndexes[_fromContract][_fromTokenId][_id];
-        if (_fromContract == address(this)) {
-            checkItemIsEquipped(_fromTokenId, _id);
-        }
+      uint256 index = s.nftItemIndexes[_fromContract][_fromTokenId][_id] - 1;
+      uint256 lastIndex = s.nftItems[_fromContract][_fromTokenId].length - 1;
+      if (index != lastIndex) {
+        uint256 lastId = s.nftItems[_fromContract][_fromTokenId][lastIndex];
+        s.nftItems[_fromContract][_fromTokenId][index] = uint16(lastId);
+        s.nftItemIndexes[_fromContract][_fromTokenId][lastId] = index + 1;
+      }
+      s.nftItems[_fromContract][_fromTokenId].pop();
+      delete s.nftItemIndexes[_fromContract][_fromTokenId][_id];
+      if (_fromContract == address(this)) {
+        checkItemIsEquipped(_fromTokenId, _id);
+      }
     }
     if (_fromContract == address(this) && bal == 1) {
-        Snowdrops storage snowdrop = s.snowdrops[_fromTokenId];
-        if (
-          snowdrop.equippedItems[LibItems.ITEM_SLOT_FRONT] == _id &&
-          snowdrop.equippedItems[LibItems.ITEM_SLOT_BACK] == _id
-        ) {
-          revert("LibItems: Can't hold 1 item in both hands");
-        }
+      Snowdrops storage snowdrop = s.snowdrops[_fromTokenId];
+      // if (
+      //   snowdrop.equippedItems[LibItems.ITEM_SLOT_FRONT] == _id &&
+      //   snowdrop.equippedItems[LibItems.ITEM_SLOT_BACK] == _id
+      // ) {
+      //   revert("LibItems: Can't hold 1 item in both hands");
+      // }
     }
   }
 
   function checkItemIsEquipped(uint256 _fromTokenId, uint256 _id) internal view {
       AppStorage storage s = LibAppStorage.diamondStorage();
-      for (uint256 i; i < EQUIPPED_ITEM_SLOTS; i++) {
-        require(s.snowdrops[_fromTokenId].equippedItems[i] != _id, "Items: Cannot transfer wearable that is equipped");
-      }
+      // for (uint256 i; i < EQUIPPED_ITEM_SLOTS; i++) {
+      //   require(s.snowdrops[_fromTokenId].equippedItems[i] != _id, "Items: Cannot transfer wearable that is equipped");
+      // }
   }
 }

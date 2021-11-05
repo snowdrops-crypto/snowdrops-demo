@@ -30,10 +30,10 @@ module.exports = {
   defaultNetwork: 'hardhat',
   networks: {
     hardhat: {
-      forking: {
-        url: process.env.MATIC_URL,
-        timeout: 120000000,
-      },
+      // forking: {
+      //   url: process.env.MATIC_URL,
+      //   timeout: 120000000,
+      // },
       blockGasLimit: 20000000,
       timeout: 120000,
       gas: "auto",
@@ -46,11 +46,11 @@ module.exports = {
     // alchemyPolygon: {
 
     // },
-    maticMainnet: {
-      url: 'https://polygon-rpc.com/',
-      chainId: 137,
-      accounts: [PRIVATE_KEY]
-    },
+    // maticMainnet: {
+    //   url: 'https://polygon-rpc.com/',
+    //   chainId: 137,
+    //   accounts: [PRIVATE_KEY]
+    // },
     // maticMumbai: {
     //   url: 'https://rpc-mumbai.maticvigil.com',
     //   chainId: 80001,
@@ -89,7 +89,7 @@ module.exports = {
     disambiguatePaths: true,
   },
   solidity: {
-    version: '0.8.4',
+    version: '0.8.7',
     settings: {
       optimizer: {
         enabled: true,
