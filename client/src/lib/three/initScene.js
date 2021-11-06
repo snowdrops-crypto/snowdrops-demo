@@ -24,6 +24,7 @@ import snowdropsLogo1 from '../../assets/snowdrops-logo-1.png'
 import snowdropsLogoRed from '../../assets/snowdrops-logo-red.png'
 import snowdropsLogoRed1024 from '../../assets/snowdrops-logo-1024.png'
 import snowdropsLogoRedBgWhite1024 from '../../assets/snowdrops-logo-1024-bg-white.png'
+import { MeshBasicMaterial } from 'three'
 // rotation: https://codepen.io/mjurczyk/pen/XWKJojR
 export default class InitScene {
   constructor() {
@@ -47,10 +48,10 @@ export default class InitScene {
     this.scene.background = new THREE.Color( '#444444' )
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
-    this.camera.position.z = -10
+    this.camera.position.z = 10
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    this.controls.target.set( 0, 0, 0 )
+    this.controls.target.set(0, 0, 0)
 
     this.mouse = new THREE.Vector2()
     this.raycaster = new THREE.Raycaster()
@@ -75,6 +76,9 @@ export default class InitScene {
   async init() {
     // Lights
     loadLights(this.scene)
+    
+    const axesHelper = new THREE.AxesHelper(5)
+    this.scene.add(axesHelper)
 
     let text = new THREE.Mesh(
       new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Loading...', 1)),
@@ -91,19 +95,70 @@ export default class InitScene {
 
     this.scene.remove(this.scene.getObjectByName('loading'))
     // Objects
-    createCube(this.scene, -5, 0, 5)
-    createTree(this.scene, 8, 0, 8)
-    basicCard(this.scene, 3, 0, -3)
-    textureToPlane(this.TextureLoader, this.scene, snowdropsLogoRed1024, 5, 5, {x: 5, y: 1, z: 0})
+    // createCube(this.scene, -5, 0, 5)
+    // createTree(this.scene, 8, 0, 8)
+    // basicCard(this.scene, 3, 0, -3)
+
+    // const material1 = new THREE.MeshBasicMaterial({
+    //   side: THREE.DoubleSide, color: 0x00ff00, transparent: false
+    // })
+    // const material2 = new THREE.MeshBasicMaterial({
+    //   side: THREE.DoubleSide, color: 0xff0000, transparent: false
+    // })
+    // const firstPage = new THREE.Mesh(new THREE.PlaneGeometry(4, 6), material1)
+    // const secondPage = new THREE.Mesh(new THREE.PlaneGeometry(4, 6), material2)
+  
+    // firstPage.position.set(-2, 0, 0)
+    // secondPage.position.set(2, 0, 3)
+    // // firstPage.rotation.y = Math.PI/4
+    // // secondPage.rotation.y = -Math.PI/4
+  
+    // this.scene.add(firstPage)
+    // this.scene.add(secondPage)
+
+    const doorMesh = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(4, 6, 0.1),
+      new THREE.MeshStandardMaterial({ color: 0xff5555 })
+    )
+    this.door = new THREE.Object3D()
+    this.door.add(doorMesh.clone())
+    this.door.children[0].position.set(-2, 0, 0)
+    this.door.position.set(0, 0, 0)
+    this.scene.add(this.door)
+
+    const sampleMesh = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(1, 1, 0.1),
+      new THREE.MeshStandardMaterial({ color: 0x55ff55 })
+    )
+    this.sampleBox = new THREE.Object3D()
+    this.sampleBox.add(sampleMesh.clone())
+    this.sampleBox.children[0].position.set(-3.5, 0, 0.2)
+    this.sampleBox.position.set(0, 0, 0)
+    this.scene.add(this.sampleBox)
+
+    // textureToPlane(this.TextureLoader, this.scene, snowdropsLogoRed1024, 5, 5, {x: 5, y: 1, z: 0})
+
+    const snowdropsLogoTexture = await this.TextureLoader.load(snowdropsLogoRed1024)
+    const snowdropsLogoMaterial = new THREE.MeshBasicMaterial({
+      map: snowdropsLogoTexture, side: THREE.DoubleSide, color: 0xffffff, transparent: true
+    })
+    const snowdropsLogoPlane = new THREE.PlaneGeometry(1, 1)
+    const snowdropsMesh = new THREE.Mesh(snowdropsLogoPlane, snowdropsLogoMaterial)
+    this.sd = new THREE.Object3D()
+    this.sd.add(snowdropsMesh.clone())
+    this.sd.children[0].position.set(-3.5, 2, 0.2)
+    this.sd.position.set(0, 0, 0)
+    this.scene.add(this.sd)
 
     this.animate()
   }
 
   animate() {
     this.renderer.setAnimationLoop(() => {
-      const cube = this.scene.getObjectByName('cube')
-      cube.rotation.x += 0.01
-      cube.rotation.y += 0.01
+      // const cube = this.scene.getObjectByName('cube')
+      // this.door.rotation.y += Math.PI / 128
+      // this.sampleBox.rotation.y += Math.PI / 128
+      // this.sd.rotation.y += Math.PI / 128
 
       const intersects = this.raycaster.intersectObjects( this.scene.children )
 
