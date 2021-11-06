@@ -11,3 +11,7 @@ blockchain/node_modules
 blockchain/artifacts
 blockchain/cache
 blockchain/.env
+
+swdp-test-blockchain/node_modules
+swdp-test-blockchain/artifacts
+swdp-test-blockchain/cache

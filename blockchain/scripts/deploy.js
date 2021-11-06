@@ -56,23 +56,14 @@ async function main(scriptName) {
 
     initialHauntSize = '10000'
 
-    // ghstTokenContract = await ethers.getContractAt('GHSTFacet', '0x658809Bb08595D15a59991d640Ed5f2c658eA284')
-    ghstTokenContract = await ethers.getContractAt('GHSTFacet', '0x20d0A1ce31f8e8A77b291f25c5fbED007Adde932')
-
-    ghstStakingDiamond = '0xA02d547512Bb90002807499F05495Fe9C4C3943f'
-    // const GhstTokenContract = await ethers.getContractFactory('GHSTFacet')
-    // ghstTokenContract = await GhstTokenContract.deploy()
-    // await ghstTokenContract.deployed()
-    // await ghstTokenContract.mintTo('0x0b22380B7c423470979AC3eD7d3c07696773dEa1')
-    // console.log('GHSTToken:' + ghstTokenContract.address)
-    // throw 'done here'
+    swdpTokenContract = await ethers.getContractAt('SWDPFacet', '0x20d0A1ce31f8e8A77b291f25c5fbED007Adde932')
 
     dao = account // 'todo' // await accounts[1].getAddress()
     daoTreasury = account
     rarityFarming = account // 'todo' // await accounts[2].getAddress()
     pixelCraft = account // 'todo' // await accounts[3].getAddress()
 
-    // console.log('GHST diamond address:' + ghstDiamond.address)
+    console.log('SWDP diamond address:' + swdpDiamond.address)
   } else {
     throw Error('No network settings for ' + hre.network.name)
   }
@@ -153,8 +144,8 @@ async function main(scriptName) {
   totalGasUsed = totalGasUsed.add(receipt.gasUsed)
 
   // Get Diamond Facets
-  const diamondLoupeFacet = await ethers.getContractAt('DiamondLoupeFacet', aavegotchiDiamond.address)
-  vrfFacet = await ethers.getContractAt('VrfFacet', aavegotchiDiamond.address)
+  const diamondLoupeFacet = await ethers.getContractAt('DiamondLoupeFacet', snowdropsDiamond.address)
+  vrfFacet = await ethers.getContractAt('VrfFacet', snowdropsDiamond.address)
   snowdropsFacet = await ethers.getContractAt('contracts/Snowdrops/facets/SnowdropsFacet.sol', snowdropsDiamond.address)
   shopFacet = await ethers.getContractAt('ShopFacet', snowdropsDiamond.address)
   erc1155MarketplaceFacet = await ethers.getContractAt('ERC1155MarketplaceFacet', snowdropsDiamond.address)
@@ -162,3 +153,14 @@ async function main(scriptName) {
 
 
 }
+
+if (require.main === module) {
+  main()
+    .then(() => process.exit(0))
+    .catch((error) => {
+      console.error(error)
+      process.exit(1)
+    })
+}
+
+exports.deployProject = main
