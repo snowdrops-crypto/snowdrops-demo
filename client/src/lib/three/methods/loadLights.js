@@ -7,14 +7,16 @@ const loadLights = (scene) => {
   ambientLight.name = 'ambient-light'
   scene.add(ambientLight)
 
-  const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 )
+  const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.8 )
   directionalLight.name = 'directional-light'
-  directionalLight.position.y = 15
+  directionalLight.position.y = 3
+  directionalLight.position.z = 3
   scene.add(directionalLight)
 
   const spotlight = new THREE.SpotLight(0xffffff)
   spotlight.name = 'spot-light'
-  spotlight.position.set(5, 5, 5)
+  spotlight.position.set(5, 3, 5)
+  spotlight.lookAt(0, 0, 0)
   scene.add(spotlight)
 
   const pointLight = new THREE.PointLight( 0xff0000, 1, 1 )

@@ -3,7 +3,7 @@
 const { expect } = require('chai')
 const { deployProject } = require('../scripts/deploy')
 
-describe('Deploying Contracts, SVG and Minting Aavegotchis', async () => {
+describe('Deploying SWDP Contract', async () => {
   before(async () => {
     const deployVars = await deployProject('deployTest')
     global.set = true

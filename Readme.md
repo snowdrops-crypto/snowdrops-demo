@@ -13,6 +13,12 @@ Snowdrops Demo is an NFT application used to demo the functionality of Snowdrops
 - Run local: `npm run serve`
 - Build: `npm run build`
 
+#### SWDP Test Blockchain
+The SWDP token has been separated from the Snowdrops implementation in order to deploy the contracts and raise funding.
+- `cd swdp-test-blockchain`
+- `npm i`
+- `npx hardhat test tests/deploy.test.js`
+
 ## Sources
 - [Aavegotchi Github](https://github.com/aavegotchi)
 - [Diamond Facet EIP-2535](https://eips.ethereum.org/EIPS/eip-2535)

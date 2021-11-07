@@ -65,7 +65,7 @@ async function deploy ({
   }
   facets = await deployFacets(facets)
   const diamondFactory = await ethers.getContractFactory('Diamond')
-  console.log(diamondFactory)
+  // console.log(diamondFactory)
   const diamondCut = []
   console.log('--')
   console.log('Setting up diamondCut args')

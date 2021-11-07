@@ -23,6 +23,7 @@ const web3i = async () => {
   console.log(web3.utils.fromWei(balance))
 
   // getBalance(web3, accounts[0])
+  return accounts[0]
 }
 
 const getBalance = async (web3, wallet_addr, token_addr) => {

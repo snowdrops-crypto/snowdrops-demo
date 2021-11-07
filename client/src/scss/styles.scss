@@ -9,3 +9,7 @@
 body {
   pointer-events: none;
 }
+
+.enable-input {
+  pointer-events: all;
+}

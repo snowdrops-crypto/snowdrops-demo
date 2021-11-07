@@ -1,7 +1,7 @@
 'use strict'
 
 import React, { useEffect } from 'react'
-import { useHistory, BrowserRouter, Route, Switch } from 'react-router-dom'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -33,14 +33,13 @@ import Wiki from './components/pages/Wiki'
 import NotFound from './components/pages/NotFound'
 
 const App = () => {
-  const history = useHistory()
   const rstate = useSelector((rstate) => rstate)
   const dispatch = useDispatch()
   const { appState } = bindActionCreators(actions, dispatch)
 
   useEffect(async () => {
-    await web3i()
-    appState({...rstate.main, status: 'landing'})
+    const _ethAddr = await web3i()
+    appState({...rstate.main, status: 'landing', ethAddr: _ethAddr})
     console.log('hi')
     return () => {
     }
