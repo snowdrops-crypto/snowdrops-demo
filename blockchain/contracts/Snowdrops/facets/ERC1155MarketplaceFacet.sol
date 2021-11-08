@@ -115,7 +115,7 @@ contract ERC1155MarketplaceFacet is Modifiers {
     }
   }
 
-    ///@notice Allow the aavegotchi diamond owner or DAO to set the default listing fee
+    ///@notice Allow the snowdrops diamond owner or DAO to set the default listing fee
     ///@param _listingFeeInWei The new listing fee in wei
     function setListingFee(uint256 _listingFeeInWei) external onlyDaoOrOwner {
       s.listingFeeInWei = _listingFeeInWei;
@@ -128,7 +128,7 @@ contract ERC1155MarketplaceFacet is Modifiers {
       uint256 category;
     }
 
-    ///@notice Allow the aavegotchi diamond owner or DAO to set the category details for multiple ERC1155 NFTs
+    ///@notice Allow the snowdrops diamond owner or DAO to set the category details for multiple ERC1155 NFTs
     ///@param _categories An array of structs where each struct contains details about each ERC1155 item //erc1155TokenAddress,erc1155TypeId and category
     function setERC1155Categories(Category[] calldata _categories) external onlyItemManager {
       for (uint256 i; i < _categories.length; i++) {
