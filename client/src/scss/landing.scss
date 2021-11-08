@@ -10,7 +10,7 @@
   height: 95vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
 }
 
 #landing-title-description {
@@ -27,4 +27,16 @@
 .landing-description {
   font-size: 2em;
   text-align: center;
+}
+
+#three-control-buttons {
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  width: 20vw;
+}
+
+.three-control-button {
+  padding: 10px;
+  font-size: 1.2em;
 }

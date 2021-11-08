@@ -71,6 +71,7 @@ export default class InitScene {
 
     document.body.addEventListener('pause-animation', () => this.stopAnimate())
     document.body.addEventListener('start-animation', () => this.animate())
+    document.body.addEventListener('three-test', () => console.log('test triggered in three'))
   }
 
   async init() {
@@ -167,7 +168,8 @@ export default class InitScene {
 
     // MESSAGE on CARD
     let message = new THREE.Mesh(
-      new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Happy Birthday!\n\nMay this be the day,\nHappy Happy Birthday\ntoday today!\nAnd if today is not today,\nmay this card be that way.\n\nSincerely,\nSnowdrops', 0.4)),
+      new THREE.ShapeBufferGeometry(this.fonter.generateShapes(
+        'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops', 0.35)),
       new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide })
     )
     this.msg = new THREE.Object3D()

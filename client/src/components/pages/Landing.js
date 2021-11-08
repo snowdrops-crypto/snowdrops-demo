@@ -23,6 +23,21 @@ const Landing = () => {
     }
   }
 
+  const handleButtonThreeTest = () => {
+    const evt = new Event('three-test')
+    document.body.dispatchEvent(evt)
+  }
+
+  const handleButtonStartAnimation = () => {
+    const evt = new Event('start-animation')
+    document.body.dispatchEvent(evt)
+  }
+
+  const handleButtonStopAnimation = () => {
+    const evt = new Event('pause-animation')
+    document.body.dispatchEvent(evt)
+  }
+
   return (
     <div id='landing-page' onScroll={(e) => handleScroll(e)}>
       <Header />
@@ -30,6 +45,11 @@ const Landing = () => {
         <div id='landing-title-description'>
           <div className='landing-title'>Welcome to Snowdrops!</div>
           <div className='landing-description'>Snowdrops are NFT greeting cards.</div>
+        </div>
+        <div id='three-control-buttons'>
+          <button className='enable-input three-control-button' onClick={() => handleButtonThreeTest()}>three test</button>
+          <button className='enable-input three-control-button' onClick={() => handleButtonStartAnimation()}>start animation</button>
+          <button className='enable-input three-control-button' onClick={() => handleButtonStopAnimation()}>stop animation</button>
         </div>
       </div>
       <Footer />
