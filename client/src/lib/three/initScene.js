@@ -274,6 +274,30 @@ export default class InitScene {
     this.rightCardBottomBox.position.set(groupPositionX, 0, 0)
     this.scene.add(this.rightCardBottomBox)
 
+    //CARD FRONT
+    const frontObjectMesh = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(2, 2, 0.1),
+      new THREE.MeshStandardMaterial({ color: 0xff55ff })
+    )
+    this.frontObject = new THREE.Object3D()
+    this.frontObject.add(frontObjectMesh.clone())
+    this.frontObject.children[0].position.set(-2, 1, -0.25)
+    this.frontObject.children[0].rotation.y = Math.PI
+    this.frontObject.position.set(groupPositionX, 0, 0)
+    this.scene.add(this.frontObject)
+
+    //BACK CARD
+    const backObjectMesh = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(2, 2, 0.1),
+      new THREE.MeshStandardMaterial({ color: 0xff5533 })
+    )
+    this.backObject = new THREE.Object3D()
+    this.backObject.add(backObjectMesh.clone())
+    this.backObject.children[0].position.set(2, 1, -0.25)
+    this.backObject.children[0].rotation.y = Math.PI
+    this.backObject.position.set(groupPositionX, 0, 0)
+    this.scene.add(this.backObject)
+
     /* ROTATIONS */
     const rotation_factor = 8
     this.cardLeft.rotation.y += Math.PI / rotation_factor
@@ -294,6 +318,10 @@ export default class InitScene {
     this.rightCardRightBox.rotation.y -= Math.PI / rotation_factor
     this.rightCardTopBox.rotation.y -= Math.PI / rotation_factor
     this.rightCardBottomBox.rotation.y -= Math.PI / rotation_factor
+
+    this.frontObject.rotation.y += Math.PI / rotation_factor
+
+    this.backObject.rotation.y -= Math.PI / rotation_factor
 
     this.animate()
   }
@@ -319,6 +347,11 @@ export default class InitScene {
       this.rightCardRightBox.rotation.y -= Math.PI / rotation_factor
       this.rightCardTopBox.rotation.y -= Math.PI / rotation_factor
       this.rightCardBottomBox.rotation.y -= Math.PI / rotation_factor
+
+      //
+      this.frontObject.rotation.y += Math.PI / rotation_factor
+
+      this.backObject.rotation.y -= Math.PI / rotation_factor
 
       // this.cardRight.rotation.y -= Math.PI / rotation_speed
 

@@ -9,7 +9,7 @@ const Nav = () => {
     <div id='nav'>
       <div id='nav-link-container'>
         <Link className='nav-link' to='/'>
-          <div className='nav-link-text'>Landing</div>
+          <div className='nav-link-text'>Home</div>
         </Link>
         <Link className='nav-link' to='/marketplace'>
           <div className='nav-link-text'>Marketplace</div>

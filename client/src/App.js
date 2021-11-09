@@ -61,7 +61,7 @@ const App = () => {
       }
     })
 
-    // appState({...rstate.main, status: 'landing', ethAddr: _ethAddr})
+    appState({...rstate.main, status: 'landing', signer: signer, provider: provider})
     return () => {
     }
   }, [])
