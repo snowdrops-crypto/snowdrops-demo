@@ -3,17 +3,19 @@
 import React, { useEffect } from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
+/* Redux */
 import { useSelector, useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as actions from './store/actions'
 
+/* Interfaces */
 import web3i from './lib/web3/web3i'
+import { ethers } from 'ethers'
 
+/* PAGES */
 import Landing from './components/pages/Landing'
-
 import CreateCard from './components/pages/CreateCard'
 import ClaimCard from './components/pages/ClaimCard'
-
 import Marketplace from './components/pages/Marketplace'
 import MarketplaceCards from './components/pages/marketplace-pages/MarketplaceCards'
 import MarketplaceItems from './components/pages/marketplace-pages/MarketplaceItems'
@@ -38,9 +40,28 @@ const App = () => {
   const { appState } = bindActionCreators(actions, dispatch)
 
   useEffect(async () => {
-    const _ethAddr = await web3i()
-    appState({...rstate.main, status: 'landing', ethAddr: _ethAddr})
-    console.log('hi')
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const signer = provider.getSigner()
+    const addr = await signer.getAddress()
+    const bal = await signer.getBalance()
+    const blockNumber = await provider.getBlockNumber()
+    const network = await provider.getNetwork()
+    
+    console.log(addr, ethers.utils.formatEther(bal), blockNumber, network)
+
+    provider.on('block', (block) => {
+      // console.log(block)
+    })
+    
+    provider.on('network', (newNetwork, oldNetwork) => {
+      if (oldNetwork) {
+        window.location.reload()
+        console.log(newNetwork)
+        console.log(oldNetwork)
+      }
+    })
+
+    // appState({...rstate.main, status: 'landing', ethAddr: _ethAddr})
     return () => {
     }
   }, [])

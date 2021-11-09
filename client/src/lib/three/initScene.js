@@ -52,6 +52,12 @@ export default class InitScene {
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.target.set(0, 0, 0)
+    this.controls.maxDistance = 10
+    this.controls.minDistance = 5
+    this.controls.maxAzimuthAngle = Math.PI/4
+    this.controls.minAzimuthAngle = -Math.PI/4
+    this.controls.maxPolarAngle = Math.PI/2
+    this.controls.minPolarAngle = Math.PI/4
 
     this.mouse = new THREE.Vector2()
     this.raycaster = new THREE.Raycaster()
@@ -319,9 +325,9 @@ export default class InitScene {
       const intersects = this.raycaster.intersectObjects(this.scene.children)
       if (intersects.length > 0) {
         if (typeof intersects[0].object !== 'undefined' && (intersects[0].object.name.includes('claim-button') || intersects[0].object.name.includes('claim-button-text'))) {
-          console.log(intersects[0].object.name)
+          // console.log(intersects[0].object.name)
           let claimButton = this.scene.getObjectByName('claim-button')
-          console.log(claimButton)
+          // console.log(claimButton)
           claimButton.material.color.set(`#99FF99`)
         } else {
           let claimButton = this.scene.getObjectByName('claim-button')
