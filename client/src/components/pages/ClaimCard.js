@@ -53,6 +53,10 @@ const ClaimCard = () => {
       Token has been found but is not claimable
     </div>
   }
+
+  const handleClaimButton = () => {
+    console.log('claim button clicked')
+  }
   
   const [inputTxt, setInputTxt] = useState('')
   const onChange = (e) => { setInputTxt(e.target.value); console.log(e.target.value)}
@@ -62,8 +66,10 @@ const ClaimCard = () => {
       <Header />
       <div id='main-content'>
         <div id='page-title'>Claim a Card</div>
-        <br/>
-        <div><input value={inputTxt} className='input-code' placeholder='ac3dsada09jvianvdfjj3raoija' onChange={e => onChange(e)}/></div>
+        <div>
+          <input value={inputTxt} className='input-code' placeholder='address' onChange={e => onChange(e)}/>
+          <button onClick={handleClaimButton}>Claim</button>
+        </div>
       </div>
       <Footer />
     </div>

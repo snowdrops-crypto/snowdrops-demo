@@ -6,6 +6,12 @@
   height: 100%;
 }
 
+#main-content {
+  width: 100%;
+  height: 100px;
+  background: rgb(167, 167, 167);
+}
+
 #page-title {
   text-align: center;
   height: 50px;
@@ -18,7 +24,7 @@
 }
 
 .input-code {
-  padding: 10px;
+  padding: 5px;
   caret-color: auto;
   pointer-events: all;
   height: 30px;

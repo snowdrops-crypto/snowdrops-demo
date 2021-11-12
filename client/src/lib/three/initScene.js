@@ -48,16 +48,18 @@ export default class InitScene {
     this.scene.background = new THREE.Color( '#444444' )
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
-    this.camera.position.z = 10
+    this.camera.position.x = 10
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.target.set(0, 0, 0)
     this.controls.maxDistance = 10
     this.controls.minDistance = 5
-    this.controls.maxAzimuthAngle = Math.PI/4
-    this.controls.minAzimuthAngle = -Math.PI/4
-    this.controls.maxPolarAngle = Math.PI/2
-    this.controls.minPolarAngle = Math.PI/4
+    // Horizontal Angle
+    // this.controls.maxAzimuthAngle = Math.PI/4
+    // this.controls.minAzimuthAngle = -Math.PI/4
+    // Vertical Angle
+    // this.controls.maxPolarAngle = Math.PI/2
+    // this.controls.minPolarAngle = Math.PI/4
 
     this.mouse = new THREE.Vector2()
     this.raycaster = new THREE.Raycaster()
@@ -84,8 +86,8 @@ export default class InitScene {
     // Lights
     loadLights(this.scene)
     
-    const axesHelper = new THREE.AxesHelper(5)
-    this.scene.add(axesHelper)
+    // const axesHelper = new THREE.AxesHelper(5)
+    // this.scene.add(axesHelper)
 
     let text = new THREE.Mesh(
       new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Loading...', 1)),
@@ -329,31 +331,32 @@ export default class InitScene {
   animate() {
     this.renderer.setAnimationLoop(() => {
       const rotation_factor = 512
-      this.cardLeft.rotation.y += Math.PI / rotation_factor
-      this.leftCardLeftBox.rotation.y += Math.PI / rotation_factor
-      this.leftCardRightBox.rotation.y += Math.PI / rotation_factor
-      this.leftCardTopBox.rotation.y += Math.PI / rotation_factor
-      this.leftCardBottomBox.rotation.y += Math.PI / rotation_factor
-      this.sd.rotation.y += Math.PI / rotation_factor
-      this.msg.rotation.y += Math.PI / rotation_factor
+      if (1 > 2) {
+        // LEFT CARD ROTATIONS
+        this.cardLeft.rotation.y += Math.PI / rotation_factor
+        this.leftCardLeftBox.rotation.y += Math.PI / rotation_factor
+        this.leftCardRightBox.rotation.y += Math.PI / rotation_factor
+        this.leftCardTopBox.rotation.y += Math.PI / rotation_factor
+        this.leftCardBottomBox.rotation.y += Math.PI / rotation_factor
+        this.sd.rotation.y += Math.PI / rotation_factor
+        this.msg.rotation.y += Math.PI / rotation_factor
 
-      this.cardRight.rotation.y -= Math.PI / rotation_factor
-      this.msg2.rotation.y -= Math.PI / rotation_factor
-      //
-      this.rightCardClaimButton.rotation.y -= Math.PI / rotation_factor
-      this.rightCardClaimButtonMessage.rotation.y -= Math.PI / rotation_factor
-      //
-      this.rightCardLeftBox.rotation.y -= Math.PI / rotation_factor
-      this.rightCardRightBox.rotation.y -= Math.PI / rotation_factor
-      this.rightCardTopBox.rotation.y -= Math.PI / rotation_factor
-      this.rightCardBottomBox.rotation.y -= Math.PI / rotation_factor
+        // RIGHT CARD ROTATIONS
+        this.cardRight.rotation.y -= Math.PI / rotation_factor
+        this.msg2.rotation.y -= Math.PI / rotation_factor
+        this.rightCardClaimButton.rotation.y -= Math.PI / rotation_factor
+        this.rightCardClaimButtonMessage.rotation.y -= Math.PI / rotation_factor
+        this.rightCardLeftBox.rotation.y -= Math.PI / rotation_factor
+        this.rightCardRightBox.rotation.y -= Math.PI / rotation_factor
+        this.rightCardTopBox.rotation.y -= Math.PI / rotation_factor
+        this.rightCardBottomBox.rotation.y -= Math.PI / rotation_factor
 
-      //
-      this.frontObject.rotation.y += Math.PI / rotation_factor
+        // FRONT CARD ROTATIONS
+        this.frontObject.rotation.y += Math.PI / rotation_factor
 
-      this.backObject.rotation.y -= Math.PI / rotation_factor
-
-      // this.cardRight.rotation.y -= Math.PI / rotation_speed
+        // BACK CARD ROTATIONS
+        this.backObject.rotation.y -= Math.PI / rotation_factor
+      }
 
       const intersects = this.raycaster.intersectObjects(this.scene.children)
       if (intersects.length > 0) {
