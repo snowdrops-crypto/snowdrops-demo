@@ -40,6 +40,11 @@ const Landing = () => {
     document.body.dispatchEvent(evt)
   }
 
+  const handleButtonSelectFrame = () => {
+    const evt = new CustomEvent('select-card-frame', {detail: {cardSide: '', cardColors: []}})
+    document.body.dispatchEvent(evt)
+  }
+
   return (
     <div id='landing-page' onScroll={(e) => handleScroll(e)}>
       <Header />

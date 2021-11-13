@@ -16,6 +16,7 @@ import offsetRotateBoxObject from './methods/offsetRotateBoxObject'
 import offsetRotateTextureObject from './methods/offsetRotateTextureObject'
 import offsetRotateTextObject from './methods/offsetRotateTextObject'
 import offsetRotateButtonObject from './methods/offsetRotateButtonObject'
+import pageFrame from './methods/pageFrame'
 
 import avocado from '../../assets/glb/Avocado.glb'
 import font_caviar from '../../assets/fonts/CaviarDreams_Regular.json'
@@ -31,7 +32,7 @@ export default class InitScene {
     this.loopCount
 
     // this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: "high-performance"})
-    this.renderer = new THREE.WebGLRenderer({antialias: true})
+    this.renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: true})
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize( window.innerWidth, window.innerHeight )
 
@@ -71,6 +72,8 @@ export default class InitScene {
 
     this.TextureLoader = new THREE.TextureLoader()
 
+    this.cardObjectNames = {'left-card': [], 'right-card': [], 'front-card': [], 'back-card': []}
+
     window.addEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
     window.addEventListener('keydown', (e) => this.keydown(e), 10)
     window.addEventListener('wheel', e => this.wheelScroll(e), false)
@@ -104,131 +107,109 @@ export default class InitScene {
     // await this.loadObjects(['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado])
     // await LoadGLTFs(this.GLTFloader, this.scene, ['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado], {x: 2, y: 2, z: 2})
 
-    const groupPositionX = 0
     // CARD
-    const leftCardName = 'left-card'
     const cardDimensions = {x: 4, y: 6, z: 0.1}
-    const verticalFrameDimensions = {x: 0.1, y: 6, z: 0.1}
-    const horizontalFrameDimensions = {x: 4, y: 0.1, z: 0.1}
-    const itemSpacing = 0.1
+    const basePosition = {x: 0, y: 0, z: 0}
+    const itemSpacingInside = 0.1
+    const itemSpacingOutside = -0.1
+
+    /* CARD RIGHT */
     offsetRotateBoxObject(
-      this.scene, `${leftCardName}`, 0xeffeef,
-      cardDimensions, {x: groupPositionX, y: 0, z: 0}, {x: (-1 * cardDimensions.x / 2), y: 0, z: 0}
+      this.scene, `${Object.keys(this.cardObjectNames)[0]}`, 0xeffeef,
+      cardDimensions, basePosition, {x: (-1 * cardDimensions.x / 2), y: 0, z: 0}
     )
-    // BOX on CARD
-    offsetRotateBoxObject(
-      this.scene, `${leftCardName}-left-box`, 0x55ff55,
-      verticalFrameDimensions, {x: groupPositionX, y: 0, z: 0}, {x: -1 * (cardDimensions.x - 0.05), y: 0, z: itemSpacing}
-    )
-    offsetRotateBoxObject(
-      this.scene, `${leftCardName}-right-box`, 0xff5555,
-      verticalFrameDimensions, {x: groupPositionX, y: 0, z: 0}, {x: 0, y: 0, z: itemSpacing}
-    )
-    offsetRotateBoxObject(
-      this.scene, `${leftCardName}-top-box`, 0x5555ff,
-      horizontalFrameDimensions, {x: groupPositionX, y: 0, z: 0},
-      {x: (-1 * cardDimensions.x / 2), y: cardDimensions.y / 2, z: itemSpacing}
-    )
-    offsetRotateBoxObject(
-      this.scene, `${leftCardName}-bottom-box`, 0xff55ff,
-      horizontalFrameDimensions, {x: groupPositionX, y: 0, z: 0},
-      {x: (-1 * cardDimensions.x / 2), y: (-1 * cardDimensions.y / 2), z: itemSpacing}
+    this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(Object.keys(this.cardObjectNames)[0])
+    // Card Frame
+    this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(
+      ...pageFrame(this.scene, basePosition, Object.keys(this.cardObjectNames)[0], cardDimensions, [])
     )
     // LOGO on CARD
     await offsetRotateTextureObject(this.scene, this.TextureLoader, snowdropsLogo1,
-      {x: 1, y: 1}, {x: groupPositionX, y: 0, z: 0}, {x: -1, y: -2.25, z: itemSpacing},
-      `${leftCardName}-snowdrops-logo`, 0xffffff
+      {x: 1, y: 1}, basePosition, {x: -1, y: -2.25, z: itemSpacingInside},
+      `${Object.keys(this.cardObjectNames)[0]}-snowdrops-logo`, 0xffffff
     )
+    this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(`${Object.keys(this.cardObjectNames)[0]}-snowdrops-logo`)
     // MESSAGE on CARD
     offsetRotateTextObject(
-      this.scene, this.fonter, `${leftCardName}-message`, 0x000000,
+      this.scene, this.fonter, `${Object.keys(this.cardObjectNames)[0]}-message`, 0x000000,
       'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops',
-      0.35, {x: groupPositionX, y: 0, z: 0}, {x: -7.5, y: 4, z: 0.20}, 0.5
+      0.35, basePosition, {x: -7.5, y: 4, z: 0.20}, 0.5
     )
+    this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(`${Object.keys(this.cardObjectNames)[0]}-message`)
 
-    /**Card 2 */
-    // CARD
-    const rightCardName = 'right-card'
+    /* CARD RIGHT */
     offsetRotateBoxObject(
-      this.scene, `${rightCardName}`, 0xeffeef,
-      cardDimensions, {x: groupPositionX, y: 0, z: 0}, {x: cardDimensions.x / 2, y: 0, z: 0},
+      this.scene, `${Object.keys(this.cardObjectNames)[1]}`, 0xeffeef,
+      cardDimensions, basePosition, {x: cardDimensions.x / 2, y: 0, z: 0},
     )
-
+    this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(Object.keys(this.cardObjectNames)[1])
+    // Card Frame
+    this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(
+      ...pageFrame(this.scene, basePosition, Object.keys(this.cardObjectNames)[1], cardDimensions, [])
+    )
     // MESSAGE on CARD
     offsetRotateTextObject(
-      this.scene, this.fonter, `${rightCardName}-claim-message`, 0x000000, 'Claim your ETH: 0.5',
-      0.5, {x: groupPositionX, y: 0, z: 0}, {x: 1, y: 1, z: 0.15}, 0.5
+      this.scene, this.fonter, `${Object.keys(this.cardObjectNames)[1]}-claim-message`, 0x000000, 'Claim your ETH: 0.5',
+      0.5, basePosition, {x: 1, y: 1, z: 0.15}, 0.5
     )
-
+    this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(`${Object.keys(this.cardObjectNames)[1]}-claim-message`)
     // Claim Button
     offsetRotateBoxObject(
-      this.scene, `claim-button`, 0x55ff55,
-      {x: 1.5, y: 0.5, z: 0.1},{x: groupPositionX, y: 0, z: 0}, {x: 2, y: 0, z: itemSpacing},
+      this.scene, `${Object.keys(this.cardObjectNames)[1]}-claim-button`, 0x55ff55,
+      {x: 1.5, y: 0.5, z: 0.1}, basePosition, {x: 2, y: 0, z: itemSpacingInside},
     )
+    this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(`${Object.keys(this.cardObjectNames)[1]}-claim-button`)
     offsetRotateTextObject(
-      this.scene, this.fonter, `claim-button-text`, 0x000000, 'Claim!',
-      0.2, {x: groupPositionX, y: 0, z: 0}, {x: 1.6, y: -0.1, z: 0.20}
+      this.scene, this.fonter, `${Object.keys(this.cardObjectNames)[1]}-claim-button-text`, 0x000000, 'Claim!',
+      0.2, basePosition, {x: 1.6, y: -0.1, z: 0.20}
     )
+    this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(`${Object.keys(this.cardObjectNames)[1]}-claim-button-text`)
 
-    // BOX on CARD
-    offsetRotateBoxObject(
-      this.scene, `${rightCardName}-left-box`, 0x55ff55,
-      {x: 0.1, y: 6, z: 0.1}, {x: groupPositionX, y: 0, z: 0}, {x: 0, y: 0, z: itemSpacing}
-    )
-    offsetRotateBoxObject(
-      this.scene, `${rightCardName}-right-box`, 0xff5555,
-      {x: 0.1, y: 6, z: 0.1}, {x: groupPositionX, y: 0, z: 0}, {x: cardDimensions.x, y: 0, z: itemSpacing}
-    )
-    offsetRotateBoxObject(
-      this.scene, `${rightCardName}-top-box`, 0x5555ff,
-      {x: 4, y: 0.1, z: 0.1}, {x: groupPositionX, y: 0, z: 0}, {x: cardDimensions.x / 2, y: cardDimensions.y / 2, z: itemSpacing}
-    )
-    offsetRotateBoxObject(
-      this.scene, `${rightCardName}-bottom-box`, 0xff55ff,
-      {x: 4, y: 0.1, z: 0.1}, {x: groupPositionX, y: 0, z: 0}, {x: cardDimensions.x / 2, y: -1 * cardDimensions.y / 2, z: itemSpacing}
-    )
-
-    //CARD FRONT
+    /* CARD FRONT */
     const frontCardName = 'front-card'
     offsetRotateBoxObject(
-      this.scene, `${frontCardName}-object`, 0xff55ff,
-      {x: 2, y: 2, z: 0.1}, {x: groupPositionX, y: 0, z: 0}, {x: -2, y: 1, z: (-1 * itemSpacing)}
+      this.scene, `${Object.keys(this.cardObjectNames)[2]}-object`, 0xff55ff,
+      {x: 2, y: 2, z: 0.1}, basePosition, {x: -2, y: 1, z: itemSpacingOutside}
+    )
+    this.cardObjectNames[Object.keys(this.cardObjectNames)[2]].push(`${Object.keys(this.cardObjectNames)[2]}-object`)
+    this.cardObjectNames[Object.keys(this.cardObjectNames)[2]].push(
+      ...pageFrame(this.scene, basePosition, Object.keys(this.cardObjectNames)[2], cardDimensions, [])
     )
 
-    //BACK CARD
+    /* BACK CARD */
     const backCardName = 'back-card'
     offsetRotateBoxObject(
-      this.scene, `${backCardName}-object`, 0xff5533,
-      {x: 2, y: 2, z: 0.1}, {x: groupPositionX, y: 0, z: 0}, {x: 2, y: 1, z: (-1 * itemSpacing)}
+      this.scene, `${Object.keys(this.cardObjectNames)[3]}-object`, 0xff5533,
+      {x: 2, y: 2, z: 0.1}, basePosition, {x: 2, y: 1, z: itemSpacingOutside}
+    )
+    this.cardObjectNames[Object.keys(this.cardObjectNames)[3]].push(`${Object.keys(this.cardObjectNames)[3]}-object`)
+    this.cardObjectNames[Object.keys(this.cardObjectNames)[3]].push(
+      ...pageFrame(this.scene, basePosition, Object.keys(this.cardObjectNames)[3], cardDimensions, [])
     )
 
+
+    console.log(this.cardObjectNames)
     /* ROTATIONS */
     const rotation_factor = 8
-    // LEFT CARD
-    this.scene.getObjectByName(`${leftCardName}`).rotation.y += Math.PI / rotation_factor
-    this.scene.getObjectByName(`${leftCardName}-left-box`).rotation.y += Math.PI / rotation_factor
-    this.scene.getObjectByName(`${leftCardName}-right-box`).rotation.y += Math.PI / rotation_factor
-    this.scene.getObjectByName(`${leftCardName}-top-box`).rotation.y += Math.PI / rotation_factor
-    this.scene.getObjectByName(`${leftCardName}-bottom-box`).rotation.y += Math.PI / rotation_factor
-    this.scene.getObjectByName(`${leftCardName}-snowdrops-logo`).rotation.y += Math.PI / rotation_factor
-    this.scene.getObjectByName(`left-card-message`).rotation.y += Math.PI / rotation_factor
 
-    // RIGHT CARD
-    this.scene.getObjectByName(`${rightCardName}`).rotation.y -= Math.PI / rotation_factor
-    this.scene.getObjectByName(`${rightCardName}-claim-message`).rotation.y -= Math.PI / rotation_factor
-    this.scene.getObjectByName(`claim-button`).rotation.y -= Math.PI / rotation_factor
-    this.scene.getObjectByName(`claim-button-text`).rotation.y -= Math.PI / rotation_factor
-
-    this.scene.getObjectByName(`${rightCardName}-left-box`).rotation.y -= Math.PI / rotation_factor
-    this.scene.getObjectByName(`${rightCardName}-right-box`).rotation.y -= Math.PI / rotation_factor
-    this.scene.getObjectByName(`${rightCardName}-top-box`).rotation.y -= Math.PI / rotation_factor
-    this.scene.getObjectByName(`${rightCardName}-bottom-box`).rotation.y -= Math.PI / rotation_factor
-
-    // FRONT CARD
-    this.scene.getObjectByName(`${frontCardName}-object`).rotation.y += Math.PI / rotation_factor
-
-    // BACK CARD
-    this.scene.getObjectByName(`${backCardName}-object`).rotation.y -= Math.PI / rotation_factor
+    Object.keys(this.cardObjectNames).forEach(cardSide => {
+      this.cardObjectNames[cardSide].forEach(objectName => {
+        switch (cardSide) {
+          case Object.keys(this.cardObjectNames)[0]:
+            this.scene.getObjectByName(`${objectName}`).rotation.y += Math.PI / rotation_factor
+            break;
+          case Object.keys(this.cardObjectNames)[1]:
+            this.scene.getObjectByName(`${objectName}`).rotation.y -= Math.PI / rotation_factor
+            break;
+          case Object.keys(this.cardObjectNames)[2]:
+            this.scene.getObjectByName(`${objectName}`).rotation.y += Math.PI / rotation_factor
+            break;
+          case Object.keys(this.cardObjectNames)[3]:
+            this.scene.getObjectByName(`${objectName}`).rotation.y -= Math.PI / rotation_factor
+            break;
+        }
+      })
+    })
 
     this.animate()
   }
@@ -236,32 +217,25 @@ export default class InitScene {
   animate() {
     this.renderer.setAnimationLoop(() => {
       const rotation_factor = 512
-      if (1 > 2) {
-        // LEFT CARD ROTATIONS
-        this.scene.getObjectByName('left-card').rotation.y += Math.PI / rotation_factor
-        this.scene.getObjectByName('left-card-left-box').rotation.y += Math.PI / rotation_factor
-        this.scene.getObjectByName('left-card-right-box').rotation.y += Math.PI / rotation_factor
-        this.scene.getObjectByName('left-card-top-box').rotation.y += Math.PI / rotation_factor
-        this.scene.getObjectByName('left-card-bottom-box').rotation.y += Math.PI / rotation_factor
-        this.scene.getObjectByName('left-card-snowdrops-logo').rotation.y += Math.PI / rotation_factor
-        this.scene.getObjectByName('left-card-message').rotation.y += Math.PI / rotation_factor
-    
-        // RIGHT CARD
-        this.scene.getObjectByName('right-card').rotation.y -= Math.PI / rotation_factor
-        this.scene.getObjectByName('right-card-claim-message').rotation.y -= Math.PI / rotation_factor
-        this.scene.getObjectByName('claim-button').rotation.y -= Math.PI / rotation_factor
-        this.scene.getObjectByName('claim-button-text').rotation.y -= Math.PI / rotation_factor
-    
-        this.scene.getObjectByName('right-card-left-box').rotation.y -= Math.PI / rotation_factor
-        this.scene.getObjectByName('right-card-right-box').rotation.y -= Math.PI / rotation_factor
-        this.scene.getObjectByName('right-card-top-box').rotation.y -= Math.PI / rotation_factor
-        this.scene.getObjectByName('right-card-bottom-box').rotation.y -= Math.PI / rotation_factor
-    
-        // FRONT CARD
-        this.scene.getObjectByName('front-card-object').rotation.y += Math.PI / rotation_factor
-    
-        // BACK CARD
-        this.scene.getObjectByName('back-card-object').rotation.y -= Math.PI / rotation_factor
+      if (1 > 0) {
+        Object.keys(this.cardObjectNames).forEach(cardSide => {
+          this.cardObjectNames[cardSide].forEach(objectName => {
+            switch (cardSide) {
+              case Object.keys(this.cardObjectNames)[0]:
+                this.scene.getObjectByName(`${objectName}`).rotation.y += Math.PI / rotation_factor
+                break;
+              case Object.keys(this.cardObjectNames)[1]:
+                this.scene.getObjectByName(`${objectName}`).rotation.y -= Math.PI / rotation_factor
+                break;
+              case Object.keys(this.cardObjectNames)[2]:
+                this.scene.getObjectByName(`${objectName}`).rotation.y += Math.PI / rotation_factor
+                break;
+              case Object.keys(this.cardObjectNames)[3]:
+                this.scene.getObjectByName(`${objectName}`).rotation.y -= Math.PI / rotation_factor
+                break;
+            }
+          })
+        })
       }
 
       const intersects = this.raycaster.intersectObjects(this.scene.children)
