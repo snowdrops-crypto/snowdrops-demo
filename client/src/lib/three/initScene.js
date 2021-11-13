@@ -12,10 +12,10 @@ import windowResize from './methods/windowResize'
 import LoadGLTFs from './methods/loadGLTF'
 import loadLights from './methods/loadLights'
 
-import textureToPlane from './methods/textureToPlane'
-import createTree from './methods/createTree'
-import basicCard from './methods/basicCard'
-import createCube from './methods/createCube'
+import offsetRotateBoxObject from './methods/offsetRotateBoxObject'
+import offsetRotateTextureObject from './methods/offsetRotateTextureObject'
+import offsetRotateTextObject from './methods/offsetRotateTextObject'
+import offsetRotateButtonObject from './methods/offsetRotateButtonObject'
 
 import avocado from '../../assets/glb/Avocado.glb'
 import font_caviar from '../../assets/fonts/CaviarDreams_Regular.json'
@@ -24,13 +24,14 @@ import snowdropsLogo1 from '../../assets/snowdrops-logo-1.png'
 import snowdropsLogoRed from '../../assets/snowdrops-logo-red.png'
 import snowdropsLogoRed1024 from '../../assets/snowdrops-logo-1024.png'
 import snowdropsLogoRedBgWhite1024 from '../../assets/snowdrops-logo-1024-bg-white.png'
-import { MeshBasicMaterial } from 'three'
+
 // rotation: https://codepen.io/mjurczyk/pen/XWKJojR
 export default class InitScene {
   constructor() {
     this.loopCount
 
-    this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: "high-performance"})
+    // this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: "high-performance"})
+    this.renderer = new THREE.WebGLRenderer({antialias: true})
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize( window.innerWidth, window.innerHeight )
 
@@ -48,7 +49,7 @@ export default class InitScene {
     this.scene.background = new THREE.Color( '#444444' )
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
-    this.camera.position.x = 10
+    this.camera.position.z = 10
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.target.set(0, 0, 0)
@@ -79,7 +80,7 @@ export default class InitScene {
 
     document.body.addEventListener('pause-animation', () => this.stopAnimate())
     document.body.addEventListener('start-animation', () => this.animate())
-    document.body.addEventListener('three-test', () => console.log('test triggered in three'))
+    document.body.addEventListener('three-test', (e) => console.log('test triggered in three', e.detail.x))
   }
 
   async init() {
@@ -98,232 +99,136 @@ export default class InitScene {
     this.scene.add(text)
 
     this.renderer.render(this.scene, this.camera)
+    this.scene.remove(this.scene.getObjectByName('loading'))
 
     // await this.loadObjects(['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado])
     // await LoadGLTFs(this.GLTFloader, this.scene, ['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado], {x: 2, y: 2, z: 2})
 
-    this.scene.remove(this.scene.getObjectByName('loading'))
-    // Objects
-    // createCube(this.scene, -5, 0, 5)
-    createTree(this.scene, 0, 0, -10)
-    // basicCard(this.scene, 3, 0, -3)
-
     const groupPositionX = 0
     // CARD
-    const cardLeftMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(4, 6, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0xeffeef })
+    const leftCardName = 'left-card'
+    const cardDimensions = {x: 4, y: 6, z: 0.1}
+    const verticalFrameDimensions = {x: 0.1, y: 6, z: 0.1}
+    const horizontalFrameDimensions = {x: 4, y: 0.1, z: 0.1}
+    const itemSpacing = 0.1
+    offsetRotateBoxObject(
+      this.scene, `${leftCardName}`, 0xeffeef,
+      cardDimensions, {x: groupPositionX, y: 0, z: 0}, {x: (-1 * cardDimensions.x / 2), y: 0, z: 0}
     )
-    this.cardLeft = new THREE.Object3D()
-    this.cardLeft.add(cardLeftMesh.clone())
-    this.cardLeft.children[0].position.set(-2, 0, 0)
-    this.cardLeft.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.cardLeft)
-
     // BOX on CARD
-    const leftCardLeftBoxMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(0.1, 6, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0x55ff55 })
+    offsetRotateBoxObject(
+      this.scene, `${leftCardName}-left-box`, 0x55ff55,
+      verticalFrameDimensions, {x: groupPositionX, y: 0, z: 0}, {x: -1 * (cardDimensions.x - 0.05), y: 0, z: itemSpacing}
     )
-    this.leftCardLeftBox = new THREE.Object3D()
-    this.leftCardLeftBox.add(leftCardLeftBoxMesh.clone())
-    this.leftCardLeftBox.children[0].position.set(-3.95, 0, 0.15)
-    this.leftCardLeftBox.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.leftCardLeftBox)
-
-    const leftCardRightBoxMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(0.1, 6, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0xff5555 })
+    offsetRotateBoxObject(
+      this.scene, `${leftCardName}-right-box`, 0xff5555,
+      verticalFrameDimensions, {x: groupPositionX, y: 0, z: 0}, {x: 0, y: 0, z: itemSpacing}
     )
-    this.leftCardRightBox = new THREE.Object3D()
-    this.leftCardRightBox.add(leftCardRightBoxMesh.clone())
-    this.leftCardRightBox.children[0].position.set(0, 0, 0.15)
-    this.leftCardRightBox.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.leftCardRightBox)
-
-    const leftCardTopBoxMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(4, 0.1, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0x5555ff })
+    offsetRotateBoxObject(
+      this.scene, `${leftCardName}-top-box`, 0x5555ff,
+      horizontalFrameDimensions, {x: groupPositionX, y: 0, z: 0},
+      {x: (-1 * cardDimensions.x / 2), y: cardDimensions.y / 2, z: itemSpacing}
     )
-    this.leftCardTopBox = new THREE.Object3D()
-    this.leftCardTopBox.add(leftCardTopBoxMesh.clone())
-    this.leftCardTopBox.children[0].position.set(-2.05, 2.95, 0.15)
-    this.leftCardTopBox.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.leftCardTopBox)
-
-    const leftCardBottomBoxMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(4, 0.1, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0xff55ff })
+    offsetRotateBoxObject(
+      this.scene, `${leftCardName}-bottom-box`, 0xff55ff,
+      horizontalFrameDimensions, {x: groupPositionX, y: 0, z: 0},
+      {x: (-1 * cardDimensions.x / 2), y: (-1 * cardDimensions.y / 2), z: itemSpacing}
     )
-    this.leftCardBottomBox = new THREE.Object3D()
-    this.leftCardBottomBox.add(leftCardBottomBoxMesh.clone())
-    this.leftCardBottomBox.children[0].position.set(-2, -3, 0.15)
-    this.leftCardBottomBox.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.leftCardBottomBox)
-
     // LOGO on CARD
-    const snowdropsLogoTexture = await this.TextureLoader.load(snowdropsLogo1)
-    const snowdropsLogoMaterial = new THREE.MeshBasicMaterial({
-      map: snowdropsLogoTexture, side: THREE.DoubleSide, color: 0xffffff, transparent: true
-    })
-    const snowdropsLogoPlane = new THREE.PlaneGeometry(1, 1)
-    const snowdropsMesh = new THREE.Mesh(snowdropsLogoPlane, snowdropsLogoMaterial)
-    this.sd = new THREE.Object3D()
-    this.sd.add(snowdropsMesh.clone())
-    this.sd.children[0].position.set(-1, -2.25, 0.2)
-    this.sd.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.sd)
-
-    // MESSAGE on CARD
-    let message = new THREE.Mesh(
-      new THREE.ShapeBufferGeometry(this.fonter.generateShapes(
-        'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops', 0.35)),
-      new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide })
+    await offsetRotateTextureObject(this.scene, this.TextureLoader, snowdropsLogo1,
+      {x: 1, y: 1}, {x: groupPositionX, y: 0, z: 0}, {x: -1, y: -2.25, z: itemSpacing},
+      `${leftCardName}-snowdrops-logo`, 0xffffff
     )
-    this.msg = new THREE.Object3D()
-    this.msg.add(message.clone())
-    this.msg.children[0].position.set(-7.5, 4, 0.15)
-    this.msg.position.set(groupPositionX, 0, 0)
-    this.msg.scale.set(0.5, 0.5, 0.5)
-    this.scene.add(this.msg)
-
+    // MESSAGE on CARD
+    offsetRotateTextObject(
+      this.scene, this.fonter, `${leftCardName}-message`, 0x000000,
+      'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops',
+      0.35, {x: groupPositionX, y: 0, z: 0}, {x: -7.5, y: 4, z: 0.20}, 0.5
+    )
 
     /**Card 2 */
     // CARD
-    const cardRightMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(4, 6, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0xeffeef })
+    const rightCardName = 'right-card'
+    offsetRotateBoxObject(
+      this.scene, `${rightCardName}`, 0xeffeef,
+      cardDimensions, {x: groupPositionX, y: 0, z: 0}, {x: cardDimensions.x / 2, y: 0, z: 0},
     )
-    this.cardRight = new THREE.Object3D()
-    this.cardRight.add(cardRightMesh.clone())
-    this.cardRight.children[0].position.set(2, 0, 0)
-    this.cardRight.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.cardRight)
 
     // MESSAGE on CARD
-    let message2 = new THREE.Mesh(
-      new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Claim your ETH: 0.5', 0.5)),
-      new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide })
+    offsetRotateTextObject(
+      this.scene, this.fonter, `${rightCardName}-claim-message`, 0x000000, 'Claim your ETH: 0.5',
+      0.5, {x: groupPositionX, y: 0, z: 0}, {x: 1, y: 1, z: 0.15}, 0.5
     )
-    this.msg2 = new THREE.Object3D()
-    this.msg2.add(message2.clone())
-    this.msg2.children[0].position.set(1, 1, 0.15)
-    this.msg2.position.set(groupPositionX, 0, 0)
-    this.msg2.scale.set(0.5, 0.5, 0.5)
-    this.scene.add(this.msg2)
 
-    // Claim Box
-    const rightCardClaimButtonMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(1.5, 0.5, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0x55ff55 })
+    // Claim Button
+    offsetRotateBoxObject(
+      this.scene, `claim-button`, 0x55ff55,
+      {x: 1.5, y: 0.5, z: 0.1},{x: groupPositionX, y: 0, z: 0}, {x: 2, y: 0, z: itemSpacing},
     )
-    rightCardClaimButtonMesh.name = 'claim-button'
-    this.rightCardClaimButton = new THREE.Object3D()
-    this.rightCardClaimButton.add(rightCardClaimButtonMesh.clone())
-    this.rightCardClaimButton.children[0].position.set(2, 0, 0.15)
-    this.rightCardClaimButton.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.rightCardClaimButton)
-    
-    const rightCardClaimButtonMessageMesh = new THREE.Mesh(
-      new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Claim!', 0.2)),
-      new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide })
+    offsetRotateTextObject(
+      this.scene, this.fonter, `claim-button-text`, 0x000000, 'Claim!',
+      0.2, {x: groupPositionX, y: 0, z: 0}, {x: 1.6, y: -0.1, z: 0.20}
     )
-    rightCardClaimButtonMessageMesh.name = 'claim-button-text'
-    this.rightCardClaimButtonMessage = new THREE.Object3D()
-    this.rightCardClaimButtonMessage.add(rightCardClaimButtonMessageMesh.clone())
-    this.rightCardClaimButtonMessage.children[0].position.set(1.6, -0.1, 0.21)
-    this.rightCardClaimButtonMessage.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.rightCardClaimButtonMessage)
 
     // BOX on CARD
-    const rightCardLeftBoxMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(0.1, 6, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0x55ff55 })
+    offsetRotateBoxObject(
+      this.scene, `${rightCardName}-left-box`, 0x55ff55,
+      {x: 0.1, y: 6, z: 0.1}, {x: groupPositionX, y: 0, z: 0}, {x: 0, y: 0, z: itemSpacing}
     )
-    this.rightCardLeftBox = new THREE.Object3D()
-    this.rightCardLeftBox.add(rightCardLeftBoxMesh.clone())
-    this.rightCardLeftBox.children[0].position.set(0, 0, 0.15)
-    this.rightCardLeftBox.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.rightCardLeftBox)
-
-    const rightCardRightBoxMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(0.1, 6, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0xff5555 })
+    offsetRotateBoxObject(
+      this.scene, `${rightCardName}-right-box`, 0xff5555,
+      {x: 0.1, y: 6, z: 0.1}, {x: groupPositionX, y: 0, z: 0}, {x: cardDimensions.x, y: 0, z: itemSpacing}
     )
-    this.rightCardRightBox = new THREE.Object3D()
-    this.rightCardRightBox.add(rightCardRightBoxMesh.clone())
-    this.rightCardRightBox.children[0].position.set(4, 0, 0.15)
-    this.rightCardRightBox.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.rightCardRightBox)
-
-    const rightCardTopBoxMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(4, 0.1, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0x5555ff })
+    offsetRotateBoxObject(
+      this.scene, `${rightCardName}-top-box`, 0x5555ff,
+      {x: 4, y: 0.1, z: 0.1}, {x: groupPositionX, y: 0, z: 0}, {x: cardDimensions.x / 2, y: cardDimensions.y / 2, z: itemSpacing}
     )
-    this.rightCardTopBox = new THREE.Object3D()
-    this.rightCardTopBox.add(rightCardTopBoxMesh.clone())
-    this.rightCardTopBox.children[0].position.set(2, 2.95, 0.15)
-    this.rightCardTopBox.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.rightCardTopBox)
-
-    const rightCardBottomBoxMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(4, 0.1, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0xff55ff })
+    offsetRotateBoxObject(
+      this.scene, `${rightCardName}-bottom-box`, 0xff55ff,
+      {x: 4, y: 0.1, z: 0.1}, {x: groupPositionX, y: 0, z: 0}, {x: cardDimensions.x / 2, y: -1 * cardDimensions.y / 2, z: itemSpacing}
     )
-    this.rightCardBottomBox = new THREE.Object3D()
-    this.rightCardBottomBox.add(rightCardBottomBoxMesh.clone())
-    this.rightCardBottomBox.children[0].position.set(2, -3, 0.15)
-    this.rightCardBottomBox.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.rightCardBottomBox)
 
     //CARD FRONT
-    const frontObjectMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(2, 2, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0xff55ff })
+    const frontCardName = 'front-card'
+    offsetRotateBoxObject(
+      this.scene, `${frontCardName}-object`, 0xff55ff,
+      {x: 2, y: 2, z: 0.1}, {x: groupPositionX, y: 0, z: 0}, {x: -2, y: 1, z: (-1 * itemSpacing)}
     )
-    this.frontObject = new THREE.Object3D()
-    this.frontObject.add(frontObjectMesh.clone())
-    this.frontObject.children[0].position.set(-2, 1, -0.25)
-    this.frontObject.children[0].rotation.y = Math.PI
-    this.frontObject.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.frontObject)
 
     //BACK CARD
-    const backObjectMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(2, 2, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0xff5533 })
+    const backCardName = 'back-card'
+    offsetRotateBoxObject(
+      this.scene, `${backCardName}-object`, 0xff5533,
+      {x: 2, y: 2, z: 0.1}, {x: groupPositionX, y: 0, z: 0}, {x: 2, y: 1, z: (-1 * itemSpacing)}
     )
-    this.backObject = new THREE.Object3D()
-    this.backObject.add(backObjectMesh.clone())
-    this.backObject.children[0].position.set(2, 1, -0.25)
-    this.backObject.children[0].rotation.y = Math.PI
-    this.backObject.position.set(groupPositionX, 0, 0)
-    this.scene.add(this.backObject)
 
     /* ROTATIONS */
     const rotation_factor = 8
-    this.cardLeft.rotation.y += Math.PI / rotation_factor
-    this.leftCardLeftBox.rotation.y += Math.PI / rotation_factor
-    this.leftCardRightBox.rotation.y += Math.PI / rotation_factor
-    this.leftCardTopBox.rotation.y += Math.PI / rotation_factor
-    this.leftCardBottomBox.rotation.y += Math.PI / rotation_factor
-    this.sd.rotation.y += Math.PI / rotation_factor
-    this.msg.rotation.y += Math.PI / rotation_factor
+    // LEFT CARD
+    this.scene.getObjectByName(`${leftCardName}`).rotation.y += Math.PI / rotation_factor
+    this.scene.getObjectByName(`${leftCardName}-left-box`).rotation.y += Math.PI / rotation_factor
+    this.scene.getObjectByName(`${leftCardName}-right-box`).rotation.y += Math.PI / rotation_factor
+    this.scene.getObjectByName(`${leftCardName}-top-box`).rotation.y += Math.PI / rotation_factor
+    this.scene.getObjectByName(`${leftCardName}-bottom-box`).rotation.y += Math.PI / rotation_factor
+    this.scene.getObjectByName(`${leftCardName}-snowdrops-logo`).rotation.y += Math.PI / rotation_factor
+    this.scene.getObjectByName(`left-card-message`).rotation.y += Math.PI / rotation_factor
 
-    this.cardRight.rotation.y -= Math.PI / rotation_factor
-    this.msg2.rotation.y -= Math.PI / rotation_factor
-    //
-    this.rightCardClaimButton.rotation.y -= Math.PI / rotation_factor
-    this.rightCardClaimButtonMessage.rotation.y -= Math.PI / rotation_factor
-    //
-    this.rightCardLeftBox.rotation.y -= Math.PI / rotation_factor
-    this.rightCardRightBox.rotation.y -= Math.PI / rotation_factor
-    this.rightCardTopBox.rotation.y -= Math.PI / rotation_factor
-    this.rightCardBottomBox.rotation.y -= Math.PI / rotation_factor
+    // RIGHT CARD
+    this.scene.getObjectByName(`${rightCardName}`).rotation.y -= Math.PI / rotation_factor
+    this.scene.getObjectByName(`${rightCardName}-claim-message`).rotation.y -= Math.PI / rotation_factor
+    this.scene.getObjectByName(`claim-button`).rotation.y -= Math.PI / rotation_factor
+    this.scene.getObjectByName(`claim-button-text`).rotation.y -= Math.PI / rotation_factor
 
-    this.frontObject.rotation.y += Math.PI / rotation_factor
+    this.scene.getObjectByName(`${rightCardName}-left-box`).rotation.y -= Math.PI / rotation_factor
+    this.scene.getObjectByName(`${rightCardName}-right-box`).rotation.y -= Math.PI / rotation_factor
+    this.scene.getObjectByName(`${rightCardName}-top-box`).rotation.y -= Math.PI / rotation_factor
+    this.scene.getObjectByName(`${rightCardName}-bottom-box`).rotation.y -= Math.PI / rotation_factor
 
-    this.backObject.rotation.y -= Math.PI / rotation_factor
+    // FRONT CARD
+    this.scene.getObjectByName(`${frontCardName}-object`).rotation.y += Math.PI / rotation_factor
+
+    // BACK CARD
+    this.scene.getObjectByName(`${backCardName}-object`).rotation.y -= Math.PI / rotation_factor
 
     this.animate()
   }
@@ -333,42 +238,43 @@ export default class InitScene {
       const rotation_factor = 512
       if (1 > 2) {
         // LEFT CARD ROTATIONS
-        this.cardLeft.rotation.y += Math.PI / rotation_factor
-        this.leftCardLeftBox.rotation.y += Math.PI / rotation_factor
-        this.leftCardRightBox.rotation.y += Math.PI / rotation_factor
-        this.leftCardTopBox.rotation.y += Math.PI / rotation_factor
-        this.leftCardBottomBox.rotation.y += Math.PI / rotation_factor
-        this.sd.rotation.y += Math.PI / rotation_factor
-        this.msg.rotation.y += Math.PI / rotation_factor
-
-        // RIGHT CARD ROTATIONS
-        this.cardRight.rotation.y -= Math.PI / rotation_factor
-        this.msg2.rotation.y -= Math.PI / rotation_factor
-        this.rightCardClaimButton.rotation.y -= Math.PI / rotation_factor
-        this.rightCardClaimButtonMessage.rotation.y -= Math.PI / rotation_factor
-        this.rightCardLeftBox.rotation.y -= Math.PI / rotation_factor
-        this.rightCardRightBox.rotation.y -= Math.PI / rotation_factor
-        this.rightCardTopBox.rotation.y -= Math.PI / rotation_factor
-        this.rightCardBottomBox.rotation.y -= Math.PI / rotation_factor
-
-        // FRONT CARD ROTATIONS
-        this.frontObject.rotation.y += Math.PI / rotation_factor
-
-        // BACK CARD ROTATIONS
-        this.backObject.rotation.y -= Math.PI / rotation_factor
+        this.scene.getObjectByName('left-card').rotation.y += Math.PI / rotation_factor
+        this.scene.getObjectByName('left-card-left-box').rotation.y += Math.PI / rotation_factor
+        this.scene.getObjectByName('left-card-right-box').rotation.y += Math.PI / rotation_factor
+        this.scene.getObjectByName('left-card-top-box').rotation.y += Math.PI / rotation_factor
+        this.scene.getObjectByName('left-card-bottom-box').rotation.y += Math.PI / rotation_factor
+        this.scene.getObjectByName('left-card-snowdrops-logo').rotation.y += Math.PI / rotation_factor
+        this.scene.getObjectByName('left-card-message').rotation.y += Math.PI / rotation_factor
+    
+        // RIGHT CARD
+        this.scene.getObjectByName('right-card').rotation.y -= Math.PI / rotation_factor
+        this.scene.getObjectByName('right-card-claim-message').rotation.y -= Math.PI / rotation_factor
+        this.scene.getObjectByName('claim-button').rotation.y -= Math.PI / rotation_factor
+        this.scene.getObjectByName('claim-button-text').rotation.y -= Math.PI / rotation_factor
+    
+        this.scene.getObjectByName('right-card-left-box').rotation.y -= Math.PI / rotation_factor
+        this.scene.getObjectByName('right-card-right-box').rotation.y -= Math.PI / rotation_factor
+        this.scene.getObjectByName('right-card-top-box').rotation.y -= Math.PI / rotation_factor
+        this.scene.getObjectByName('right-card-bottom-box').rotation.y -= Math.PI / rotation_factor
+    
+        // FRONT CARD
+        this.scene.getObjectByName('front-card-object').rotation.y += Math.PI / rotation_factor
+    
+        // BACK CARD
+        this.scene.getObjectByName('back-card-object').rotation.y -= Math.PI / rotation_factor
       }
 
       const intersects = this.raycaster.intersectObjects(this.scene.children)
       if (intersects.length > 0) {
-        if (typeof intersects[0].object !== 'undefined' && (intersects[0].object.name.includes('claim-button') || intersects[0].object.name.includes('claim-button-text'))) {
-          // console.log(intersects[0].object.name)
-          let claimButton = this.scene.getObjectByName('claim-button')
-          // console.log(claimButton)
-          claimButton.material.color.set(`#99FF99`)
-        } else {
-          let claimButton = this.scene.getObjectByName('claim-button')
-          claimButton.material.color.set(`#00FF00`)
-        }
+        // if (typeof intersects[0].object !== 'undefined' && (intersects[0].object.name.includes('claim-button') || intersects[0].object.name.includes('claim-button-text'))) {
+        //   // console.log(intersects[0].object.name)
+        //   let claimButton = this.scene.getObjectByName('claim-button')
+        //   // console.log(claimButton)
+        //   claimButton.material.color.set(`#99FF99`)
+        // } else {
+        //   let claimButton = this.scene.getObjectByName('claim-button')
+        //   claimButton.material.color.set(`#00FF00`)
+        // }
         const hexValues = [0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F'];
         if (this.loopCount % 15 === 0) {
           let hex = ''

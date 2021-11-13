@@ -10,6 +10,8 @@ import Footer from '../layouts/Footer'
 import '../../scss/landing.scss'
 
 const Landing = () => {
+  const dev = true
+
   useEffect(() => {
 
   }, [])
@@ -24,7 +26,7 @@ const Landing = () => {
   }
 
   const handleButtonThreeTest = () => {
-    const evt = new Event('three-test')
+    const evt = new CustomEvent('three-test', {'detail': {'x': 12}})
     document.body.dispatchEvent(evt)
   }
 
@@ -46,11 +48,13 @@ const Landing = () => {
           <div className='landing-title'>Welcome to Snowdrops!</div>
           <div className='landing-description'>Snowdrops are NFT greeting cards.</div>
         </div>
-        <div id='three-control-buttons'>
-          <button className='enable-input three-control-button' onClick={() => handleButtonThreeTest()}>three test</button>
-          <button className='enable-input three-control-button' onClick={() => handleButtonStartAnimation()}>start animation</button>
-          <button className='enable-input three-control-button' onClick={() => handleButtonStopAnimation()}>stop animation</button>
-        </div>
+        {dev ?
+          <div id='three-control-buttons'>
+            <button className='enable-input three-control-button' onClick={() => handleButtonThreeTest()}>three test</button>
+            <button className='enable-input three-control-button' onClick={() => handleButtonStartAnimation()}>start animation</button>
+            <button className='enable-input three-control-button' onClick={() => handleButtonStopAnimation()}>stop animation</button>
+          </div> : ''
+        }
       </div>
       <Footer />
     </div>
