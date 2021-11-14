@@ -73,6 +73,8 @@ export default class InitScene {
     this.TextureLoader = new THREE.TextureLoader()
 
     this.cardObjectNames = {'left-card': [], 'right-card': [], 'front-card': [], 'back-card': []}
+    this.basePosition = {x: 0, y: 0, z: 0}
+    this.cardDimensions = {x: 4, y: 6, z: 0.1}
 
     window.addEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
     window.addEventListener('keydown', (e) => this.keydown(e), 10)
@@ -108,24 +110,22 @@ export default class InitScene {
     // await LoadGLTFs(this.GLTFloader, this.scene, ['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado], {x: 2, y: 2, z: 2})
 
     // CARD
-    const cardDimensions = {x: 4, y: 6, z: 0.1}
-    const basePosition = {x: 0, y: 0, z: 0}
     const itemSpacingInside = 0.1
     const itemSpacingOutside = -0.1
 
-    /* CARD RIGHT */
+    /* CARD LEFT */
     offsetRotateBoxObject(
       this.scene, `${Object.keys(this.cardObjectNames)[0]}`, 0xeffeef,
-      cardDimensions, basePosition, {x: (-1 * cardDimensions.x / 2), y: 0, z: 0}
+      this.cardDimensions, this.basePosition, {x: (-1 * this.cardDimensions.x / 2), y: 0, z: 0}
     )
     this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(Object.keys(this.cardObjectNames)[0])
     // Card Frame
     this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(
-      ...pageFrame(this.scene, basePosition, Object.keys(this.cardObjectNames)[0], cardDimensions, [])
+      ...pageFrame(this.scene, this.basePosition, Object.keys(this.cardObjectNames)[0], this.cardDimensions, [])
     )
     // LOGO on CARD
     await offsetRotateTextureObject(this.scene, this.TextureLoader, snowdropsLogo1,
-      {x: 1, y: 1}, basePosition, {x: -1, y: -2.25, z: itemSpacingInside},
+      {x: 1, y: 1}, this.basePosition, {x: -1, y: -2.25, z: itemSpacingInside},
       `${Object.keys(this.cardObjectNames)[0]}-snowdrops-logo`, 0xffffff
     )
     this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(`${Object.keys(this.cardObjectNames)[0]}-snowdrops-logo`)
@@ -133,65 +133,61 @@ export default class InitScene {
     offsetRotateTextObject(
       this.scene, this.fonter, `${Object.keys(this.cardObjectNames)[0]}-message`, 0x000000,
       'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops',
-      0.35, basePosition, {x: -7.5, y: 4, z: 0.20}, 0.5
+      0.35, this.basePosition, {x: -7.5, y: 4, z: 0.20}, 0.5
     )
     this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(`${Object.keys(this.cardObjectNames)[0]}-message`)
 
     /* CARD RIGHT */
     offsetRotateBoxObject(
       this.scene, `${Object.keys(this.cardObjectNames)[1]}`, 0xeffeef,
-      cardDimensions, basePosition, {x: cardDimensions.x / 2, y: 0, z: 0},
+      this.cardDimensions, this.basePosition, {x: this.cardDimensions.x / 2, y: 0, z: 0},
     )
     this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(Object.keys(this.cardObjectNames)[1])
     // Card Frame
     this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(
-      ...pageFrame(this.scene, basePosition, Object.keys(this.cardObjectNames)[1], cardDimensions, [])
+      ...pageFrame(this.scene, this.basePosition, Object.keys(this.cardObjectNames)[1], this.cardDimensions, [])
     )
     // MESSAGE on CARD
     offsetRotateTextObject(
       this.scene, this.fonter, `${Object.keys(this.cardObjectNames)[1]}-claim-message`, 0x000000, 'Claim your ETH: 0.5',
-      0.5, basePosition, {x: 1, y: 1, z: 0.15}, 0.5
+      0.5, this.basePosition, {x: 1, y: 1, z: 0.15}, 0.5
     )
     this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(`${Object.keys(this.cardObjectNames)[1]}-claim-message`)
     // Claim Button
     offsetRotateBoxObject(
       this.scene, `${Object.keys(this.cardObjectNames)[1]}-claim-button`, 0x55ff55,
-      {x: 1.5, y: 0.5, z: 0.1}, basePosition, {x: 2, y: 0, z: itemSpacingInside},
+      {x: 1.5, y: 0.5, z: 0.1}, this.basePosition, {x: 2, y: 0, z: itemSpacingInside},
     )
     this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(`${Object.keys(this.cardObjectNames)[1]}-claim-button`)
     offsetRotateTextObject(
       this.scene, this.fonter, `${Object.keys(this.cardObjectNames)[1]}-claim-button-text`, 0x000000, 'Claim!',
-      0.2, basePosition, {x: 1.6, y: -0.1, z: 0.20}
+      0.2, this.basePosition, {x: 1.6, y: -0.1, z: 0.20}
     )
     this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(`${Object.keys(this.cardObjectNames)[1]}-claim-button-text`)
 
     /* CARD FRONT */
-    const frontCardName = 'front-card'
     offsetRotateBoxObject(
       this.scene, `${Object.keys(this.cardObjectNames)[2]}-object`, 0xff55ff,
-      {x: 2, y: 2, z: 0.1}, basePosition, {x: -2, y: 1, z: itemSpacingOutside}
+      {x: 2, y: 2, z: 0.1}, this.basePosition, {x: -2, y: 1, z: itemSpacingOutside}
     )
     this.cardObjectNames[Object.keys(this.cardObjectNames)[2]].push(`${Object.keys(this.cardObjectNames)[2]}-object`)
     this.cardObjectNames[Object.keys(this.cardObjectNames)[2]].push(
-      ...pageFrame(this.scene, basePosition, Object.keys(this.cardObjectNames)[2], cardDimensions, [])
+      ...pageFrame(this.scene, this.basePosition, Object.keys(this.cardObjectNames)[2], this.cardDimensions, [])
     )
 
     /* BACK CARD */
-    const backCardName = 'back-card'
     offsetRotateBoxObject(
       this.scene, `${Object.keys(this.cardObjectNames)[3]}-object`, 0xff5533,
-      {x: 2, y: 2, z: 0.1}, basePosition, {x: 2, y: 1, z: itemSpacingOutside}
+      {x: 2, y: 2, z: 0.1}, this.basePosition, {x: 2, y: 1, z: itemSpacingOutside}
     )
     this.cardObjectNames[Object.keys(this.cardObjectNames)[3]].push(`${Object.keys(this.cardObjectNames)[3]}-object`)
     this.cardObjectNames[Object.keys(this.cardObjectNames)[3]].push(
-      ...pageFrame(this.scene, basePosition, Object.keys(this.cardObjectNames)[3], cardDimensions, [])
+      ...pageFrame(this.scene, this.basePosition, Object.keys(this.cardObjectNames)[3], this.cardDimensions, [])
     )
 
-
-    console.log(this.cardObjectNames)
     /* ROTATIONS */
     const rotation_factor = 8
-
+    console.log(this.scene.getObjectByName(`left-card`).rotation.y)
     Object.keys(this.cardObjectNames).forEach(cardSide => {
       this.cardObjectNames[cardSide].forEach(objectName => {
         switch (cardSide) {
@@ -210,6 +206,7 @@ export default class InitScene {
         }
       })
     })
+    console.log(this.scene.getObjectByName(`left-card`).rotation.y)
 
     this.animate()
   }
@@ -217,7 +214,7 @@ export default class InitScene {
   animate() {
     this.renderer.setAnimationLoop(() => {
       const rotation_factor = 512
-      if (1 > 0) {
+      if (1 > 2) {
         Object.keys(this.cardObjectNames).forEach(cardSide => {
           this.cardObjectNames[cardSide].forEach(objectName => {
             switch (cardSide) {
@@ -278,6 +275,44 @@ export default class InitScene {
 
     if (e.key === 's') {
       this.animate()
+    }
+
+    // Add Card Frames
+    if (e.key === 'd') {
+      const nameRemoves = []
+      const nameNotRemoves = []
+      let framesRemoved = false
+      for (let i = 0; i < this.cardObjectNames['left-card'].length; i++) {
+        if (this.cardObjectNames['left-card'][i].includes('frame')) {
+          this.scene.remove(this.scene.getObjectByName(this.cardObjectNames['left-card'][i]))
+          framesRemoved = true
+        } else {
+          nameNotRemoves.push(this.cardObjectNames['left-card'][i])
+        }
+      }
+      if (framesRemoved) {
+        this.cardObjectNames['left-card'] = nameNotRemoves
+      } else {
+        console.log('Frames do not exist')
+      }
+    }
+
+    // Removes Card Frames
+    if (e.key === 'a') {
+      let framesExist = false
+      for (let i = 0; i < this.cardObjectNames['left-card'].length; i++) {
+        if (this.cardObjectNames['left-card'][i].includes('frame')) {
+          this.scene.remove(this.scene.getObjectByName(this.cardObjectNames['left-card'][i]))
+          framesExist = true
+        }
+      }
+      if (!framesExist) {
+        this.cardObjectNames['left-card'].push(
+          ...pageFrame(this.scene, this.basePosition, 'left-card', this.cardDimensions, [], this.scene.getObjectByName('left-card').rotation.y)
+        )
+      } else {
+        console.log('Frames already exist')
+      }
     }
   }
 

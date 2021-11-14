@@ -10,7 +10,7 @@ import offsetRotateBoxObject from './offsetRotateBoxObject'
  * @param {{x,y,z}} cardDimensions 
  * @param {Object[]} colors
  */
-const pageFrame = (scene, basePosition, cardSide, cardDimensions, colors) => {
+const pageFrame = (scene, basePosition, cardSide, cardDimensions, colors, rotation = 0) => {
   const itemSpacingInside = 0.1
   const itemSpacingOutside = - 0.1
   const offsetPositions = [] //Left, Right, Front, Back
@@ -110,23 +110,29 @@ const pageFrame = (scene, basePosition, cardSide, cardDimensions, colors) => {
     default: console.error('Invalid string inputted for cardSide.')
   }
 
-  const objectNames = [`${cardSide}-left-box`, `${cardSide}-right-box`, `${cardSide}-top-box`, `${cardSide}-bottom-box`]
+  const objectNames = [`${cardSide}-left-frame`, `${cardSide}-right-frame`, `${cardSide}-top-frame`, `${cardSide}-bottom-frame`]
+  // Create Objects
   offsetRotateBoxObject(
-    scene, `${cardSide}-left-box`, colors[0],
+    scene, `${cardSide}-left-frame`, colors[0],
     verticalFrameDimensions, basePosition, offsetPositions[0]
   )
   offsetRotateBoxObject(
-    scene, `${cardSide}-right-box`, colors[1],
+    scene, `${cardSide}-right-frame`, colors[1],
     verticalFrameDimensions, basePosition, offsetPositions[1]
   )
   offsetRotateBoxObject(
-    scene, `${cardSide}-top-box`, colors[2],
+    scene, `${cardSide}-top-frame`, colors[2],
     horizontalFrameDimensions, basePosition, offsetPositions[2]
   )
   offsetRotateBoxObject(
-    scene, `${cardSide}-bottom-box`, colors[3],
+    scene, `${cardSide}-bottom-frame`, colors[3],
     horizontalFrameDimensions, basePosition, offsetPositions[3]
   )
+
+  // Set initial rotation
+  objectNames.forEach(name => {
+    scene.getObjectByName(name).rotation.y = rotation
+  })
 
   return objectNames
 }
