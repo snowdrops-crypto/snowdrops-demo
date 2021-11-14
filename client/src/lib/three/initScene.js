@@ -35,7 +35,7 @@ export default class InitScene {
     // store.dispatch({type: 'main', payload: {...state}})
 
     // this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: "high-performance"})
-    this.renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: true})
+    this.renderer = new THREE.WebGLRenderer({antialias: false, logarithmicDepthBuffer: false})
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize( window.innerWidth, window.innerHeight )
 
@@ -50,7 +50,7 @@ export default class InitScene {
     canvas.style.pointerEvents = 'all'
     
     this.scene = new THREE.Scene()
-    this.scene.background = new THREE.Color( '#444444' )
+    this.scene.background = new THREE.Color('#444444')
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
     this.camera.position.z = 10
@@ -80,6 +80,7 @@ export default class InitScene {
     this.cardDimensions = {x: 4, y: 6, z: 0.1}
 
     this.cardMessage = ''
+    this.updateCardMessage = false
 
     window.addEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
     window.addEventListener('keydown', (e) => this.keydown(e), 10)
@@ -96,8 +97,11 @@ export default class InitScene {
     document.body.addEventListener('pause-animation', () => this.stopAnimate())
     document.body.addEventListener('start-animation', () => this.animate())
     document.body.addEventListener('handle-card-message', (e) => {
-      this.cardMessage = e.detail.msg
       console.log(this.cardMessage)
+      if (this.cardMessage !== e.detail.msg) {
+        this.updateCardMessage = true
+        this.cardMessage = e.detail.msg
+      }
     })
 
     document.body.addEventListener('handle-card-frame', (e) => {
@@ -148,12 +152,14 @@ export default class InitScene {
     )
     this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(`${Object.keys(this.cardObjectNames)[0]}-snowdrops-logo`)
     // MESSAGE on CARD
+    this.cardMessage = 'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops'
+    autoFormatMessage(this.cardMessage)
     offsetRotateTextObject(
       this.scene, this.fonter, `${Object.keys(this.cardObjectNames)[0]}-message`, 0x000000,
-      'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops',
+      this.cardMessage,
       0.35, this.basePosition, {x: -7.5, y: 4, z: itemSpacingInside + 0.1}, 0.5
     )
-    autoFormatMessage('Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops')
+    
     this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(`${Object.keys(this.cardObjectNames)[0]}-message`)
 
     /* CARD RIGHT */
@@ -213,12 +219,26 @@ export default class InitScene {
 
   animate() {
     this.renderer.setAnimationLoop(() => {
+      // Animatated 360 degree rotation
       const rotation_factor = 512
       if (1 > 2) {
         handleObjectRotations(this.scene, this.cardObjectNames, rotation_factor)
       }
 
-      this.scene.getObjectByName('left-card-message').children[0].geometry.groups = this.fonter.generateShapes('hi there!', 0.5)
+      // Update card message
+      if (this.updateCardMessage) {
+        const saveRotation = this.scene.getObjectByName('left-card-message').rotation.y
+        this.scene.remove(this.scene.getObjectByName('left-card-message'))
+        offsetRotateTextObject(
+          this.scene, this.fonter, `left-card-message`, 0x000000,
+          this.cardMessage,
+          0.35, this.basePosition, {x: -7.5, y: 4, z: 0.2}, 0.5
+        )
+        this.scene.getObjectByName('left-card-message').rotation.y = saveRotation
+        this.updateCardMessage = false
+      }
+
+      
       const intersects = this.raycaster.intersectObjects(this.scene.children)
       if (intersects.length > 0) {
         // console.log(intersects[0].object.parent.name)
