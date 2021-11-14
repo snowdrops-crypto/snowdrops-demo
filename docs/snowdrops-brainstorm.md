@@ -2,6 +2,9 @@
 
 This document is created to list ideas that come to mind about the implementation of Snowdrops.
 
+#### Threejs
+[Rotation](https://codepen.io/mjurczyk/pen/XWKJojR)
+
 #### Solidity vs Smart Weave
 [Smartweave Article](https://arweave.medium.com/introducing-smartweave-building-smart-contracts-with-arweave-1fc85cb3b632#:~:text=Smart%20contract%20interactions%20are%20placed,verified%20by%20users%20during%20interaction.&text=Instead%2C%20developers%20are%20given%20the,participate%20in%20the%20contract%20execution.)
 [SmartWeave Repo](https://github.com/ArweaveTeam/SmartWeave)

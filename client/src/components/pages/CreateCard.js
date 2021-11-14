@@ -1,5 +1,6 @@
 'use strict'
 import React, { useEffect, useState } from 'react'
+import Arweave from 'arweave'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -12,46 +13,138 @@ import snowdropsLogoRedBgWhite1024 from '../../assets/snowdrops-logo-1024-bg-whi
 import '../../scss/create-card.scss'
 
 const CreateCard = () => {
+  const rstate = useSelector((rstate) => rstate)
+  const dispatch = useDispatch()
+  const { appState } = bindActionCreators(actions, dispatch)
+
   const [message, setMessage] = useState('')
+  const images = ['img1', 'img2', 'img3']
+  const dev = true
+
+  useEffect(() => {
+    setMessage('Lorem Ipsum Upsum Heapson')
+    appState({...rstate.main, status: 'create-card'})
+    const evt = new Event('update-three-redux')
+    document.body.dispatchEvent(evt)
+  }, [])
   
-  const handleMessaage = e => {
+  const handleButtonThreeTest = () => {
+    const evt = new CustomEvent('three-test', {'detail': {'x': 12}})
+    document.body.dispatchEvent(evt)
+  }
+  const handleButtonStartAnimation = () => {
+    const evt = new Event('start-animation')
+    document.body.dispatchEvent(evt)
+  }
+  const handleButtonStopAnimation = () => {
+    const evt = new Event('pause-animation')
+    document.body.dispatchEvent(evt)
+  }
+  const handleButtonSelectFrame = () => {
+    const evt = new CustomEvent('select-card-frame', {detail: {cardSide: '', cardColors: []}})
+    document.body.dispatchEvent(evt)
+  }
+  const handleCardMessage = () => {
+    const evt = new CustomEvent('handle-card-message', {detail: {msg: message}})
+    document.body.dispatchEvent(evt)
+  }
+
+  const handleMessage = e => {
+    console.log(e.target.value)
     setMessage(e.target.value)
   }
 
   const handleUpdateMessage = () => {
-    console.log('handle update message')
+    handleCardMessage()
+    console.log(message)
   }
 
-  const assetRows = () => {
-    const assetRow = () => {
-      const rows = []
-      for(let i = 0; i < 60; i++) {
-        rows.push(
-          <div className='asset-row'>
-            <img src={snowdropsLogoRedBgWhite1024} width='80px' height='80px' />
-            <img src={snowdropsLogoRedBgWhite1024} width='80px' height='80px' />
-            <img src={snowdropsLogoRedBgWhite1024} width='80px' height='80px' />
-          </div>
-        )
-      }
-      return rows
-    }
-    return (
-      <div id='create-card-assets' className='enable-input'>
-        {assetRow()}
-      </div>
-    )
+  const handleSelectImage = (e) => {
+    console.log(e.target)
+    e.target.className === '' ? e.target.className = 'selected-img' : e.target.className = ''
   }
+
+  const assetRow = () => {
+    const rows = []
+    const dim = '80px'
+    for(let i = 0; i < 3; i++) {
+      rows.push(
+        <div className='asset-row'>
+          <img onClick={e => handleSelectImage(e)} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
+          <img onClick={handleSelectImage} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
+          <img onClick={handleSelectImage} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
+        </div>
+      )
+    }
+    return rows
+  }
+
   return (
     <div id='create-card-page'>
       <Header />
       <div id='page-title'>Create a Card</div>
-      <div id='create-card-content' className='enable-input'>
-        <div className='create-card-title'>Message</div>
-        <textarea value={message} className='enable-input' onChange={(e) => handleMessaage(e)} />
-        <button onClick={handleUpdateMessage}>Update Message</button>
-        <div className='create-card-sub-title'>List of available Items</div>
-        {assetRows()}
+      <div id='create-card-main'>
+        <div id='create-card-content' className='enable-input'>
+          <div className='create-card-title'>Message</div>
+          <textarea value={message} className='card-message enable-input' onChange={(e) => handleMessage(e)} />
+          <button onClick={handleUpdateMessage}>Update Message</button>
+          
+          <hr />
+
+          <div id='frame-container'>
+            <div className='create-card-title'>Update Card Frame</div>
+            <div><input type='checkbox' />Left Card Inside</div>
+            <div className='color-container'>
+              <div className='color-field'>left <input type='text' /></div>
+              <div className='color-field'>right <input type='text' /></div>
+              <div className='color-field'>top <input type='text' /></div>
+              <div className='color-field'>bottom <input type='text' /></div>
+            </div>
+
+            <hr className='color-frame-hr'/>
+            <div><input type='checkbox' />Right Card Inside</div>
+            <div className='color-container'>
+              <div className='color-field'>left <input type='text' /></div>
+              <div className='color-field'>right <input type='text' /></div>
+              <div className='color-field'>top <input type='text' /></div>
+              <div className='color-field'>bottom <input type='text' /></div>
+            </div>
+
+            <hr className='color-frame-hr'/>
+            <div><input type='checkbox' />Left Card Outside</div>
+            <div className='color-container'>
+              <div className='color-field'>left <input type='text' /></div>
+              <div className='color-field'>right <input type='text' /></div>
+              <div className='color-field'>top <input type='text' /></div>
+              <div className='color-field'>bottom <input type='text' /></div>
+            </div>
+
+            <hr className='color-frame-hr'/>
+            <div><input type='checkbox' />Right Card Outside</div>
+            <div className='color-container'>
+              <div className='color-field'>left <input type='text' /></div>
+              <div className='color-field'>right <input type='text' /></div>
+              <div className='color-field'>top <input type='text' /></div>
+              <div className='color-field'>bottom <input type='text' /></div>
+            </div>
+
+            <button>Update</button>
+          </div>
+
+          <hr className='main-hr'/>
+          
+          <div className='create-card-title'>List of Available Items</div>
+          <div id='create-card-assets' className='enable-input'>
+            {assetRow()}
+          </div>
+        </div>
+        {dev ?
+          <div id='three-control-buttons'>
+            <button className='enable-input three-control-button' onClick={() => handleButtonThreeTest()}>three test</button>
+            <button className='enable-input three-control-button' onClick={() => handleButtonStartAnimation()}>start animation</button>
+            <button className='enable-input three-control-button' onClick={() => handleButtonStopAnimation()}>stop animation</button>
+          </div> : ''
+        }
       </div>
       <Footer />
     </div>

@@ -1,7 +1,7 @@
 // https://discoverthreejs.com/book/first-steps/animation-loop/
 // https://github.com/emreacar/google-fonts-as-json/tree/master/json-files
 'use strict'
-
+import { store } from '../../store/store'
 import { throttle } from 'lodash-es'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
@@ -17,19 +17,21 @@ import offsetRotateTextureObject from './methods/offsetRotateTextureObject'
 import offsetRotateTextObject from './methods/offsetRotateTextObject'
 import offsetRotateButtonObject from './methods/offsetRotateButtonObject'
 import pageFrame from './methods/pageFrame'
+import handleObjectRotations from './methods/handleObjectRotations'
+import autoFormatMessage from './methods/autoFormatMessage'
 
 import avocado from '../../assets/glb/Avocado.glb'
+
 import font_caviar from '../../assets/fonts/CaviarDreams_Regular.json'
 import font_marg from '../../assets/fonts/MargatroidGrotesque.json'
-import snowdropsLogo1 from '../../assets/snowdrops-logo-1.png'
-import snowdropsLogoRed from '../../assets/snowdrops-logo-red.png'
-import snowdropsLogoRed1024 from '../../assets/snowdrops-logo-1024.png'
-import snowdropsLogoRedBgWhite1024 from '../../assets/snowdrops-logo-1024-bg-white.png'
 
-// rotation: https://codepen.io/mjurczyk/pen/XWKJojR
+import snowdropsLogo1 from '../../assets/snowdrops-logo-1.png'
+
 export default class InitScene {
   constructor() {
     this.loopCount
+    console.log(store.getState())
+    // store.dispatch({type: 'main', payload: {...state}})
 
     // this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: "high-performance"})
     this.renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: true})
@@ -76,6 +78,8 @@ export default class InitScene {
     this.basePosition = {x: 0, y: 0, z: 0}
     this.cardDimensions = {x: 4, y: 6, z: 0.1}
 
+    this.cardMessage = ''
+
     window.addEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
     window.addEventListener('keydown', (e) => this.keydown(e), 10)
     window.addEventListener('wheel', e => this.wheelScroll(e), false)
@@ -83,9 +87,19 @@ export default class InitScene {
     window.addEventListener('mousedown', e => this.mouseDown(e), false)
     window.addEventListener('mouseup', e => this.mouseUp(e), false)
 
+    document.body.addEventListener('update-three-redux', () => {
+      console.log(store.getState())
+    })
     document.body.addEventListener('pause-animation', () => this.stopAnimate())
     document.body.addEventListener('start-animation', () => this.animate())
     document.body.addEventListener('three-test', (e) => console.log('test triggered in three', e.detail.x))
+    document.body.addEventListener('handle-card-frame', (e) => {
+      console.log(e.detail)
+    })
+    document.body.addEventListener('handle-card-message', (e) => {
+      this.cardMessage = e.detail.msg
+      console.log(this.cardMessage)
+    })
   }
 
   async init() {
@@ -133,8 +147,9 @@ export default class InitScene {
     offsetRotateTextObject(
       this.scene, this.fonter, `${Object.keys(this.cardObjectNames)[0]}-message`, 0x000000,
       'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops',
-      0.35, this.basePosition, {x: -7.5, y: 4, z: 0.20}, 0.5
+      0.35, this.basePosition, {x: -7.5, y: 4, z: itemSpacingInside + 0.1}, 0.5
     )
+    autoFormatMessage('Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops')
     this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(`${Object.keys(this.cardObjectNames)[0]}-message`)
 
     /* CARD RIGHT */
@@ -187,26 +202,7 @@ export default class InitScene {
 
     /* ROTATIONS */
     const rotation_factor = 8
-    console.log(this.scene.getObjectByName(`left-card`).rotation.y)
-    Object.keys(this.cardObjectNames).forEach(cardSide => {
-      this.cardObjectNames[cardSide].forEach(objectName => {
-        switch (cardSide) {
-          case Object.keys(this.cardObjectNames)[0]:
-            this.scene.getObjectByName(`${objectName}`).rotation.y += Math.PI / rotation_factor
-            break;
-          case Object.keys(this.cardObjectNames)[1]:
-            this.scene.getObjectByName(`${objectName}`).rotation.y -= Math.PI / rotation_factor
-            break;
-          case Object.keys(this.cardObjectNames)[2]:
-            this.scene.getObjectByName(`${objectName}`).rotation.y += Math.PI / rotation_factor
-            break;
-          case Object.keys(this.cardObjectNames)[3]:
-            this.scene.getObjectByName(`${objectName}`).rotation.y -= Math.PI / rotation_factor
-            break;
-        }
-      })
-    })
-    console.log(this.scene.getObjectByName(`left-card`).rotation.y)
+    handleObjectRotations(this.scene, this.cardObjectNames, rotation_factor)
 
     this.animate()
   }
@@ -215,45 +211,24 @@ export default class InitScene {
     this.renderer.setAnimationLoop(() => {
       const rotation_factor = 512
       if (1 > 2) {
-        Object.keys(this.cardObjectNames).forEach(cardSide => {
-          this.cardObjectNames[cardSide].forEach(objectName => {
-            switch (cardSide) {
-              case Object.keys(this.cardObjectNames)[0]:
-                this.scene.getObjectByName(`${objectName}`).rotation.y += Math.PI / rotation_factor
-                break;
-              case Object.keys(this.cardObjectNames)[1]:
-                this.scene.getObjectByName(`${objectName}`).rotation.y -= Math.PI / rotation_factor
-                break;
-              case Object.keys(this.cardObjectNames)[2]:
-                this.scene.getObjectByName(`${objectName}`).rotation.y += Math.PI / rotation_factor
-                break;
-              case Object.keys(this.cardObjectNames)[3]:
-                this.scene.getObjectByName(`${objectName}`).rotation.y -= Math.PI / rotation_factor
-                break;
-            }
-          })
-        })
+        handleObjectRotations(this.scene, this.cardObjectNames, rotation_factor)
       }
 
       const intersects = this.raycaster.intersectObjects(this.scene.children)
       if (intersects.length > 0) {
-        // if (typeof intersects[0].object !== 'undefined' && (intersects[0].object.name.includes('claim-button') || intersects[0].object.name.includes('claim-button-text'))) {
-        //   // console.log(intersects[0].object.name)
-        //   let claimButton = this.scene.getObjectByName('claim-button')
-        //   // console.log(claimButton)
-        //   claimButton.material.color.set(`#99FF99`)
-        // } else {
-        //   let claimButton = this.scene.getObjectByName('claim-button')
-        //   claimButton.material.color.set(`#00FF00`)
-        // }
-        const hexValues = [0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F'];
-        if (this.loopCount % 15 === 0) {
-          let hex = ''
-          for(let i = 0; i < 6; i++){
-            const index = Math.floor(Math.random() * hexValues.length)
-            hex += hexValues[index];
-          }
-          intersects[0].object.material.color.set(`#${hex}`)
+        // console.log(intersects[0].object.parent.name)
+        // console.log(intersects[0].object.parent.children[0].material.color)
+
+        if (typeof intersects[0].object !== 'undefined'
+        && (intersects[0].object.parent.name.includes('right-card-claim-button')
+        || intersects[0].object.parent.name.includes('right-card-claim-button-text'))
+        ) {
+          this.scene.getObjectByName('right-card-claim-button').children[0].material.color.set(`#66FF66`)
+          document.body.style.cursor = 'pointer'
+        } else {
+          this.scene.getObjectByName('right-card-claim-button').children[0].material.color.set(`#00FF00`)
+          document.body.style.cursor = 'default'
+          // console.log(this.scene.getObjectByName('right-card-claim-button'))
         }
       }
 
@@ -268,7 +243,7 @@ export default class InitScene {
   keydown(e) {
     // Don't really need keydown
     // Maybe in the future for shortcuts
-    console.log(e.key)
+    // console.log(e.key)
     if (e.key === 'p') {
       this.stopAnimate()
     }
@@ -278,42 +253,41 @@ export default class InitScene {
     }
 
     // Add Card Frames
-    if (e.key === 'd') {
-      const nameRemoves = []
-      const nameNotRemoves = []
-      let framesRemoved = false
-      for (let i = 0; i < this.cardObjectNames['left-card'].length; i++) {
-        if (this.cardObjectNames['left-card'][i].includes('frame')) {
-          this.scene.remove(this.scene.getObjectByName(this.cardObjectNames['left-card'][i]))
-          framesRemoved = true
-        } else {
-          nameNotRemoves.push(this.cardObjectNames['left-card'][i])
-        }
-      }
-      if (framesRemoved) {
-        this.cardObjectNames['left-card'] = nameNotRemoves
-      } else {
-        console.log('Frames do not exist')
-      }
-    }
+    // if (e.key === 'd') {
+    //   const nameNotRemoves = []
+    //   let framesRemoved = false
+    //   for (let i = 0; i < this.cardObjectNames['left-card'].length; i++) {
+    //     if (this.cardObjectNames['left-card'][i].includes('frame')) {
+    //       this.scene.remove(this.scene.getObjectByName(this.cardObjectNames['left-card'][i]))
+    //       framesRemoved = true
+    //     } else {
+    //       nameNotRemoves.push(this.cardObjectNames['left-card'][i])
+    //     }
+    //   }
+    //   if (framesRemoved) {
+    //     this.cardObjectNames['left-card'] = nameNotRemoves
+    //   } else {
+    //     console.log('Frames do not exist')
+    //   }
+    // }
 
-    // Removes Card Frames
-    if (e.key === 'a') {
-      let framesExist = false
-      for (let i = 0; i < this.cardObjectNames['left-card'].length; i++) {
-        if (this.cardObjectNames['left-card'][i].includes('frame')) {
-          this.scene.remove(this.scene.getObjectByName(this.cardObjectNames['left-card'][i]))
-          framesExist = true
-        }
-      }
-      if (!framesExist) {
-        this.cardObjectNames['left-card'].push(
-          ...pageFrame(this.scene, this.basePosition, 'left-card', this.cardDimensions, [], this.scene.getObjectByName('left-card').rotation.y)
-        )
-      } else {
-        console.log('Frames already exist')
-      }
-    }
+    // // Removes Card Frames
+    // if (e.key === 'a') {
+    //   let framesExist = false
+    //   for (let i = 0; i < this.cardObjectNames['left-card'].length; i++) {
+    //     if (this.cardObjectNames['left-card'][i].includes('frame')) {
+    //       this.scene.remove(this.scene.getObjectByName(this.cardObjectNames['left-card'][i]))
+    //       framesExist = true
+    //     }
+    //   }
+    //   if (!framesExist) {
+    //     this.cardObjectNames['left-card'].push(
+    //       ...pageFrame(this.scene, this.basePosition, 'left-card', this.cardDimensions, [], this.scene.getObjectByName('left-card').rotation.y)
+    //     )
+    //   } else {
+    //     console.log('Frames already exist')
+    //   }
+    // }
   }
 
   wheelScroll(e) {
@@ -331,13 +305,12 @@ export default class InitScene {
 
     // this.raycaster.setFromCamera( this.mouse, this.camera )
     const intersects = this.raycaster.intersectObjects( this.scene.children )
-    if (intersects.length > 0) {
-      if (intersects[0].object.name === 'cube_0') {
-        console.log('cube 0 clicked')
-        const evt_cube_click = new Event('cube-click')
-        document.body.dispatchEvent(evt_cube_click)
+    if (intersects.length > 0 && typeof intersects[0].object !== 'undefined1') {
+      if (intersects[0].object.parent.name.includes('right-card-claim-button')
+        || intersects[0].object.parent.name.includes('right-card-claim-button-text'))
+      {
+        console.log('claim button clicked')
       }
-
     }
   }
 

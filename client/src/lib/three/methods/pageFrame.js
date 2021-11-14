@@ -15,7 +15,8 @@ const pageFrame = (scene, basePosition, cardSide, cardDimensions, colors, rotati
   const itemSpacingOutside = - 0.1
   const offsetPositions = [] //Left, Right, Front, Back
 
-  colors = [0x55ff55, 0xff5555, 0x5555ff, 0xff55ff]
+  if (colors.length === 0)  colors = [0x55ff55, 0xff5555, 0x5555ff, 0xff55ff]
+
   const verticalFrameDimensions = {x: 0.1, y: 6, z: 0.1}
   const horizontalFrameDimensions = {x: 4 - (verticalFrameDimensions.x * 2), y: 0.1, z: 0.1}
   switch (cardSide) {

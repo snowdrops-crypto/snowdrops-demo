@@ -25,26 +25,6 @@ const Landing = () => {
     }
   }
 
-  const handleButtonThreeTest = () => {
-    const evt = new CustomEvent('three-test', {'detail': {'x': 12}})
-    document.body.dispatchEvent(evt)
-  }
-
-  const handleButtonStartAnimation = () => {
-    const evt = new Event('start-animation')
-    document.body.dispatchEvent(evt)
-  }
-
-  const handleButtonStopAnimation = () => {
-    const evt = new Event('pause-animation')
-    document.body.dispatchEvent(evt)
-  }
-
-  const handleButtonSelectFrame = () => {
-    const evt = new CustomEvent('select-card-frame', {detail: {cardSide: '', cardColors: []}})
-    document.body.dispatchEvent(evt)
-  }
-
   return (
     <div id='landing-page' onScroll={(e) => handleScroll(e)}>
       <Header />
@@ -53,13 +33,6 @@ const Landing = () => {
           <div className='landing-title'>Welcome to Snowdrops!</div>
           <div className='landing-description'>Snowdrops are NFT greeting cards.</div>
         </div>
-        {dev ?
-          <div id='three-control-buttons'>
-            <button className='enable-input three-control-button' onClick={() => handleButtonThreeTest()}>three test</button>
-            <button className='enable-input three-control-button' onClick={() => handleButtonStartAnimation()}>start animation</button>
-            <button className='enable-input three-control-button' onClick={() => handleButtonStopAnimation()}>stop animation</button>
-          </div> : ''
-        }
       </div>
       <Footer />
     </div>

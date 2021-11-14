@@ -30,3 +30,11 @@ body {
 .enable-input {
   pointer-events: all;
 }
+
+input[type=text] {
+  border-radius: 5px;
+}
+
+textarea {
+  border-radius: 5px;
+}

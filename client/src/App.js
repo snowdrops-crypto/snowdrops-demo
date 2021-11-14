@@ -62,6 +62,8 @@ const App = () => {
     })
 
     appState({...rstate.main, status: 'landing', signer: signer, provider: provider})
+    const evt = new Event('update-three-redux')
+    document.body.dispatchEvent(evt)
     return () => {
     }
   }, [])
