@@ -7,6 +7,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Font } from 'three/examples/jsm/loaders/FontLoader'
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry'
 
 import windowResize from './methods/windowResize'
 import LoadGLTFs from './methods/loadGLTF'
@@ -90,16 +91,19 @@ export default class InitScene {
     document.body.addEventListener('update-three-redux', () => {
       console.log(store.getState())
     })
+
+    /* TODO change to Toggle Animation */
     document.body.addEventListener('pause-animation', () => this.stopAnimate())
     document.body.addEventListener('start-animation', () => this.animate())
-    document.body.addEventListener('three-test', (e) => console.log('test triggered in three', e.detail.x))
-    document.body.addEventListener('handle-card-frame', (e) => {
-      console.log(e.detail)
-    })
     document.body.addEventListener('handle-card-message', (e) => {
       this.cardMessage = e.detail.msg
       console.log(this.cardMessage)
     })
+
+    document.body.addEventListener('handle-card-frame', (e) => {
+      console.log(e.detail)
+    })
+
   }
 
   async init() {
@@ -214,6 +218,7 @@ export default class InitScene {
         handleObjectRotations(this.scene, this.cardObjectNames, rotation_factor)
       }
 
+      this.scene.getObjectByName('left-card-message').children[0].geometry.groups = this.fonter.generateShapes('hi there!', 0.5)
       const intersects = this.raycaster.intersectObjects(this.scene.children)
       if (intersects.length > 0) {
         // console.log(intersects[0].object.parent.name)

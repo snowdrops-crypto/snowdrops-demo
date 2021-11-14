@@ -1,5 +1,5 @@
 'use strict'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import Arweave from 'arweave'
 
 import { useSelector, useDispatch } from 'react-redux'
@@ -18,6 +18,12 @@ const CreateCard = () => {
   const { appState } = bindActionCreators(actions, dispatch)
 
   const [message, setMessage] = useState('')
+  const [colors, setColors] = useState({
+    leftInCard: { l: '', r: '', t: '', b: ''},
+    rightInCard: { l: '', r: '', t: '', b: ''},
+    leftOutCard: { l: '', r: '', t: '', b: ''},
+    rightOutCard: { l: '', r: '', t: '', b: ''},
+  })
   const images = ['img1', 'img2', 'img3']
   const dev = true
 
@@ -28,10 +34,6 @@ const CreateCard = () => {
     document.body.dispatchEvent(evt)
   }, [])
   
-  const handleButtonThreeTest = () => {
-    const evt = new CustomEvent('three-test', {'detail': {'x': 12}})
-    document.body.dispatchEvent(evt)
-  }
   const handleButtonStartAnimation = () => {
     const evt = new Event('start-animation')
     document.body.dispatchEvent(evt)
@@ -59,7 +61,12 @@ const CreateCard = () => {
     console.log(message)
   }
 
-  const handleSelectImage = (e) => {
+  const handleColors = (e) => {
+    setColors(prevState => ({...prevState, leftInCard: { l: e.target.value } } ))
+    console.log(colors)
+  }
+
+  const handleSelectImage = e => {
     console.log(e.target)
     e.target.className === '' ? e.target.className = 'selected-img' : e.target.className = ''
   }
@@ -70,7 +77,7 @@ const CreateCard = () => {
     for(let i = 0; i < 3; i++) {
       rows.push(
         <div className='asset-row'>
-          <img onClick={e => handleSelectImage(e)} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
+          <img onClick={handleSelectImage} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
           <img onClick={handleSelectImage} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
           <img onClick={handleSelectImage} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
         </div>
@@ -86,7 +93,7 @@ const CreateCard = () => {
       <div id='create-card-main'>
         <div id='create-card-content' className='enable-input'>
           <div className='create-card-title'>Message</div>
-          <textarea value={message} className='card-message enable-input' onChange={(e) => handleMessage(e)} />
+          <textarea value={message} className='card-message enable-input' onChange={handleMessage} />
           <button onClick={handleUpdateMessage}>Update Message</button>
           
           <hr />
@@ -95,37 +102,39 @@ const CreateCard = () => {
             <div className='create-card-title'>Update Card Frame</div>
             <div><input type='checkbox' />Left Card Inside</div>
             <div className='color-container'>
-              <div className='color-field'>left <input type='text' /></div>
-              <div className='color-field'>right <input type='text' /></div>
-              <div className='color-field'>top <input type='text' /></div>
-              <div className='color-field'>bottom <input type='text' /></div>
+              <div className='color-field'>
+                left color<input max='6' name='leftInCardl' value={colors.leftInCard.l} onChange={handleColors} type='text' className='frame-color-input' />
+              </div>
+              <div className='color-field'>right color<input type='text' className='frame-color-input' /></div>
+              <div className='color-field'>top color<input type='text' className='frame-color-input' /></div>
+              <div className='color-field'>bottom color<input type='text' className='frame-color-input' /></div>
             </div>
 
             <hr className='color-frame-hr'/>
             <div><input type='checkbox' />Right Card Inside</div>
             <div className='color-container'>
-              <div className='color-field'>left <input type='text' /></div>
-              <div className='color-field'>right <input type='text' /></div>
-              <div className='color-field'>top <input type='text' /></div>
-              <div className='color-field'>bottom <input type='text' /></div>
+              <div className='color-field'>left color<input type='text' className='frame-color-input' /></div>
+              <div className='color-field'>right color<input type='text' className='frame-color-input' /></div>
+              <div className='color-field'>top color<input type='text' className='frame-color-input' /></div>
+              <div className='color-field'>bottom color<input type='text' className='frame-color-input' /></div>
             </div>
 
             <hr className='color-frame-hr'/>
             <div><input type='checkbox' />Left Card Outside</div>
             <div className='color-container'>
-              <div className='color-field'>left <input type='text' /></div>
-              <div className='color-field'>right <input type='text' /></div>
-              <div className='color-field'>top <input type='text' /></div>
-              <div className='color-field'>bottom <input type='text' /></div>
+              <div className='color-field'>left color<input type='text' className='frame-color-input' /></div>
+              <div className='color-field'>right color<input type='text' className='frame-color-input' /></div>
+              <div className='color-field'>top color<input type='text' className='frame-color-input' /></div>
+              <div className='color-field'>bottom color<input type='text' className='frame-color-input' /></div>
             </div>
 
             <hr className='color-frame-hr'/>
             <div><input type='checkbox' />Right Card Outside</div>
             <div className='color-container'>
-              <div className='color-field'>left <input type='text' /></div>
-              <div className='color-field'>right <input type='text' /></div>
-              <div className='color-field'>top <input type='text' /></div>
-              <div className='color-field'>bottom <input type='text' /></div>
+              <div className='color-field'>left color<input type='text' className='frame-color-input' /></div>
+              <div className='color-field'>right color<input type='text' className='frame-color-input' /></div>
+              <div className='color-field'>top color<input type='text' className='frame-color-input' /></div>
+              <div className='color-field'>bottom color<input type='text' className='frame-color-input' /></div>
             </div>
 
             <button>Update</button>
