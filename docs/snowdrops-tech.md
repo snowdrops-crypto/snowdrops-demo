@@ -9,6 +9,7 @@
 - erc-1155 Items
 - erc-173 Contract Ownership
 - erc-165 Standard Interface Detection
+- eip-2981 NFT Royalty Standard
 
 #### Client Pages
 

@@ -20,6 +20,7 @@ import offsetRotateButtonObject from './methods/offsetRotateButtonObject'
 import pageFrame from './methods/pageFrame'
 import handleObjectRotations from './methods/handleObjectRotations'
 import autoFormatMessage from './methods/autoFormatMessage'
+import floatingParticles from './methods/floatingParticles'
 
 import avocado from '../../assets/glb/Avocado.glb'
 
@@ -37,7 +38,7 @@ export default class InitScene {
     // this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: "high-performance"})
     this.renderer = new THREE.WebGLRenderer({antialias: false, logarithmicDepthBuffer: false})
     this.renderer.setPixelRatio(window.devicePixelRatio)
-    this.renderer.setSize( window.innerWidth, window.innerHeight )
+    this.renderer.setSize(window.innerWidth, window.innerHeight)
 
     document.body.appendChild( this.renderer.domElement )
     const canvas = document.body.children[1]
@@ -50,7 +51,7 @@ export default class InitScene {
     canvas.style.pointerEvents = 'all'
     
     this.scene = new THREE.Scene()
-    this.scene.background = new THREE.Color('#444444')
+    this.scene.background = new THREE.Color('#222222')
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
     this.camera.position.z = 10
@@ -80,7 +81,17 @@ export default class InitScene {
     this.cardDimensions = {x: 4, y: 6, z: 0.1}
 
     this.cardMessage = ''
+    this.cardFrames = {
+      frameColors: {
+        leftIn: {'left-in-left-frame': '', 'left-in-right-frame': '', 'left-in-top-frame': '', 'left-in-bottom-frame': ''},
+        rightIn: {'right-in-left-frame': '', 'right-in-right-frame': '', 'right-in-top-frame': '', 'right-in-bottom-frame': ''},
+        leftOut: {'left-out-left-frame': '', 'left-out-right-frame': '', 'left-out-top-frame': '', 'left-out-bottom-frame': ''},
+        rightOut: {'right-out-left-frame': '', 'right-out-right-frame': '', 'right-out-top-frame': '', 'right-out-bottom-frame': ''}
+      },
+      setFrames: {'left-in-frames': false, 'right-in-frames': false, 'left-out-frames': false, 'right-out-frames': false}
+    }
     this.updateCardMessage = false
+    this.updateCardFrame = false
 
     window.addEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
     window.addEventListener('keydown', (e) => this.keydown(e), 10)
@@ -131,7 +142,9 @@ export default class InitScene {
     // await this.loadObjects(['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado])
     // await LoadGLTFs(this.GLTFloader, this.scene, ['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado], {x: 2, y: 2, z: 2})
 
-    // CARD
+    await floatingParticles(this.scene, this.TextureLoader, snowdropsLogo1)
+
+    /** CARD **/
     const itemSpacingInside = 0.1
     const itemSpacingOutside = -0.1
 
@@ -238,15 +251,18 @@ export default class InitScene {
         this.updateCardMessage = false
       }
 
-      
       const intersects = this.raycaster.intersectObjects(this.scene.children)
       if (intersects.length > 0) {
+        let intersectionLayer = 0
+        while (intersects[intersectionLayer].object.name === 'particles' && intersects.length > intersectionLayer + 1) {
+          intersectionLayer++
+        }
         // console.log(intersects[0].object.parent.name)
         // console.log(intersects[0].object.parent.children[0].material.color)
-
-        if (typeof intersects[0].object !== 'undefined'
-        && (intersects[0].object.parent.name.includes('right-card-claim-button')
-        || intersects[0].object.parent.name.includes('right-card-claim-button-text'))
+        // console.log(intersects[intersectionLayer])
+        if (typeof intersects[intersectionLayer].object !== 'undefined'
+        && (intersects[intersectionLayer].object.parent.name.includes('right-card-claim-button')
+        || intersects[intersectionLayer].object.parent.name.includes('right-card-claim-button-text'))
         ) {
           this.scene.getObjectByName('right-card-claim-button').children[0].material.color.set(`#66FF66`)
           document.body.style.cursor = 'pointer'

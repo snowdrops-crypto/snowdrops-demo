@@ -102,7 +102,7 @@ const pageFrame = (scene, basePosition, cardSide, cardDimensions, colors, rotati
         y: cardDimensions.y / 2 - horizontalFrameDimensions.y / 2,
         z: itemSpacingOutside
       })
-      offsetPositions.push(    {
+      offsetPositions.push({
         x: cardDimensions.x / 2,
         y: (-1 * cardDimensions.y / 2) + horizontalFrameDimensions.y / 2,
         z: itemSpacingOutside

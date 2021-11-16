@@ -14,7 +14,7 @@ const NotFound = () => {
   return (
     <div id='not-found-page'>
       <Header />
-      404
+      Something went wrong :/ The page you are looking for wasn't found.
       <Footer />
     </div>
   )

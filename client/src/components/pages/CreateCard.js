@@ -18,18 +18,12 @@ const CreateCard = () => {
   const { appState } = bindActionCreators(actions, dispatch)
 
   const [message, setMessage] = useState('')
-  const [colors, setColors] = useState({
-    leftInCard: { l: '', r: '', t: '', b: ''},
-    rightInCard: { l: '', r: '', t: '', b: ''},
-    leftOutCard: { l: '', r: '', t: '', b: ''},
-    rightOutCard: { l: '', r: '', t: '', b: ''},
-  })
   const [leftInColor, setLeftInColor] = useState({'left-in-left-frame': '', 'left-in-right-frame': '', 'left-in-top-frame': '', 'left-in-bottom-frame': ''})
   const [rightInColor, setRightInColor] = useState({'right-in-left-frame': '', 'right-in-right-frame': '', 'right-in-top-frame': '', 'right-in-bottom-frame': ''})
   const [leftOutColor, setLeftOutColor] = useState({'left-out-left-frame': '', 'left-out-right-frame': '', 'left-out-top-frame': '', 'left-out-bottom-frame': ''})
   const [rightOutColor, setRightOutColor] = useState({'right-out-left-frame': '', 'right-out-right-frame': '', 'right-out-top-frame': '', 'right-out-bottom-frame': ''})
   const [addFrames, setAddFrames] = useState({'left-in-frames': false, 'right-in-frames': false, 'left-out-frames': false, 'right-out-frames': false})
-  const images = ['img1', 'img2', 'img3']
+
   const dev = true
 
   useEffect(() => {
@@ -53,6 +47,21 @@ const CreateCard = () => {
     document.body.dispatchEvent(evt)
     console.log(message)
   }
+  const handleUpdateFrame = () => {
+    const evt = new CustomEvent('handle-card-frame', {
+      detail: {
+        frameColors: {
+          leftIn: leftInColor,
+          rightIn: rightInColor,
+          leftOut: leftOutColor,
+          rightOut: rightOutColor
+        },
+        setFrames: addFrames
+      }
+    })
+    document.body.dispatchEvent(evt)
+  }
+
   const updateCardFrames = () => {
     // const evt = new CustomEvent('select-card-frame', {detail: {cardSide: '', cardColors: []}})
     // document.body.dispatchEvent(evt)
