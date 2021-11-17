@@ -1,4 +1,4 @@
-# Stardrops Demo
+# Snowdrops Demo
 
 Snowdrops Demo is an NFT application used to demo the functionality of Snowdrops. Snowdrops are NFT greeting cards that can have Ethereum based tokens attached to them before send to someone. The application will also provide an option to Buy and Seller user created greeting cards from a market.
 

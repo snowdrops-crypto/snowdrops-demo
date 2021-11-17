@@ -9,6 +9,8 @@ import * as actions from '../../store/actions'
 import Header from '../layouts/Header'
 import Footer from '../layouts/Footer'
 
+import DefaultCardInfo from '../../lib/DefaultCardInfo'
+
 import snowdropsLogoRedBgWhite1024 from '../../assets/snowdrops-logo-1024-bg-white.png'
 import snowdropsLogo1024 from '../../assets/snowdrops-logo-1024.png'
 import basicHeart from '../../assets/basic-heart-1024.png'

@@ -13,6 +13,8 @@ import windowResize from './methods/windowResize'
 import LoadGLTFs from './methods/loadGLTF'
 import loadLights from './methods/loadLights'
 
+import DefaultCardInfo from '../DefaultCardInfo'
+
 import offsetRotateBoxObject from './methods/offsetRotateBoxObject'
 import offsetRotateTextureObject from './methods/offsetRotateTextureObject'
 import offsetRotateTextObject from './methods/offsetRotateTextObject'
@@ -21,6 +23,7 @@ import pageFrame from './methods/pageFrame'
 import handleObjectRotations from './methods/handleObjectRotations'
 import autoFormatMessage from './methods/autoFormatMessage'
 import floatingParticles from './methods/floatingParticles'
+import addFrames from './methods/addFrames'
 
 import avocado from '../../assets/glb/Avocado.glb'
 
@@ -37,7 +40,7 @@ export default class InitScene {
     // store.dispatch({type: 'main', payload: {...state}})
 
     // this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: "high-performance"})
-    this.renderer = new THREE.WebGLRenderer({antialias: false, logarithmicDepthBuffer: false})
+    this.renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: false})
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(window.innerWidth, window.innerHeight)
 
@@ -50,13 +53,10 @@ export default class InitScene {
     canvas.style.top = '0px'
     canvas.style.zIndex = '-1'
     canvas.style.pointerEvents = 'all'
-    
     this.scene = new THREE.Scene()
     this.scene.background = new THREE.Color('#222222')
-
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
     this.camera.position.z = 10
-
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.target.set(0, 0, 0)
     // this.controls.maxDistance = 10
@@ -67,32 +67,18 @@ export default class InitScene {
     // Vertical Angle
     // this.controls.maxPolarAngle = Math.PI/2
     // this.controls.minPolarAngle = Math.PI/4
-
     this.mouse = new THREE.Vector2()
     this.raycaster = new THREE.Raycaster()
     this.raycaster.params.Line.threshold = 0.1
-
     this.GLTFloader = new GLTFLoader()
     this.fonter = new Font(font_caviar)
-
     this.TextureLoader = new THREE.TextureLoader()
 
-    this.objectCardNames = {
-      left: {
-        card: 'left-card',
-        in: { frames: [], message: '', other: [] },
-        out: { frames: [], other: [] }
-      },
-      right: {
-        card: 'right-card',
-        in: { frames: [], claim: [], other: [] },
-        out: { frames: [], other: [] },
-      }
-    }
     this.basePosition = {x: 0, y: 0, z: 0}
     this.cardDimensions = {x: 4, y: 6, z: 0.1}
 
-    this.cardMessage = 'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops'
+    this.cardInfo = DefaultCardInfo
+    this.cardInfo.left.in.greeting.message = 'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops'
     this.cardFrames = {
       frameColors: {
         leftIn: {'left-in-left-frame': '55ff55', 'left-in-right-frame': 'ff5555', 'left-in-top-frame': '5555ff', 'left-in-bottom-frame': 'ff55ff'},
@@ -122,42 +108,6 @@ export default class InitScene {
       }
     })
     document.body.addEventListener('handle-card-frame', (e) => {
-      this.updateCardFrameSet = true
-      Object.keys(e.detail.setFrames).forEach(key => {
-        switch(key) {
-          case 'left-in-frames':
-            if (e.detail.setFrames[key]) {
-
-            } else {
-
-            }
-            break;
-          case 'right-in-frames':
-            break;
-          case 'left-out-frames':
-            break;
-          case 'right-out-frames':
-            break;
-        }
-      })
-      e.detail.frameColors
-      // Object.keys(this.cardFrames.setFrames).forEach(frame => {
-      //   // console.log(frame, this.cardFrames.setFrames[frame])
-      //   if (this.cardFrames.setFrames[frame] !== e.detail.setFrames[frame]) {
-      //     this.updateCardFrameSet = true
-      //     this.frameSetActions.push({frame: frame, action: e.detail.setFrames[frame]})
-      //     this.cardFrames.setFrames[frame] = e.detail.setFrames[frame]
-      //   }
-      // })
-
-      // Object.keys(this.cardFrames.frameColors).forEach(side => {
-      //   Object.keys(this.cardFrames.frameColors[side]).forEach(frameName => {
-      //     if (this.cardFrames.frameColors[side][frameName] !== e.detail.frameColors[side][frameName]) {
-      //       this.updateCardFrameColor = true
-      //       this.frameColorActions.push({frame: frameName, action: e.detail.frameColors[side][frameName]})
-      //     }
-      //   })
-      // })
     })
 
     window.addEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
@@ -171,14 +121,11 @@ export default class InitScene {
   async init() {
     // Lights
     loadLights(this.scene)
-    
     // const axesHelper = new THREE.AxesHelper(5)
     // this.scene.add(axesHelper)
-
     this.SkySphere = new THREE.Mesh(new THREE.SphereBufferGeometry(20, 32, 32), new THREE.MeshBasicMaterial({color: '#CCBBFF', side: THREE.DoubleSide, transparent: true, opacity: 0.5}))
     this.SkySphere.name = 'sky-sphere'
     this.scene.add(this.SkySphere)
-
     this.Floor = new THREE.Mesh(new THREE.BoxBufferGeometry(40, 40, 1), new THREE.MeshBasicMaterial({color: '#EEFFFF'}))
     this.Floor.rotation.x = Math.PI / 2
     this.Floor.position.set(0, -5, 0)
@@ -192,93 +139,77 @@ export default class InitScene {
     text.name = 'loading'
     text.position.set(-1.5, 3, 0)
     this.scene.add(text)
-
     this.renderer.render(this.scene, this.camera)
     this.scene.remove(this.scene.getObjectByName('loading'))
-
     // await this.loadObjects(['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado])
     // await LoadGLTFs(this.GLTFloader, this.scene, ['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado], {x: 2, y: 2, z: 2})
-
-    await floatingParticles(this.scene, this.TextureLoader, basicHeart)
-
+    // await floatingParticles(this.scene, this.TextureLoader, basicHeart)
 
 
     /** CARD **/
-    const itemSpacingInside = 0.1
-    const itemSpacingOutside = -0.1
 
     /* CARD LEFT */
     offsetRotateBoxObject(
-      this.scene, this.objectCardNames.left.card, 0xeffeef,
-      this.cardDimensions, this.basePosition, {x: (-1 * this.cardDimensions.x / 2), y: 0, z: 0}
+      this.scene, this.cardInfo.left.name, 0xeffeef,
+      this.cardDimensions, this.cardInfo.basePosition, {x: (-1 * this.cardDimensions.x / 2), y: 0, z: 0}
     )
-
     /* CARD RIGHT */
     offsetRotateBoxObject(
-      this.scene, this.objectCardNames.right.card, 0xeffeef,
-      this.cardDimensions, this.basePosition, {x: this.cardDimensions.x / 2, y: 0, z: 0},
+      this.scene, this.cardInfo.right.name, 0xeffeef,
+      this.cardDimensions, this.cardInfo.basePosition, {x: this.cardDimensions.x / 2, y: 0, z: 0},
     )
 
     // Card Frame
-    this.objectCardNames.left.in.frames.push(...pageFrame(this.scene, this.basePosition, 'left-in', this.cardDimensions, []))
-    this.objectCardNames.right.in.frames.push(...pageFrame(this.scene, this.basePosition, 'right-in', this.cardDimensions, []))
-    this.objectCardNames.left.out.frames.push(...pageFrame(this.scene, this.basePosition, 'left-out', this.cardDimensions, []))
-    this.objectCardNames.right.out.frames.push(...pageFrame(this.scene, this.basePosition, 'right-out', this.cardDimensions, []))
+    if (this.cardInfo.left.in.framesActive) addFrames(this.scene, this.cardInfo, 'left-in')
+    if (this.cardInfo.right.in.framesActive) addFrames(this.scene, this.cardInfo, 'right-in')
+    if (this.cardInfo.left.out.framesActive) addFrames(this.scene, this.cardInfo, 'left-out')
+    if (this.cardInfo.right.out.framesActive) addFrames(this.scene, this.cardInfo, 'right-out')
 
     // LOGO on CARD
     await offsetRotateTextureObject(this.scene, this.TextureLoader, snowdropsLogo1,
-      {x: 1, y: 1}, this.basePosition, {x: -1, y: -2.25, z: itemSpacingInside},
+      {x: 1, y: 1}, this.cardInfo.basePosition, {x: -1, y: -2.25, z: this.cardInfo.itemSpacingIn},
       `left-in-snowdrops-logo`, 0xffffff
     )
-    this.objectCardNames.left.in.other.push(`left-in-snowdrops-logo`)
+    this.cardInfo.left.in.other.push(`left-in-snowdrops-logo`)
 
     // MESSAGE on CARD
-    autoFormatMessage(this.cardMessage)
     offsetRotateTextObject(
-      this.scene, this.fonter, `left-in-message`, 0x000000,
-      this.cardMessage,
-      0.35, this.basePosition, {x: -7.5, y: 4, z: itemSpacingInside + 0.1}, 0.5
+      this.scene, this.fonter, this.cardInfo.left.in.greeting.name, 0x000000, this.cardInfo.left.in.greeting.message,
+      0.35, this.cardInfo.basePosition, {x: -7.5, y: 4, z: this.cardInfo.itemSpacingIn + 0.1}, 0.5
     )
-    this.objectCardNames.left.in.message = `left-in-message`
 
     // CLAIM Message
     offsetRotateTextObject(
-      this.scene, this.fonter, `right-in-claim-message`, 0x000000, 'Claim your ETH: 0.5',
-      0.5, this.basePosition, {x: 1, y: 1, z: 0.15}, 0.5
+      this.scene, this.fonter, this.cardInfo.right.in.claim.message.name, 0x000000, this.cardInfo.right.in.claim.message.message,
+      0.5, this.cardInfo.basePosition, {x: 1, y: 1, z: 0.15}, 0.5
     )
-    this.objectCardNames.right.in.claim.push(`right-in-claim-message`)
-
     // Claim Button
     offsetRotateBoxObject(
-      this.scene, `right-in-claim-button`, 0x55ff55,
-      {x: 1.5, y: 0.5, z: 0.1}, this.basePosition, {x: 2, y: 0, z: itemSpacingInside},
+      this.scene, this.cardInfo.right.in.claim.button.name, 0x55ff55,
+      {x: 1.5, y: 0.5, z: 0.1}, this.cardInfo.basePosition, {x: 2, y: 0, z: this.cardInfo.itemSpacingIn},
     )
-    this.objectCardNames.right.in.claim.push(`right-in-claim-button`)
-
     offsetRotateTextObject(
-      this.scene, this.fonter, `right-in-claim-button-text`, 0x000000, 'Claim!',
-      0.2, this.basePosition, {x: 1.6, y: -0.1, z: 0.20}
+      this.scene, this.fonter, this.cardInfo.right.in.claim.buttonText.name, 0x000000, this.cardInfo.right.in.claim.buttonText.message,
+      0.2, this.cardInfo.basePosition, {x: 1.6, y: -0.1, z: 0.20}
     )
-    this.objectCardNames.right.in.claim.push(`right-in-claim-button-text`)
 
     /* CARD FRONT Objects */
     offsetRotateBoxObject(
       this.scene, `left-out-object`, 0xff55ff,
-      {x: 2, y: 2, z: 0.1}, this.basePosition, {x: -2, y: 1, z: itemSpacingOutside}
+      {x: 2, y: 2, z: 0.1}, this.cardInfo.basePosition, {x: -2, y: 1, z: this.cardInfo.itemSpacingOut}
     )
-    this.objectCardNames.left.out.other.push(`left-out-object`)
-
+    this.cardInfo.left.out.other.push(`left-out-object`)
 
     /* BACK CARD Objects */
     offsetRotateBoxObject(
       this.scene, `right-out-object`, 0xff5533,
-      {x: 2, y: 2, z: 0.1}, this.basePosition, {x: 2, y: 1, z: itemSpacingOutside}
+      {x: 2, y: 2, z: 0.1}, this.cardInfo.basePosition, {x: 2, y: 1, z: this.cardInfo.itemSpacingOut}
     )
-    this.objectCardNames.right.out.other.push(`right-out-object`)
+    this.cardInfo.right.out.other.push('right-out-object')
 
     /* ROTATIONS */
     const rotation_factor = 8
-    handleObjectRotations(this.scene, this.objectCardNames, rotation_factor)
+    handleObjectRotations(this.scene, this.cardInfo, rotation_factor)
 
     this.animate()
   }
@@ -288,7 +219,7 @@ export default class InitScene {
       // Animatated 360 degree rotation
       const rotation_factor = 512
       if (1 > 2) {
-        handleObjectRotations(this.scene, this.objectCardNames, rotation_factor)
+        handleObjectRotations(this.scene, this.cardInfo, rotation_factor)
       }
 
       // Update card message
@@ -298,7 +229,7 @@ export default class InitScene {
         offsetRotateTextObject(
           this.scene, this.fonter, `left-in-message`, 0x000000,
           this.cardMessage,
-          0.35, this.basePosition, {x: -7.5, y: 4, z: 0.2}, 0.5
+          0.35, this.cardInfo.basePosition, {x: -7.5, y: 4, z: 0.2}, 0.5
         )
         this.scene.getObjectByName('left-in-message').rotation.y = saveRotation
         this.updateCardMessage = false
@@ -311,7 +242,7 @@ export default class InitScene {
           const cardSide = action.frame.substr(0, idx)
           console.log(cardSide)
           if (action.action) {
-            pageFrame(this.scene, this.basePosition, `${cardSide}-right-frame`, this.cardDimensions, [], this.scene.getObjectByName(`${cardSide}-card`).rotation.y)
+            pageFrame(this.scene, this.cardInfo.basePosition, `${cardSide}-right-frame`, this.cardDimensions, [], this.scene.getObjectByName(`${cardSide}-card`).rotation.y)
           } else {
             
             const frameNames = [`${cardSide}-card-left-frame`, `${cardSide}-card-right-frame`, `${cardSide}-card-top-frame`, `${cardSide}-card-bottom-frame`]
@@ -344,13 +275,13 @@ export default class InitScene {
         }
 
         if (typeof intersects[intersectionLayer].object !== 'undefined'
-          && (intersects[intersectionLayer].object.parent.name.includes('right-in-claim-button')
-          || intersects[intersectionLayer].object.parent.name.includes('right-in-claim-button-text'))
+          && (intersects[intersectionLayer].object.parent.name.includes('claim-button')
+          || intersects[intersectionLayer].object.parent.name.includes('claim-button-text'))
         ) {
-          this.scene.getObjectByName('right-in-claim-button').children[0].material.color.set(`#66FF66`)
+          this.scene.getObjectByName('claim-button').children[0].material.color.set(`#66FF66`)
           document.body.style.cursor = 'pointer'
         } else {
-          this.scene.getObjectByName('right-in-claim-button').children[0].material.color.set(`#00FF00`)
+          this.scene.getObjectByName('claim-button').children[0].material.color.set(`#00FF00`)
           document.body.style.cursor = 'default'
         }
       }
@@ -387,7 +318,7 @@ export default class InitScene {
 
     // this.raycaster.setFromCamera( this.mouse, this.camera )
     const intersects = this.raycaster.intersectObjects( this.scene.children )
-    if (intersects.length > 0 && typeof intersects[0].object !== 'undefined1') {
+    if (intersects.length > 0 && typeof intersects[0].object !== 'undefined') {
       if (intersects[0].object.parent.name.includes('right-card-claim-button')
         || intersects[0].object.parent.name.includes('right-card-claim-button-text'))
       {

@@ -1,21 +1,21 @@
 'use strict'
 
 const handleObjectRotations = (scene, cardObjectNames, rotation_factor) => {
-  scene.getObjectByName(cardObjectNames.left.card).rotation.y += Math.PI / rotation_factor
-  scene.getObjectByName(cardObjectNames.right.card).rotation.y -= Math.PI / rotation_factor
+  scene.getObjectByName(cardObjectNames.left.name).rotation.y += Math.PI / rotation_factor
+  scene.getObjectByName(cardObjectNames.right.name).rotation.y -= Math.PI / rotation_factor
 
   // Frames
-  cardObjectNames.left.in.frames.forEach(name => {
-    scene.getObjectByName(name).rotation.y += Math.PI / rotation_factor
+  Object.keys(cardObjectNames.left.in.frames).forEach(frame => {
+    scene.getObjectByName(cardObjectNames.left.in.frames[frame].name).rotation.y += Math.PI / rotation_factor
   })
-  cardObjectNames.right.in.frames.forEach(name => {
-    scene.getObjectByName(name).rotation.y -= Math.PI / rotation_factor
+  Object.keys(cardObjectNames.right.in.frames).forEach(frame => {
+    scene.getObjectByName(cardObjectNames.right.in.frames[frame].name).rotation.y -= Math.PI / rotation_factor
   })
-  cardObjectNames.left.out.frames.forEach(name => {
-    scene.getObjectByName(name).rotation.y += Math.PI / rotation_factor
+  Object.keys(cardObjectNames.left.out.frames).forEach(frame => {
+    scene.getObjectByName(cardObjectNames.left.out.frames[frame].name).rotation.y += Math.PI / rotation_factor
   })
-  cardObjectNames.right.out.frames.forEach(name => {
-    scene.getObjectByName(name).rotation.y -= Math.PI / rotation_factor
+  Object.keys(cardObjectNames.right.out.frames).forEach(frame => {
+    scene.getObjectByName(cardObjectNames.right.out.frames[frame].name).rotation.y -= Math.PI / rotation_factor
   })
 
   // Other
@@ -33,12 +33,12 @@ const handleObjectRotations = (scene, cardObjectNames, rotation_factor) => {
   })
 
   // Claim
-  cardObjectNames.right.in.claim.forEach(name => {
-    scene.getObjectByName(name).rotation.y -= Math.PI / rotation_factor
+  Object.keys(cardObjectNames.right.in.claim).forEach(type => {
+    scene.getObjectByName(cardObjectNames.right.in.claim[type].name).rotation.y -= Math.PI / rotation_factor
   })
 
   // Message
-  scene.getObjectByName(cardObjectNames.left.in.message).rotation.y += Math.PI / rotation_factor
+  scene.getObjectByName(cardObjectNames.left.in.greeting.name).rotation.y += Math.PI / rotation_factor
 }
 
 export default handleObjectRotations
