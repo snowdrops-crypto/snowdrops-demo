@@ -28,6 +28,7 @@ import font_caviar from '../../assets/fonts/CaviarDreams_Regular.json'
 import font_marg from '../../assets/fonts/MargatroidGrotesque.json'
 
 import snowdropsLogo1 from '../../assets/snowdrops-logo-1.png'
+import basicHeart from '../../assets/basic-heart-1024.png'
 
 export default class InitScene {
   constructor() {
@@ -58,8 +59,8 @@ export default class InitScene {
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.target.set(0, 0, 0)
-    this.controls.maxDistance = 10
-    this.controls.minDistance = 5
+    // this.controls.maxDistance = 10
+    // this.controls.minDistance = 5
     // Horizontal Angle
     // this.controls.maxAzimuthAngle = Math.PI/4
     // this.controls.minAzimuthAngle = -Math.PI/4
@@ -76,34 +77,40 @@ export default class InitScene {
 
     this.TextureLoader = new THREE.TextureLoader()
 
-    this.cardObjectNames = {'left-card': [], 'right-card': [], 'front-card': [], 'back-card': []}
+    this.objectCardNames = {
+      left: {
+        card: 'left-card',
+        in: { frames: [], message: '', other: [] },
+        out: { frames: [], other: [] }
+      },
+      right: {
+        card: 'right-card',
+        in: { frames: [], claim: [], other: [] },
+        out: { frames: [], other: [] },
+      }
+    }
     this.basePosition = {x: 0, y: 0, z: 0}
     this.cardDimensions = {x: 4, y: 6, z: 0.1}
 
-    this.cardMessage = ''
+    this.cardMessage = 'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops'
     this.cardFrames = {
       frameColors: {
-        leftIn: {'left-in-left-frame': '', 'left-in-right-frame': '', 'left-in-top-frame': '', 'left-in-bottom-frame': ''},
-        rightIn: {'right-in-left-frame': '', 'right-in-right-frame': '', 'right-in-top-frame': '', 'right-in-bottom-frame': ''},
-        leftOut: {'left-out-left-frame': '', 'left-out-right-frame': '', 'left-out-top-frame': '', 'left-out-bottom-frame': ''},
-        rightOut: {'right-out-left-frame': '', 'right-out-right-frame': '', 'right-out-top-frame': '', 'right-out-bottom-frame': ''}
+        leftIn: {'left-in-left-frame': '55ff55', 'left-in-right-frame': 'ff5555', 'left-in-top-frame': '5555ff', 'left-in-bottom-frame': 'ff55ff'},
+        rightIn: {'right-in-left-frame': '55ff55', 'right-in-right-frame': 'ff5555', 'right-in-top-frame': '5555ff', 'right-in-bottom-frame': 'ff55ff'},
+        leftOut: {'left-out-left-frame': '55ff55', 'left-out-right-frame': 'ff5555', 'left-out-top-frame': '5555ff', 'left-out-bottom-frame': 'ff55ff'},
+        rightOut: {'right-out-left-frame': '55ff55', 'right-out-right-frame': 'ff5555', 'right-out-top-frame': '5555ff', 'right-out-bottom-frame': 'ff55ff'}
       },
-      setFrames: {'left-in-frames': false, 'right-in-frames': false, 'left-out-frames': false, 'right-out-frames': false}
+      setFrames: {'left-in-frames': true, 'right-in-frames': true, 'left-out-frames': true, 'right-out-frames': true}
     }
+    this.frameSetActions = []
+    this.frameColorActions = []
     this.updateCardMessage = false
-    this.updateCardFrame = false
-
-    window.addEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
-    window.addEventListener('keydown', (e) => this.keydown(e), 10)
-    window.addEventListener('wheel', e => this.wheelScroll(e), false)
-    window.addEventListener('mousemove', e => this.mouseMove(e), false)
-    window.addEventListener('mousedown', e => this.mouseDown(e), false)
-    window.addEventListener('mouseup', e => this.mouseUp(e), false)
+    this.updateCardFrameSet = false
+    this.updateCardFrameColor = false
 
     document.body.addEventListener('update-three-redux', () => {
       console.log(store.getState())
     })
-
     /* TODO change to Toggle Animation */
     document.body.addEventListener('pause-animation', () => this.stopAnimate())
     document.body.addEventListener('start-animation', () => this.animate())
@@ -114,11 +121,51 @@ export default class InitScene {
         this.cardMessage = e.detail.msg
       }
     })
-
     document.body.addEventListener('handle-card-frame', (e) => {
-      console.log(e.detail)
+      this.updateCardFrameSet = true
+      Object.keys(e.detail.setFrames).forEach(key => {
+        switch(key) {
+          case 'left-in-frames':
+            if (e.detail.setFrames[key]) {
+
+            } else {
+
+            }
+            break;
+          case 'right-in-frames':
+            break;
+          case 'left-out-frames':
+            break;
+          case 'right-out-frames':
+            break;
+        }
+      })
+      e.detail.frameColors
+      // Object.keys(this.cardFrames.setFrames).forEach(frame => {
+      //   // console.log(frame, this.cardFrames.setFrames[frame])
+      //   if (this.cardFrames.setFrames[frame] !== e.detail.setFrames[frame]) {
+      //     this.updateCardFrameSet = true
+      //     this.frameSetActions.push({frame: frame, action: e.detail.setFrames[frame]})
+      //     this.cardFrames.setFrames[frame] = e.detail.setFrames[frame]
+      //   }
+      // })
+
+      // Object.keys(this.cardFrames.frameColors).forEach(side => {
+      //   Object.keys(this.cardFrames.frameColors[side]).forEach(frameName => {
+      //     if (this.cardFrames.frameColors[side][frameName] !== e.detail.frameColors[side][frameName]) {
+      //       this.updateCardFrameColor = true
+      //       this.frameColorActions.push({frame: frameName, action: e.detail.frameColors[side][frameName]})
+      //     }
+      //   })
+      // })
     })
 
+    window.addEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
+    window.addEventListener('keydown', (e) => this.keydown(e), 10)
+    window.addEventListener('wheel', e => this.wheelScroll(e), false)
+    window.addEventListener('mousemove', e => this.mouseMove(e), false)
+    window.addEventListener('mousedown', e => this.mouseDown(e), false)
+    window.addEventListener('mouseup', e => this.mouseUp(e), false)
   }
 
   async init() {
@@ -127,6 +174,16 @@ export default class InitScene {
     
     // const axesHelper = new THREE.AxesHelper(5)
     // this.scene.add(axesHelper)
+
+    this.SkySphere = new THREE.Mesh(new THREE.SphereBufferGeometry(20, 32, 32), new THREE.MeshBasicMaterial({color: '#CCBBFF', side: THREE.DoubleSide, transparent: true, opacity: 0.5}))
+    this.SkySphere.name = 'sky-sphere'
+    this.scene.add(this.SkySphere)
+
+    this.Floor = new THREE.Mesh(new THREE.BoxBufferGeometry(40, 40, 1), new THREE.MeshBasicMaterial({color: '#EEFFFF'}))
+    this.Floor.rotation.x = Math.PI / 2
+    this.Floor.position.set(0, -5, 0)
+    this.Floor.name = 'floor'
+    this.scene.add(this.Floor)
 
     let text = new THREE.Mesh(
       new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Loading...', 1)),
@@ -142,7 +199,9 @@ export default class InitScene {
     // await this.loadObjects(['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado])
     // await LoadGLTFs(this.GLTFloader, this.scene, ['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado], {x: 2, y: 2, z: 2})
 
-    await floatingParticles(this.scene, this.TextureLoader, snowdropsLogo1)
+    await floatingParticles(this.scene, this.TextureLoader, basicHeart)
+
+
 
     /** CARD **/
     const itemSpacingInside = 0.1
@@ -150,82 +209,76 @@ export default class InitScene {
 
     /* CARD LEFT */
     offsetRotateBoxObject(
-      this.scene, `${Object.keys(this.cardObjectNames)[0]}`, 0xeffeef,
+      this.scene, this.objectCardNames.left.card, 0xeffeef,
       this.cardDimensions, this.basePosition, {x: (-1 * this.cardDimensions.x / 2), y: 0, z: 0}
     )
-    this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(Object.keys(this.cardObjectNames)[0])
-    // Card Frame
-    this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(
-      ...pageFrame(this.scene, this.basePosition, Object.keys(this.cardObjectNames)[0], this.cardDimensions, [])
-    )
-    // LOGO on CARD
-    await offsetRotateTextureObject(this.scene, this.TextureLoader, snowdropsLogo1,
-      {x: 1, y: 1}, this.basePosition, {x: -1, y: -2.25, z: itemSpacingInside},
-      `${Object.keys(this.cardObjectNames)[0]}-snowdrops-logo`, 0xffffff
-    )
-    this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(`${Object.keys(this.cardObjectNames)[0]}-snowdrops-logo`)
-    // MESSAGE on CARD
-    this.cardMessage = 'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops'
-    autoFormatMessage(this.cardMessage)
-    offsetRotateTextObject(
-      this.scene, this.fonter, `${Object.keys(this.cardObjectNames)[0]}-message`, 0x000000,
-      this.cardMessage,
-      0.35, this.basePosition, {x: -7.5, y: 4, z: itemSpacingInside + 0.1}, 0.5
-    )
-    
-    this.cardObjectNames[Object.keys(this.cardObjectNames)[0]].push(`${Object.keys(this.cardObjectNames)[0]}-message`)
 
     /* CARD RIGHT */
     offsetRotateBoxObject(
-      this.scene, `${Object.keys(this.cardObjectNames)[1]}`, 0xeffeef,
+      this.scene, this.objectCardNames.right.card, 0xeffeef,
       this.cardDimensions, this.basePosition, {x: this.cardDimensions.x / 2, y: 0, z: 0},
     )
-    this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(Object.keys(this.cardObjectNames)[1])
+
     // Card Frame
-    this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(
-      ...pageFrame(this.scene, this.basePosition, Object.keys(this.cardObjectNames)[1], this.cardDimensions, [])
+    this.objectCardNames.left.in.frames.push(...pageFrame(this.scene, this.basePosition, 'left-in', this.cardDimensions, []))
+    this.objectCardNames.right.in.frames.push(...pageFrame(this.scene, this.basePosition, 'right-in', this.cardDimensions, []))
+    this.objectCardNames.left.out.frames.push(...pageFrame(this.scene, this.basePosition, 'left-out', this.cardDimensions, []))
+    this.objectCardNames.right.out.frames.push(...pageFrame(this.scene, this.basePosition, 'right-out', this.cardDimensions, []))
+
+    // LOGO on CARD
+    await offsetRotateTextureObject(this.scene, this.TextureLoader, snowdropsLogo1,
+      {x: 1, y: 1}, this.basePosition, {x: -1, y: -2.25, z: itemSpacingInside},
+      `left-in-snowdrops-logo`, 0xffffff
     )
+    this.objectCardNames.left.in.other.push(`left-in-snowdrops-logo`)
+
     // MESSAGE on CARD
+    autoFormatMessage(this.cardMessage)
     offsetRotateTextObject(
-      this.scene, this.fonter, `${Object.keys(this.cardObjectNames)[1]}-claim-message`, 0x000000, 'Claim your ETH: 0.5',
+      this.scene, this.fonter, `left-in-message`, 0x000000,
+      this.cardMessage,
+      0.35, this.basePosition, {x: -7.5, y: 4, z: itemSpacingInside + 0.1}, 0.5
+    )
+    this.objectCardNames.left.in.message = `left-in-message`
+
+    // CLAIM Message
+    offsetRotateTextObject(
+      this.scene, this.fonter, `right-in-claim-message`, 0x000000, 'Claim your ETH: 0.5',
       0.5, this.basePosition, {x: 1, y: 1, z: 0.15}, 0.5
     )
-    this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(`${Object.keys(this.cardObjectNames)[1]}-claim-message`)
+    this.objectCardNames.right.in.claim.push(`right-in-claim-message`)
+
     // Claim Button
     offsetRotateBoxObject(
-      this.scene, `${Object.keys(this.cardObjectNames)[1]}-claim-button`, 0x55ff55,
+      this.scene, `right-in-claim-button`, 0x55ff55,
       {x: 1.5, y: 0.5, z: 0.1}, this.basePosition, {x: 2, y: 0, z: itemSpacingInside},
     )
-    this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(`${Object.keys(this.cardObjectNames)[1]}-claim-button`)
+    this.objectCardNames.right.in.claim.push(`right-in-claim-button`)
+
     offsetRotateTextObject(
-      this.scene, this.fonter, `${Object.keys(this.cardObjectNames)[1]}-claim-button-text`, 0x000000, 'Claim!',
+      this.scene, this.fonter, `right-in-claim-button-text`, 0x000000, 'Claim!',
       0.2, this.basePosition, {x: 1.6, y: -0.1, z: 0.20}
     )
-    this.cardObjectNames[Object.keys(this.cardObjectNames)[1]].push(`${Object.keys(this.cardObjectNames)[1]}-claim-button-text`)
+    this.objectCardNames.right.in.claim.push(`right-in-claim-button-text`)
 
-    /* CARD FRONT */
+    /* CARD FRONT Objects */
     offsetRotateBoxObject(
-      this.scene, `${Object.keys(this.cardObjectNames)[2]}-object`, 0xff55ff,
+      this.scene, `left-out-object`, 0xff55ff,
       {x: 2, y: 2, z: 0.1}, this.basePosition, {x: -2, y: 1, z: itemSpacingOutside}
     )
-    this.cardObjectNames[Object.keys(this.cardObjectNames)[2]].push(`${Object.keys(this.cardObjectNames)[2]}-object`)
-    this.cardObjectNames[Object.keys(this.cardObjectNames)[2]].push(
-      ...pageFrame(this.scene, this.basePosition, Object.keys(this.cardObjectNames)[2], this.cardDimensions, [])
-    )
+    this.objectCardNames.left.out.other.push(`left-out-object`)
 
-    /* BACK CARD */
+
+    /* BACK CARD Objects */
     offsetRotateBoxObject(
-      this.scene, `${Object.keys(this.cardObjectNames)[3]}-object`, 0xff5533,
+      this.scene, `right-out-object`, 0xff5533,
       {x: 2, y: 2, z: 0.1}, this.basePosition, {x: 2, y: 1, z: itemSpacingOutside}
     )
-    this.cardObjectNames[Object.keys(this.cardObjectNames)[3]].push(`${Object.keys(this.cardObjectNames)[3]}-object`)
-    this.cardObjectNames[Object.keys(this.cardObjectNames)[3]].push(
-      ...pageFrame(this.scene, this.basePosition, Object.keys(this.cardObjectNames)[3], this.cardDimensions, [])
-    )
+    this.objectCardNames.right.out.other.push(`right-out-object`)
 
     /* ROTATIONS */
     const rotation_factor = 8
-    handleObjectRotations(this.scene, this.cardObjectNames, rotation_factor)
+    handleObjectRotations(this.scene, this.objectCardNames, rotation_factor)
 
     this.animate()
   }
@@ -235,41 +288,70 @@ export default class InitScene {
       // Animatated 360 degree rotation
       const rotation_factor = 512
       if (1 > 2) {
-        handleObjectRotations(this.scene, this.cardObjectNames, rotation_factor)
+        handleObjectRotations(this.scene, this.objectCardNames, rotation_factor)
       }
 
       // Update card message
       if (this.updateCardMessage) {
-        const saveRotation = this.scene.getObjectByName('left-card-message').rotation.y
-        this.scene.remove(this.scene.getObjectByName('left-card-message'))
+        const saveRotation = this.scene.getObjectByName('left-in-message').rotation.y
+        this.scene.remove(this.scene.getObjectByName('left-in-message'))
         offsetRotateTextObject(
-          this.scene, this.fonter, `left-card-message`, 0x000000,
+          this.scene, this.fonter, `left-in-message`, 0x000000,
           this.cardMessage,
           0.35, this.basePosition, {x: -7.5, y: 4, z: 0.2}, 0.5
         )
-        this.scene.getObjectByName('left-card-message').rotation.y = saveRotation
+        this.scene.getObjectByName('left-in-message').rotation.y = saveRotation
         this.updateCardMessage = false
+      }
+
+      if (this.updateCardFrameSet) {
+        this.updateCardFrameSet = false
+        this.frameSetActions.forEach(action => {
+          const idx = action.frame.indexOf('-', 6)
+          const cardSide = action.frame.substr(0, idx)
+          console.log(cardSide)
+          if (action.action) {
+            pageFrame(this.scene, this.basePosition, `${cardSide}-right-frame`, this.cardDimensions, [], this.scene.getObjectByName(`${cardSide}-card`).rotation.y)
+          } else {
+            
+            const frameNames = [`${cardSide}-card-left-frame`, `${cardSide}-card-right-frame`, `${cardSide}-card-top-frame`, `${cardSide}-card-bottom-frame`]
+            frameNames.forEach(frameName => {
+              console.log(this.scene.getObjectByName(frameName))
+              this.scene.remove(this.scene.getObjectByName(frameName))
+            })
+          }
+        })
+      }
+
+      if (this.updateCardFrameColor) {
+        this.updateCardFrameColor = false
+        this.frameColorActions.forEach(action => {
+          const idx = action.frame.indexOf('-', 6)
+          const name = action.frame.substr(0, idx)
+          console.log(name)
+          console.log(action.frame, action.action)
+          // this.scene.getObjectByName()
+        })
       }
 
       const intersects = this.raycaster.intersectObjects(this.scene.children)
       if (intersects.length > 0) {
+        
+        // Ignore Raycasting of Particles
         let intersectionLayer = 0
         while (intersects[intersectionLayer].object.name === 'particles' && intersects.length > intersectionLayer + 1) {
           intersectionLayer++
         }
-        // console.log(intersects[0].object.parent.name)
-        // console.log(intersects[0].object.parent.children[0].material.color)
-        // console.log(intersects[intersectionLayer])
+
         if (typeof intersects[intersectionLayer].object !== 'undefined'
-        && (intersects[intersectionLayer].object.parent.name.includes('right-card-claim-button')
-        || intersects[intersectionLayer].object.parent.name.includes('right-card-claim-button-text'))
+          && (intersects[intersectionLayer].object.parent.name.includes('right-in-claim-button')
+          || intersects[intersectionLayer].object.parent.name.includes('right-in-claim-button-text'))
         ) {
-          this.scene.getObjectByName('right-card-claim-button').children[0].material.color.set(`#66FF66`)
+          this.scene.getObjectByName('right-in-claim-button').children[0].material.color.set(`#66FF66`)
           document.body.style.cursor = 'pointer'
         } else {
-          this.scene.getObjectByName('right-card-claim-button').children[0].material.color.set(`#00FF00`)
+          this.scene.getObjectByName('right-in-claim-button').children[0].material.color.set(`#00FF00`)
           document.body.style.cursor = 'default'
-          // console.log(this.scene.getObjectByName('right-card-claim-button'))
         }
       }
 
@@ -282,53 +364,12 @@ export default class InitScene {
   }
 
   keydown(e) {
-    // Don't really need keydown
-    // Maybe in the future for shortcuts
-    // console.log(e.key)
     if (e.key === 'p') {
       this.stopAnimate()
     }
-
     if (e.key === 's') {
       this.animate()
     }
-
-    // Add Card Frames
-    // if (e.key === 'd') {
-    //   const nameNotRemoves = []
-    //   let framesRemoved = false
-    //   for (let i = 0; i < this.cardObjectNames['left-card'].length; i++) {
-    //     if (this.cardObjectNames['left-card'][i].includes('frame')) {
-    //       this.scene.remove(this.scene.getObjectByName(this.cardObjectNames['left-card'][i]))
-    //       framesRemoved = true
-    //     } else {
-    //       nameNotRemoves.push(this.cardObjectNames['left-card'][i])
-    //     }
-    //   }
-    //   if (framesRemoved) {
-    //     this.cardObjectNames['left-card'] = nameNotRemoves
-    //   } else {
-    //     console.log('Frames do not exist')
-    //   }
-    // }
-
-    // // Removes Card Frames
-    // if (e.key === 'a') {
-    //   let framesExist = false
-    //   for (let i = 0; i < this.cardObjectNames['left-card'].length; i++) {
-    //     if (this.cardObjectNames['left-card'][i].includes('frame')) {
-    //       this.scene.remove(this.scene.getObjectByName(this.cardObjectNames['left-card'][i]))
-    //       framesExist = true
-    //     }
-    //   }
-    //   if (!framesExist) {
-    //     this.cardObjectNames['left-card'].push(
-    //       ...pageFrame(this.scene, this.basePosition, 'left-card', this.cardDimensions, [], this.scene.getObjectByName('left-card').rotation.y)
-    //     )
-    //   } else {
-    //     console.log('Frames already exist')
-    //   }
-    // }
   }
 
   wheelScroll(e) {

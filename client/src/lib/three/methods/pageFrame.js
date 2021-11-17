@@ -15,12 +15,15 @@ const pageFrame = (scene, basePosition, cardSide, cardDimensions, colors, rotati
   const itemSpacingOutside = - 0.1
   const offsetPositions = [] //Left, Right, Front, Back
 
-  if (colors.length === 0)  colors = [0x55ff55, 0xff5555, 0x5555ff, 0xff55ff]
+  if (colors.length === 0) colors = ['55ff55', 'ff5555', '5555ff', 'ff55ff']
+  for (let i = 0; i < colors.length; i++) {
+    if (colors[i][0] !== '#') colors[i] = `#${colors[i]}`
+  }
 
   const verticalFrameDimensions = {x: 0.1, y: 6, z: 0.1}
   const horizontalFrameDimensions = {x: 4 - (verticalFrameDimensions.x * 2), y: 0.1, z: 0.1}
   switch (cardSide) {
-    case 'left-card': // LEFT
+    case 'left-in': // LEFT
       offsetPositions.push({
         x: -1 * (cardDimensions.x - verticalFrameDimensions.x / 2),
         y: 0,
@@ -42,7 +45,7 @@ const pageFrame = (scene, basePosition, cardSide, cardDimensions, colors, rotati
         z: itemSpacingInside
       })
       break;
-    case 'right-card': // RIGHT
+    case 'right-in': // RIGHT
       offsetPositions.push({
         x: verticalFrameDimensions.x / 2,
         y: 0,
@@ -64,7 +67,7 @@ const pageFrame = (scene, basePosition, cardSide, cardDimensions, colors, rotati
         z: itemSpacingInside
       })
       break;
-    case 'front-card': // FRONT
+    case 'left-out': // FRONT
       offsetPositions.push({
         x: -1 * (cardDimensions.x - verticalFrameDimensions.x / 2),
         y: 0,
@@ -86,7 +89,7 @@ const pageFrame = (scene, basePosition, cardSide, cardDimensions, colors, rotati
         z: itemSpacingOutside
       })
       break;
-    case 'back-card': // BACK
+    case 'right-out': // BACK
       offsetPositions.push({
         x: verticalFrameDimensions.x / 2,
         y: 0,

@@ -10,6 +10,9 @@ import Header from '../layouts/Header'
 import Footer from '../layouts/Footer'
 
 import snowdropsLogoRedBgWhite1024 from '../../assets/snowdrops-logo-1024-bg-white.png'
+import snowdropsLogo1024 from '../../assets/snowdrops-logo-1024.png'
+import basicHeart from '../../assets/basic-heart-1024.png'
+
 import '../../scss/create-card.scss'
 
 const CreateCard = () => {
@@ -18,11 +21,31 @@ const CreateCard = () => {
   const { appState } = bindActionCreators(actions, dispatch)
 
   const [message, setMessage] = useState('')
-  const [leftInColor, setLeftInColor] = useState({'left-in-left-frame': '', 'left-in-right-frame': '', 'left-in-top-frame': '', 'left-in-bottom-frame': ''})
-  const [rightInColor, setRightInColor] = useState({'right-in-left-frame': '', 'right-in-right-frame': '', 'right-in-top-frame': '', 'right-in-bottom-frame': ''})
-  const [leftOutColor, setLeftOutColor] = useState({'left-out-left-frame': '', 'left-out-right-frame': '', 'left-out-top-frame': '', 'left-out-bottom-frame': ''})
-  const [rightOutColor, setRightOutColor] = useState({'right-out-left-frame': '', 'right-out-right-frame': '', 'right-out-top-frame': '', 'right-out-bottom-frame': ''})
-  const [addFrames, setAddFrames] = useState({'left-in-frames': false, 'right-in-frames': false, 'left-out-frames': false, 'right-out-frames': false})
+  const [leftInColor, setLeftInColor] = useState({
+    'left-in-left-frame': '55ff55',
+    'left-in-right-frame': 'ff5555',
+    'left-in-top-frame': '5555ff', 
+    'left-in-bottom-frame': 'ff55ff'
+  })
+  const [rightInColor, setRightInColor] = useState({
+    'right-in-left-frame': '55ff55',
+    'right-in-right-frame': 'ff5555',
+    'right-in-top-frame': '5555ff',
+    'right-in-bottom-frame': 'ff55ff'
+  })
+  const [leftOutColor, setLeftOutColor] = useState({
+    'left-out-left-frame': '55ff55',
+    'left-out-right-frame': 'ff5555', 
+    'left-out-top-frame': '5555ff',
+    'left-out-bottom-frame': 'ff55ff'
+  })
+  const [rightOutColor, setRightOutColor] = useState({
+    'right-out-left-frame': '55ff55',
+    'right-out-right-frame': 'ff5555',
+    'right-out-top-frame': '5555ff',
+    'right-out-bottom-frame': 'ff55ff'
+  })
+  const [addFrames, setAddFrames] = useState({'left-in-frames': true, 'right-in-frames': true, 'left-out-frames': true, 'right-out-frames': true})
 
   const dev = true
 
@@ -112,10 +135,10 @@ const CreateCard = () => {
     const dim = '80px'
     for(let i = 0; i < 3; i++) {
       rows.push(
-        <div className='asset-row'>
-          <img onClick={handleSelectImage} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
-          <img onClick={handleSelectImage} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
-          <img onClick={handleSelectImage} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
+        <div key={`assetrow-${i}`} className='asset-row'>
+          <img key={`asset-${i*3 + 0}`} onClick={handleSelectImage} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
+          <img key={`asset-${i*3 + 1}`} onClick={handleSelectImage} src={snowdropsLogo1024} width={dim} height={dim} />
+          <img key={`asset-${i*3 + 2}`} onClick={handleSelectImage} src={basicHeart} width={dim} height={dim} />
         </div>
       )
     }
@@ -219,7 +242,7 @@ const CreateCard = () => {
               </div>
             </div>
 
-            <button onClick={updateCardFrames}>Update</button>
+            <button onClick={handleUpdateFrame}>Update</button>
           </div>
 
           <hr className='main-hr'/>
