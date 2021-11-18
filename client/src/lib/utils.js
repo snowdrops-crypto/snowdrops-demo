@@ -8,7 +8,16 @@ const AsyncForEach = async (array, callback) => {
 
 const sleep = async (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds))
 
+const cardIterator = cb => {
+  ['left', 'right'].forEach(card => {
+    ['in', 'out'].forEach(side => {
+      cb(card, side)
+    })
+  })
+}
+
 export {
   AsyncForEach,
-  sleep
+  sleep,
+  cardIterator
 }

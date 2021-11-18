@@ -10,6 +10,7 @@ import Header from '../layouts/Header'
 import Footer from '../layouts/Footer'
 
 import DefaultCardInfo from '../../lib/DefaultCardInfo'
+import { cardIterator } from '../../lib/utils'
 
 import snowdropsLogoRedBgWhite1024 from '../../assets/snowdrops-logo-1024-bg-white.png'
 import snowdropsLogo1024 from '../../assets/snowdrops-logo-1024.png'
@@ -73,51 +74,73 @@ const CreateCard = () => {
     console.log(message)
   }
   const handleUpdateFrame = () => {
-    const cardInfo = DefaultCardInfo
+    const cardInfo = {
+      left: {in: {framesActive: true, frames: {
+        left: {name: '', color: ''},
+        right: {name: '', color: ''},
+        top: {name: '', color: ''},
+        bottom: {name: '', color: ''},
+      }}, out: {framesActive: true, frames: {
+        left: {name: '', color: ''},
+        right: {name: '', color: ''},
+        top: {name: '', color: ''},
+        bottom: {name: '', color: ''},
+      }}},
+      right: {in: {framesActive: true, frames: {
+        left: {name: '', color: ''},
+        right: {name: '', color: ''},
+        top: {name: '', color: ''},
+        bottom: {name: '', color: ''},
+      }}, out: {framesActive: true, frames: {
+        left: {name: '', color: ''},
+        right: {name: '', color: ''},
+        top: {name: '', color: ''},
+        bottom: {name: '', color: ''},
+      }}}
+    }
 
-    cardInfo.left.in.frames.left.color = leftInColor['left-in-left-frame']
-    cardInfo.left.in.frames.right.color = leftInColor['left-in-right-frame']
-    cardInfo.left.in.frames.top.color = leftInColor['left-in-top-frame']
-    cardInfo.left.in.frames.bottom.color = leftInColor['left-in-bottom-frame']
+    cardIterator((card, side) => {
+      console.log(card, side)
+      Object.keys(cardInfo[card][side].frames).forEach(frame => {
+        switch (`${card}${side}`) {
+          case 'leftin':
+            cardInfo[card][side].frames[frame].color = leftInColor[`${card}-${side}-${frame}-frame`]
+            break;
+          case 'rightin':
+            cardInfo[card][side].frames[frame].color = rightInColor[`${card}-${side}-${frame}-frame`]
+            break;
+          case 'leftout':
+            cardInfo[card][side].frames[frame].color = leftOutColor[`${card}-${side}-${frame}-frame`]
+            break;
+          case 'rightout':
+            cardInfo[card][side].frames[frame].color = rightOutColor[`${card}-${side}-${frame}-frame`]
+            break;
+          default: console.error('[CardCard.js][HandleFrameUpdateSwitch]: Something when wrong!')
+        }
+      })
+    })
+
     cardInfo.left.in.framesActive = addFrames['left-in-frames']
-
-    cardInfo.right.in.frames.left.color = rightInColor['right-in-left-frame']
-    cardInfo.right.in.frames.right.color = rightInColor['right-in-right-frame']
-    cardInfo.right.in.frames.top.color = rightInColor['right-in-top-frame']
-    cardInfo.right.in.frames.bottom.color = rightInColor['right-in-bottom-frame']
     cardInfo.right.in.framesActive = addFrames['right-in-frames']
-
-    cardInfo.left.out.frames.left.color = leftOutColor['left-out-left-frame']
-    cardInfo.left.out.frames.right.color = leftOutColor['left-out-right-frame']
-    cardInfo.left.out.frames.top.color = leftOutColor['left-out-top-frame']
-    cardInfo.left.out.frames.bottom.color = leftOutColor['left-out-bottom-frame']
     cardInfo.left.out.framesActive = addFrames['left-out-frames']
-
-    cardInfo.right.out.frames.right.color = leftOutColor['left-out-right-frame']
-    cardInfo.right.out.frames.right.color = leftOutColor['left-out-left-frame']
-    cardInfo.right.out.frames.right.color = leftOutColor['left-out-top-frame']
-    cardInfo.right.out.frames.right.color = leftOutColor['left-out-bottom-frame']
     cardInfo.right.out.framesActive = addFrames['right-out-frames']
 
-    const evt = new CustomEvent('handle-card-frame', {cardInfo})
+    const evt = new CustomEvent('handle-card-frame', {detail:cardInfo})
     document.body.dispatchEvent(evt)
   }
 
   const handleMessage = e => {
-    console.log(e.target.value)
     setMessage(e.target.value)
   }
 
   const handleFrameAdd = (e) => {
-    console.log(e.target.checked)
     setAddFrames(prevState => ({...prevState, [e.target.name]: e.target.checked}))
   }
 
   const handleColors = async (e, page) => {
     switch (page) {
       case 'leftIn':
-        console.log(e.target.value)
-        await setLeftInColor(prevState => ({...prevState, [e.target.name]: e.target.value}))
+        setLeftInColor(prevState => ({...prevState, [e.target.name]: e.target.value}))
         break;
       case 'rightIn':
         setRightInColor(prevState => ({...prevState, [e.target.name]: e.target.value}))

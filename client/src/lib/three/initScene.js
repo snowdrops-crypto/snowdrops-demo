@@ -7,6 +7,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Font } from 'three/examples/jsm/loaders/FontLoader'
+import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader'
 
 import windowResize from './methods/windowResize'
 import LoadGLTFs from './methods/loadGLTF'
@@ -73,27 +74,13 @@ export default class InitScene {
     this.fonter = new Font(font_caviar)
     this.TextureLoader = new THREE.TextureLoader()
 
+    this.cardIterator = {left: 'in', right: 'in', left: 'out', right: 'out'}
     this.basePosition = {x: 0, y: 0, z: 0}
     this.cardDimensions = {x: 4, y: 6, z: 0.1}
     this.greetingDimensions = {x: -7.5, y: 4, z: 0.2}
 
     this.cardInfo = DefaultCardInfo
     this.cardInfo.left.in.greeting.message = 'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops'
-    this.cardFrames = {
-      frameColors: {
-        leftIn: {'left-in-left-frame': '55ff55', 'left-in-right-frame': 'ff5555', 'left-in-top-frame': '5555ff', 'left-in-bottom-frame': 'ff55ff'},
-        rightIn: {'right-in-left-frame': '55ff55', 'right-in-right-frame': 'ff5555', 'right-in-top-frame': '5555ff', 'right-in-bottom-frame': 'ff55ff'},
-        leftOut: {'left-out-left-frame': '55ff55', 'left-out-right-frame': 'ff5555', 'left-out-top-frame': '5555ff', 'left-out-bottom-frame': 'ff55ff'},
-        rightOut: {'right-out-left-frame': '55ff55', 'right-out-right-frame': 'ff5555', 'right-out-top-frame': '5555ff', 'right-out-bottom-frame': 'ff55ff'}
-      },
-      setFrames: {'left-in-frames': true, 'right-in-frames': true, 'left-out-frames': true, 'right-out-frames': true}
-    }
-    this.frameSetActions = []
-    this.frameColorActions = []
-    this.updateCardMessage = false
-    this.updateCardFrameSet = false
-    this.updateCardFrameColor = false
-
     document.body.addEventListener('update-three-redux', () => {
       console.log(store.getState())
     })
@@ -114,7 +101,37 @@ export default class InitScene {
       }
     })
     document.body.addEventListener('handle-card-frame', (e) => {
-      console.log(e)
+      const cardUpdate = e.detail
+      ;['left', 'right'].forEach(card => {
+        ['in', 'out'].forEach(side => {
+          if (cardUpdate[card][side].framesActive !== this.cardInfo[card][side].framesActive) {
+            if (this.cardInfo[card][side].framesActive === true && cardUpdate[card][side].framesActive === false) {
+              // Remove
+              this.scene.remove(this.scene.getObjectByName(this.cardInfo[card][side].frames.left.name))
+              this.scene.remove(this.scene.getObjectByName(this.cardInfo[card][side].frames.right.name))
+              this.scene.remove(this.scene.getObjectByName(this.cardInfo[card][side].frames.top.name))
+              this.scene.remove(this.scene.getObjectByName(this.cardInfo[card][side].frames.bottom.name))
+            } else if (this.cardInfo[card][side].framesActive === false && cardUpdate[card][side].framesActive === true) {
+              // add
+              const rotation = this.scene.getObjectByName(this.cardInfo[card].name).rotation.y
+              addFrames(this.scene, this.cardInfo, `${card}-${side}`, rotation)
+            }
+            this.cardInfo[card][side].framesActive = cardUpdate[card][side].framesActive
+          }
+    
+          Object.keys(cardUpdate[card][side].frames).forEach(frame => {
+            if (cardUpdate[card][side].frames[frame].color !== this.cardInfo[card][side].frames[frame].color) {
+              console.log('color changed!')
+              console.log(cardUpdate[card][side].frames[frame].color, this.cardInfo[card][side].frames[frame].color)
+              console.log(card, side, frame)
+              if (this.cardInfo[card][side].framesActive) {
+                this.scene.getObjectByName(this.cardInfo[card][side].frames[frame].name).children[0].material.color.set(`#${cardUpdate[card][side].frames[frame].color}`)
+              }
+              this.cardInfo[card][side].frames[frame].color = cardUpdate[card][side].frames[frame].color
+            }
+          })
+        })
+      })
     })
 
     window.addEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
@@ -229,36 +246,6 @@ export default class InitScene {
         handleObjectRotations(this.scene, this.cardInfo, rotation_factor)
       }
 
-      if (this.updateCardFrameSet) {
-        this.updateCardFrameSet = false
-        this.frameSetActions.forEach(action => {
-          const idx = action.frame.indexOf('-', 6)
-          const cardSide = action.frame.substr(0, idx)
-          console.log(cardSide)
-          if (action.action) {
-            pageFrame(this.scene, this.cardInfo.basePosition, `${cardSide}-right-frame`, this.cardDimensions, [], this.scene.getObjectByName(`${cardSide}-card`).rotation.y)
-          } else {
-            
-            const frameNames = [`${cardSide}-card-left-frame`, `${cardSide}-card-right-frame`, `${cardSide}-card-top-frame`, `${cardSide}-card-bottom-frame`]
-            frameNames.forEach(frameName => {
-              console.log(this.scene.getObjectByName(frameName))
-              this.scene.remove(this.scene.getObjectByName(frameName))
-            })
-          }
-        })
-      }
-
-      if (this.updateCardFrameColor) {
-        this.updateCardFrameColor = false
-        this.frameColorActions.forEach(action => {
-          const idx = action.frame.indexOf('-', 6)
-          const name = action.frame.substr(0, idx)
-          console.log(name)
-          console.log(action.frame, action.action)
-          // this.scene.getObjectByName()
-        })
-      }
-
       const intersects = this.raycaster.intersectObjects(this.scene.children)
       if (intersects.length > 0) {
         
@@ -306,15 +293,10 @@ export default class InitScene {
   }
 
   mouseDown(e) {
-    // e.preventDefault()
-    // this.mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
-    // this.mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
-
-    // this.raycaster.setFromCamera( this.mouse, this.camera )
     const intersects = this.raycaster.intersectObjects( this.scene.children )
     if (intersects.length > 0 && typeof intersects[0].object !== 'undefined') {
-      if (intersects[0].object.parent.name.includes('right-card-claim-button')
-        || intersects[0].object.parent.name.includes('right-card-claim-button-text'))
+      if (intersects[0].object.parent.name.includes('claim-button')
+        || intersects[0].object.parent.name.includes('claim-button-text'))
       {
         console.log('claim button clicked')
       }

@@ -2,7 +2,7 @@
 
 import offsetRotateBoxObject from "./offsetRotateBoxObject"
 
-const addFrames = (scene, cardInfo, side) => {
+const addFrames = (scene, cardInfo, side = '', rotation = 0) => {
   const verticalFrameDimensions = {x: 0.1, y: 6, z: 0.1}
   const horizontalFrameDimensions = {x: 4 - (verticalFrameDimensions.x * 2), y: 0.1, z: 0.1}
   let offsetPosition = {}
@@ -51,6 +51,7 @@ const addFrames = (scene, cardInfo, side) => {
           scene, cardInfo.left.in.frames[frame].name, `#${cardInfo.left.in.frames[frame].color}`,
           frameDimesions, cardInfo.basePosition, offsetPosition
         )
+        scene.getObjectByName(cardInfo.left.in.frames[frame].name).rotation.y = rotation
       }
     })
   }
@@ -99,6 +100,7 @@ const addFrames = (scene, cardInfo, side) => {
           scene, cardInfo.right.in.frames[frame].name, `#${cardInfo.right.in.frames[frame].color}`,
           frameDimesions, cardInfo.basePosition, offsetPosition
         )
+        scene.getObjectByName(cardInfo.left.in.frames[frame].name).rotation.y = rotation
       }
     })
   }
@@ -147,6 +149,7 @@ const addFrames = (scene, cardInfo, side) => {
           scene, cardInfo.left.out.frames[frame].name, `#${cardInfo.left.out.frames[frame].color}`,
           frameDimesions, cardInfo.basePosition, offsetPosition
         )
+        scene.getObjectByName(cardInfo.left.in.frames[frame].name).rotation.y = rotation
       }
     })
   }
@@ -195,6 +198,7 @@ const addFrames = (scene, cardInfo, side) => {
           scene, cardInfo.right.out.frames[frame].name, `#${cardInfo.right.out.frames[frame].color}`,
           frameDimesions, cardInfo.basePosition, offsetPosition
         )
+        scene.getObjectByName(cardInfo.left.in.frames[frame].name).rotation.y = rotation
       }
     })
   }
