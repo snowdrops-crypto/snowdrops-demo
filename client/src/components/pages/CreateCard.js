@@ -73,33 +73,44 @@ const CreateCard = () => {
     console.log(message)
   }
   const handleUpdateFrame = () => {
-    const evt = new CustomEvent('handle-card-frame', {
-      detail: {
-        frameColors: {
-          leftIn: leftInColor,
-          rightIn: rightInColor,
-          leftOut: leftOutColor,
-          rightOut: rightOutColor
-        },
-        setFrames: addFrames
-      }
-    })
-    document.body.dispatchEvent(evt)
-  }
+    const cardInfo = DefaultCardInfo
 
-  const updateCardFrames = () => {
-    // const evt = new CustomEvent('select-card-frame', {detail: {cardSide: '', cardColors: []}})
-    // document.body.dispatchEvent(evt)
-    console.log(leftInColor)
-    console.log(rightInColor)
-    console.log(leftOutColor)
-    console.log(rightOutColor)
-    console.log(addFrames)
+    cardInfo.left.in.frames.left.color = leftInColor['left-in-left-frame']
+    cardInfo.left.in.frames.right.color = leftInColor['left-in-right-frame']
+    cardInfo.left.in.frames.top.color = leftInColor['left-in-top-frame']
+    cardInfo.left.in.frames.bottom.color = leftInColor['left-in-bottom-frame']
+    cardInfo.left.in.framesActive = addFrames['left-in-frames']
+
+    cardInfo.right.in.frames.left.color = rightInColor['right-in-left-frame']
+    cardInfo.right.in.frames.right.color = rightInColor['right-in-right-frame']
+    cardInfo.right.in.frames.top.color = rightInColor['right-in-top-frame']
+    cardInfo.right.in.frames.bottom.color = rightInColor['right-in-bottom-frame']
+    cardInfo.right.in.framesActive = addFrames['right-in-frames']
+
+    cardInfo.left.out.frames.left.color = leftOutColor['left-out-left-frame']
+    cardInfo.left.out.frames.right.color = leftOutColor['left-out-right-frame']
+    cardInfo.left.out.frames.top.color = leftOutColor['left-out-top-frame']
+    cardInfo.left.out.frames.bottom.color = leftOutColor['left-out-bottom-frame']
+    cardInfo.left.out.framesActive = addFrames['left-out-frames']
+
+    cardInfo.right.out.frames.right.color = leftOutColor['left-out-right-frame']
+    cardInfo.right.out.frames.right.color = leftOutColor['left-out-left-frame']
+    cardInfo.right.out.frames.right.color = leftOutColor['left-out-top-frame']
+    cardInfo.right.out.frames.right.color = leftOutColor['left-out-bottom-frame']
+    cardInfo.right.out.framesActive = addFrames['right-out-frames']
+
+    const evt = new CustomEvent('handle-card-frame', {cardInfo})
+    document.body.dispatchEvent(evt)
   }
 
   const handleMessage = e => {
     console.log(e.target.value)
     setMessage(e.target.value)
+  }
+
+  const handleFrameAdd = (e) => {
+    console.log(e.target.checked)
+    setAddFrames(prevState => ({...prevState, [e.target.name]: e.target.checked}))
   }
 
   const handleColors = async (e, page) => {
@@ -125,11 +136,6 @@ const CreateCard = () => {
   const handleSelectImage = e => {
     console.log(e.target)
     e.target.className === '' ? e.target.className = 'selected-img' : e.target.className = ''
-  }
-
-  const handleFrameAdd = (e) => {
-    console.log(e.target.checked)
-    setAddFrames(prevState => ({...prevState, [e.target.name]: e.target.checked}))
   }
 
   const assetRow = () => {

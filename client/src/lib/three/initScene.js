@@ -7,7 +7,6 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Font } from 'three/examples/jsm/loaders/FontLoader'
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry'
 
 import windowResize from './methods/windowResize'
 import LoadGLTFs from './methods/loadGLTF'
@@ -76,6 +75,7 @@ export default class InitScene {
 
     this.basePosition = {x: 0, y: 0, z: 0}
     this.cardDimensions = {x: 4, y: 6, z: 0.1}
+    this.greetingDimensions = {x: -7.5, y: 4, z: 0.2}
 
     this.cardInfo = DefaultCardInfo
     this.cardInfo.left.in.greeting.message = 'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops'
@@ -101,13 +101,20 @@ export default class InitScene {
     document.body.addEventListener('pause-animation', () => this.stopAnimate())
     document.body.addEventListener('start-animation', () => this.animate())
     document.body.addEventListener('handle-card-message', (e) => {
-      console.log(this.cardMessage)
-      if (this.cardMessage !== e.detail.msg) {
-        this.updateCardMessage = true
-        this.cardMessage = e.detail.msg
+      if (this.cardInfo.left.in.greeting.message !== e.detail.msg) {
+        this.cardInfo.left.in.greeting.message = e.detail.msg
+
+        const saveRotation = this.scene.getObjectByName('greeting').rotation.y
+        this.scene.remove(this.scene.getObjectByName('greeting'))
+        offsetRotateTextObject(
+          this.scene, this.fonter, this.cardInfo.left.in.greeting.name, 0x000000, this.cardInfo.left.in.greeting.message,
+          0.35, this.cardInfo.basePosition, {x: -7.5, y: 4, z: this.cardInfo.itemSpacingIn + 0.1}, 0.5
+        )
+        this.scene.getObjectByName('greeting').rotation.y = saveRotation
       }
     })
     document.body.addEventListener('handle-card-frame', (e) => {
+      console.log(e)
     })
 
     window.addEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
@@ -220,19 +227,6 @@ export default class InitScene {
       const rotation_factor = 512
       if (1 > 2) {
         handleObjectRotations(this.scene, this.cardInfo, rotation_factor)
-      }
-
-      // Update card message
-      if (this.updateCardMessage) {
-        const saveRotation = this.scene.getObjectByName('left-in-message').rotation.y
-        this.scene.remove(this.scene.getObjectByName('left-in-message'))
-        offsetRotateTextObject(
-          this.scene, this.fonter, `left-in-message`, 0x000000,
-          this.cardMessage,
-          0.35, this.cardInfo.basePosition, {x: -7.5, y: 4, z: 0.2}, 0.5
-        )
-        this.scene.getObjectByName('left-in-message').rotation.y = saveRotation
-        this.updateCardMessage = false
       }
 
       if (this.updateCardFrameSet) {
