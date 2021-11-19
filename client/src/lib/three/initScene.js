@@ -14,6 +14,9 @@ import LoadGLTFs from './methods/loadGLTF'
 import loadLights from './methods/loadLights'
 
 import DefaultCardInfo from '../DefaultCardInfo'
+import { cardIterator } from '../utils'
+
+import toggleAnimation from './three-events/toggleAnimation'
 
 import offsetRotateBoxObject from './methods/offsetRotateBoxObject'
 import offsetRotateTextureObject from './methods/offsetRotateTextureObject'
@@ -36,6 +39,11 @@ import basicHeart from '../../assets/basic-heart-1024.png'
 export default class InitScene {
   constructor() {
     this.loopCount
+    this.animationOn = true
+    this.selectedAsset = ''
+    this.mouseDownLastPosition = new THREE.Vector2()
+    this.mouseDownTriggered = false
+
     console.log(store.getState())
     // store.dispatch({type: 'main', payload: {...state}})
 
@@ -81,13 +89,21 @@ export default class InitScene {
 
     this.cardInfo = DefaultCardInfo
     this.cardInfo.left.in.greeting.message = 'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops'
+
     document.body.addEventListener('update-three-redux', () => {
       console.log(store.getState())
     })
-    /* TODO change to Toggle Animation */
-    document.body.addEventListener('pause-animation', () => this.stopAnimate())
-    document.body.addEventListener('start-animation', () => this.animate())
-    document.body.addEventListener('handle-card-message', (e) => {
+    document.body.addEventListener('toggle-animation', () => {
+      if (this.animationOn) {
+        this.animationOn = false
+        this.controls.enabled = false
+      } else {
+        this.animationOn = true
+        this.controls.enabled = true
+      }
+      console.log(this.animationOn)
+    })
+    document.body.addEventListener('handle-card-message', e => {
       if (this.cardInfo.left.in.greeting.message !== e.detail.msg) {
         this.cardInfo.left.in.greeting.message = e.detail.msg
 
@@ -100,38 +116,72 @@ export default class InitScene {
         this.scene.getObjectByName('greeting').rotation.y = saveRotation
       }
     })
-    document.body.addEventListener('handle-card-frame', (e) => {
+    document.body.addEventListener('handle-card-frame', e => {
       const cardUpdate = e.detail
-      ;['left', 'right'].forEach(card => {
-        ['in', 'out'].forEach(side => {
-          if (cardUpdate[card][side].framesActive !== this.cardInfo[card][side].framesActive) {
-            if (this.cardInfo[card][side].framesActive === true && cardUpdate[card][side].framesActive === false) {
-              // Remove
-              this.scene.remove(this.scene.getObjectByName(this.cardInfo[card][side].frames.left.name))
-              this.scene.remove(this.scene.getObjectByName(this.cardInfo[card][side].frames.right.name))
-              this.scene.remove(this.scene.getObjectByName(this.cardInfo[card][side].frames.top.name))
-              this.scene.remove(this.scene.getObjectByName(this.cardInfo[card][side].frames.bottom.name))
-            } else if (this.cardInfo[card][side].framesActive === false && cardUpdate[card][side].framesActive === true) {
-              // add
-              const rotation = this.scene.getObjectByName(this.cardInfo[card].name).rotation.y
-              addFrames(this.scene, this.cardInfo, `${card}-${side}`, rotation)
-            }
-            this.cardInfo[card][side].framesActive = cardUpdate[card][side].framesActive
+      cardIterator((card, side) => {
+        if (cardUpdate[card][side].framesActive !== this.cardInfo[card][side].framesActive) {
+          if (this.cardInfo[card][side].framesActive === true && cardUpdate[card][side].framesActive === false) {
+            // Remove
+            this.scene.remove(this.scene.getObjectByName(this.cardInfo[card][side].frames.left.name))
+            this.scene.remove(this.scene.getObjectByName(this.cardInfo[card][side].frames.right.name))
+            this.scene.remove(this.scene.getObjectByName(this.cardInfo[card][side].frames.top.name))
+            this.scene.remove(this.scene.getObjectByName(this.cardInfo[card][side].frames.bottom.name))
+          } else if (this.cardInfo[card][side].framesActive === false && cardUpdate[card][side].framesActive === true) {
+            // add
+            const rotation = this.scene.getObjectByName(this.cardInfo[card].name).rotation.y
+            addFrames(this.scene, this.cardInfo, `${card}-${side}`, rotation)
           }
-    
-          Object.keys(cardUpdate[card][side].frames).forEach(frame => {
-            if (cardUpdate[card][side].frames[frame].color !== this.cardInfo[card][side].frames[frame].color) {
-              console.log('color changed!')
-              console.log(cardUpdate[card][side].frames[frame].color, this.cardInfo[card][side].frames[frame].color)
-              console.log(card, side, frame)
-              if (this.cardInfo[card][side].framesActive) {
-                this.scene.getObjectByName(this.cardInfo[card][side].frames[frame].name).children[0].material.color.set(`#${cardUpdate[card][side].frames[frame].color}`)
-              }
-              this.cardInfo[card][side].frames[frame].color = cardUpdate[card][side].frames[frame].color
+          this.cardInfo[card][side].framesActive = cardUpdate[card][side].framesActive
+        }
+  
+        Object.keys(cardUpdate[card][side].frames).forEach(frame => {
+          if (cardUpdate[card][side].frames[frame].color !== this.cardInfo[card][side].frames[frame].color) {
+            if (this.cardInfo[card][side].framesActive) {
+              this.scene.getObjectByName(this.cardInfo[card][side].frames[frame].name).children[0].material.color.set(`#${cardUpdate[card][side].frames[frame].color}`)
             }
-          })
+            this.cardInfo[card][side].frames[frame].color = cardUpdate[card][side].frames[frame].color
+          }
         })
       })
+    })
+    document.body.addEventListener('handle-add-asset', async e => {
+      console.log(e.detail.assetName, e.detail.side)
+      const assetName = e.detail.assetName
+      const assetPosition = {x: -2, y: -2.25, z: this.cardInfo.itemSpacingIn}
+      let rotationDirection = ''
+      switch(e.detail.side) {
+        case 'left-in':
+          assetPosition.x = -2
+          assetPosition.y = -2
+          assetPosition.z = this.cardInfo.itemSpacingIn
+          rotationDirection = this.scene.getObjectByName(this.cardInfo.left.name).rotation.y
+          break;
+        case 'right-in':
+          assetPosition.x = 2
+          assetPosition.y = -2
+          assetPosition.z = this.cardInfo.itemSpacingIn
+          rotationDirection = this.scene.getObjectByName(this.cardInfo.right.name).rotation.y
+          break;
+        case 'left-out':
+          assetPosition.x = -2
+          assetPosition.y = -2
+          assetPosition.z = this.cardInfo.itemSpacingOut
+          rotationDirection = this.scene.getObjectByName(this.cardInfo.left.name).rotation.y
+          break;
+        case 'right-out':
+          assetPosition.x = 2
+          assetPosition.y = -2
+          assetPosition.z = this.cardInfo.itemSpacingOut
+          rotationDirection = this.scene.getObjectByName(this.cardInfo.right.name).rotation.y
+          break;
+        default: console.error('[initScene][handle-add-asset]: Card side switch statement defaulted.')
+      }
+      const composedAssetName = `${e.detail.side}-${e.detail.assetName}`
+      console.log(composedAssetName)
+      await offsetRotateTextureObject(this.scene, this.TextureLoader, basicHeart,
+        {x: 1, y: 1}, this.cardInfo.basePosition, assetPosition, rotationDirection, composedAssetName, 0xffffff
+      )
+      this.cardInfo.left.in.other.push(composedAssetName)
     })
 
     window.addEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
@@ -170,6 +220,18 @@ export default class InitScene {
     // await floatingParticles(this.scene, this.TextureLoader, basicHeart)
 
 
+    let controlText = new THREE.Mesh(
+      new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Click outside the item to cancel.', 0.25)),
+      new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide })
+    )
+    controlText.name = 'click-instructions'
+    controlText.geometry.computeBoundingBox()
+    const max = controlText.geometry.boundingBox
+    console.log(max)
+    controlText.position.set(-1 * max.x / 2, -2.95, 3)
+    controlText.rotation.x = - Math.PI / 2
+
+    this.scene.add(controlText)
     /** CARD **/
 
     /* CARD LEFT */
@@ -191,7 +253,7 @@ export default class InitScene {
 
     // LOGO on CARD
     await offsetRotateTextureObject(this.scene, this.TextureLoader, snowdropsLogo1,
-      {x: 1, y: 1}, this.cardInfo.basePosition, {x: -1, y: -2.25, z: this.cardInfo.itemSpacingIn},
+      {x: 1, y: 1}, this.cardInfo.basePosition, {x: -1, y: -2.25, z: this.cardInfo.itemSpacingIn}, 0,
       `left-in-snowdrops-logo`, 0xffffff
     )
     this.cardInfo.left.in.other.push(`left-in-snowdrops-logo`)
@@ -240,34 +302,41 @@ export default class InitScene {
 
   animate() {
     this.renderer.setAnimationLoop(() => {
-      // Animatated 360 degree rotation
-      const rotation_factor = 512
-      if (1 > 2) {
-        handleObjectRotations(this.scene, this.cardInfo, rotation_factor)
-      }
-
-      const intersects = this.raycaster.intersectObjects(this.scene.children)
-      if (intersects.length > 0) {
-        
-        // Ignore Raycasting of Particles
-        let intersectionLayer = 0
-        while (intersects[intersectionLayer].object.name === 'particles' && intersects.length > intersectionLayer + 1) {
-          intersectionLayer++
-        }
-
-        if (typeof intersects[intersectionLayer].object !== 'undefined'
-          && (intersects[intersectionLayer].object.parent.name.includes('claim-button')
-          || intersects[intersectionLayer].object.parent.name.includes('claim-button-text'))
-        ) {
-          this.scene.getObjectByName('claim-button').children[0].material.color.set(`#66FF66`)
-          document.body.style.cursor = 'pointer'
+      if (this.animationOn) {
+        if (this.mouseDownTriggered && this.selectedAsset !== '') {
+          this.controls.enabled = false
         } else {
-          this.scene.getObjectByName('claim-button').children[0].material.color.set(`#00FF00`)
-          document.body.style.cursor = 'default'
+          this.controls.enabled = true
         }
-      }
+        // Animatated 360 degree rotation
+        const rotation_factor = 512
+        if (1 > 2) {
+          handleObjectRotations(this.scene, this.cardInfo, rotation_factor)
+        }
 
-      this.renderer.render(this.scene, this.camera)
+        const intersects = this.raycaster.intersectObjects(this.scene.children)
+        if (intersects.length > 0) {
+          
+          // Ignore Raycasting of Particles
+          let intersectionLayer = 0
+          while (intersects[intersectionLayer].object.name === 'particles' && intersects.length > intersectionLayer + 1) {
+            intersectionLayer++
+          }
+
+          if (typeof intersects[intersectionLayer].object !== 'undefined') {
+            if (intersects[intersectionLayer].object.parent.name.includes('claim-button')
+                || intersects[intersectionLayer].object.parent.name.includes('claim-button-text')) {
+              this.scene.getObjectByName('claim-button').children[0].material.color.set(`#66FF66`)
+              document.body.style.cursor = 'pointer'
+            } else {
+              this.scene.getObjectByName('claim-button').children[0].material.color.set(`#00FF00`)
+              document.body.style.cursor = 'default'
+            }
+          }
+        }
+
+        this.renderer.render(this.scene, this.camera)
+      }
     })
   }
 
@@ -284,6 +353,78 @@ export default class InitScene {
     }
   }
 
+  mouseMove(e) {
+    this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    this.raycaster.setFromCamera(this.mouse, this.camera)
+
+    console.log(this.selectedAsset)
+    if (this.selectedAsset !== '') {
+      console.log('mouse move selected asset')
+      const moveObject = this.scene.getObjectByName(this.selectedAsset)
+      console.log(moveObject)
+    }
+  }
+  mouseDown(e) {
+    this.mouseDownTriggered = true
+    this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    this.raycaster.setFromCamera(this.mouse, this.camera)
+
+    const intersects = this.raycaster.intersectObjects(this.scene.children)
+
+    if (this.selectedAsset !== '') {
+
+    }
+
+    if (intersects.length > 0) {
+      // Ignore Raycasting of Particles
+      let intersectionLayer = 0
+      while (intersects[intersectionLayer].object.name === 'particles' && intersects.length > intersectionLayer + 1) {
+        intersectionLayer++
+      }
+
+      if (typeof intersects[intersectionLayer].object !== 'undefined') {
+        if (intersects[intersectionLayer].object.parent.name.includes('claim-button')
+            || intersects[intersectionLayer].object.parent.name.includes('claim-button-text')) {
+          console.log('claim button clicked')
+        }
+
+        if (intersects[intersectionLayer].object.parent.name.includes('right-in-asset-0')) {
+          console.log(this.scene.getObjectByName('right-in-asset-0').children[0].position)
+          console.log(this.mouse)
+          this.mouseDownLastPosition = this.mouse
+          console.log('in right in asset 0')
+          this.selectedAsset = 'right-in-asset-0'
+
+          let text = new THREE.Mesh(
+            new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Click outside the item to canacel.', 1)),
+            new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide })
+          )
+          text.name = 'click-instructions'
+          text.position.set(-2, -2.95, 3)
+          text.rotation.x = Math.PI / 2
+          text.rotation.z = Math.PI / 2
+          text.rotation.y = Math.PI / 4
+          this.scene.add(text)
+        }
+      }
+    }
+  }
+  mouseUp(e) {
+    console.log('mouseup')
+    
+    if (this.mouseDownTriggered) {
+      this.mouseDownTriggered = false
+      this.selectedAsset = ''
+      // this.controls.enabled = true
+
+      if (typeof this.scene.getObjectByName('click-instructions') !== 'undefined') {
+        this.scene.remove(this.scene.getObjectByName('click-instructions'))
+      }
+    }
+  }
+
   wheelScroll(e) {
     if (e.deltaY > 0) {
       this.camera.z += 1
@@ -292,31 +433,6 @@ export default class InitScene {
     }
   }
 
-  mouseDown(e) {
-    const intersects = this.raycaster.intersectObjects( this.scene.children )
-    if (intersects.length > 0 && typeof intersects[0].object !== 'undefined') {
-      if (intersects[0].object.parent.name.includes('claim-button')
-        || intersects[0].object.parent.name.includes('claim-button-text'))
-      {
-        console.log('claim button clicked')
-      }
-    }
-  }
-
-  mouseUp(e) {
-    // e.preventDefault()
-    // 
-  }
-
-  mouseMove(e) {
-    // e.preventDefault()
-    this.mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
-    this.mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
-
-    this.raycaster.setFromCamera( this.mouse, this.camera )
-  }
-
-
   destroy() {
     window.removeEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
     window.removeEventListener('keydown', (e) => this.keydown(e))
@@ -324,5 +440,11 @@ export default class InitScene {
     window.removeEventListener('mousemove', e => this.mouseMove(e))
     window.removeEventListener('mousedown', e => this.mouseDown(e))
     window.removeEventListener('mouseup', e => this.mouseUp(e))
+
+    body.removeEventListener('update-three-redux')
+    body.removeEventListener('toggle-animation')
+    body.removeEventListener('handle-card-message')
+    body.removeEventListener('handle-card-frame')
+    body.removeEventListener('handle-add-asset')
   }
 }

@@ -17,11 +17,13 @@ import snowdropsLogo1024 from '../../assets/snowdrops-logo-1024.png'
 import basicHeart from '../../assets/basic-heart-1024.png'
 
 import '../../scss/create-card.scss'
+import { setSize } from 'mathjs'
 
 const CreateCard = () => {
   const rstate = useSelector((rstate) => rstate)
   const dispatch = useDispatch()
   const { appState } = bindActionCreators(actions, dispatch)
+  const dev = true
 
   const [message, setMessage] = useState('')
   const [leftInColor, setLeftInColor] = useState({
@@ -49,8 +51,9 @@ const CreateCard = () => {
     'right-out-bottom-frame': 'ff55ff'
   })
   const [addFrames, setAddFrames] = useState({'left-in-frames': true, 'right-in-frames': true, 'left-out-frames': true, 'right-out-frames': true})
-
-  const dev = true
+  const [selectAsset, setSelectAsset] = useState('')
+  const [prevSelectAsset, setPrevSelectAsset] = useState('')
+  const [assetCardSideSelect, setAssetCardSideSelect] = useState('')
 
   useEffect(() => {
     setMessage('Lorem Ipsum Upsum Heapson')
@@ -60,14 +63,6 @@ const CreateCard = () => {
     console.log('reset')
   }, [])
   
-  const handleButtonStartAnimation = () => {
-    const evt = new Event('start-animation')
-    document.body.dispatchEvent(evt)
-  }
-  const handleButtonStopAnimation = () => {
-    const evt = new Event('pause-animation')
-    document.body.dispatchEvent(evt)
-  }
   const handleUpdateMessage = () => {
     const evt = new CustomEvent('handle-card-message', {detail: {msg: message}})
     document.body.dispatchEvent(evt)
@@ -151,14 +146,43 @@ const CreateCard = () => {
       case 'rightOut':
         setRightOutColor(prevState => ({...prevState, [e.target.name]: e.target.value}))
         break;
-      default: console.error('CLIENT: Invalid card side inputted')
+      default: console.error('[CreateCard][handleColors]: Invalid card side in switch statement')
     }
-    // setColors(prevState => ({...prevState, leftInCard: { l: e.target.value } } ))
+  }
+
+  const handleAssetSideSelect = e => {
+    console.log(e.target.value)
+    setAssetCardSideSelect(e.target.value)
+  }
+
+  const handleButtonAddAsset = () => {
+    if (selectAsset === '') {
+      alert('asset not selected!')
+    } else if (assetCardSideSelect === '') {
+      alert('Which card surface the item is placed on is not selected')
+    } else {
+      const evt = new CustomEvent('handle-add-asset', {detail: {assetName: selectAsset, side: assetCardSideSelect}})
+      document.body.dispatchEvent(evt)
+    }
   }
 
   const handleSelectImage = e => {
-    console.log(e.target)
-    e.target.className === '' ? e.target.className = 'selected-img' : e.target.className = ''
+    // console.log(e.target)
+    if (selectAsset === '') {
+      setSelectAsset(e.target.name)
+      setPrevSelectAsset(e.target)
+      e.target.className === '' ? e.target.className = 'selected-img' : e.target.className = ''
+      console.log('one')
+    } else {
+      console.log(prevSelectAsset.className)
+      setSelectAsset(e.target.name)
+      
+      e.target.className === '' ? e.target.className = 'selected-img' : e.target.className = ''
+      
+      prevSelectAsset === '' ? prevSelectAsset.className = 'selected-img' : prevSelectAsset.className = ''
+      setPrevSelectAsset(e.target)
+    }
+
   }
 
   const assetRow = () => {
@@ -167,9 +191,9 @@ const CreateCard = () => {
     for(let i = 0; i < 3; i++) {
       rows.push(
         <div key={`assetrow-${i}`} className='asset-row'>
-          <img key={`asset-${i*3 + 0}`} onClick={handleSelectImage} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
-          <img key={`asset-${i*3 + 1}`} onClick={handleSelectImage} src={snowdropsLogo1024} width={dim} height={dim} />
-          <img key={`asset-${i*3 + 2}`} onClick={handleSelectImage} src={basicHeart} width={dim} height={dim} />
+          <img key={`asset-${i*3 + 0}`} name={`asset-${i*3 + 0}`} onClick={handleSelectImage} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
+          <img key={`asset-${i*3 + 1}`} name={`asset-${i*3 + 0}`} onClick={handleSelectImage} src={snowdropsLogo1024} width={dim} height={dim} />
+          <img key={`asset-${i*3 + 2}`} name={`asset-${i*3 + 0}`} onClick={handleSelectImage} src={basicHeart} width={dim} height={dim} />
         </div>
       )
     }
@@ -280,14 +304,19 @@ const CreateCard = () => {
           
           <div className='create-card-title'>List of Available Items</div>
           <div id='create-card-assets' className='enable-input'>
+            <div id='asset-card-side-select' style={{display: 'flex', justifyContent: 'space-around'}}>
+              leftin<input onChange={handleAssetSideSelect} name='asset-side-select' type='radio' value='left-in' />
+              rightin<input onChange={handleAssetSideSelect} name='asset-side-select' type='radio' value='right-in' />
+              leftout<input onChange={handleAssetSideSelect} name='asset-side-select' type='radio' value='left-out' />
+              rightout<input onChange={handleAssetSideSelect} name='asset-side-select' type='radio' value='right-out' />
+            </div>
+            <button onClick={handleButtonAddAsset}>Add</button>
             {assetRow()}
           </div>
         </div>
         {dev ?
           <div id='three-control-buttons'>
-            <button className='enable-input three-control-button' onClick={() => handleButtonThreeTest()}>three test</button>
-            <button className='enable-input three-control-button' onClick={() => handleButtonStartAnimation()}>start animation</button>
-            <button className='enable-input three-control-button' onClick={() => handleButtonStopAnimation()}>stop animation</button>
+            <button className='enable-input three-control-button' onClick={() => document.body.dispatchEvent(new Event('toggle-animation'))}>toggle animation</button>
           </div> : ''
         }
       </div>
