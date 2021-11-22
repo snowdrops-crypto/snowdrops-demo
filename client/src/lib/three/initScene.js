@@ -347,7 +347,7 @@ export default class InitScene {
       }
 
       if (typeof intersects[intersectionLayer].object !== 'undefined') {
-        console.log(intersects[intersectionLayer])
+        // console.log(intersects[intersectionLayer])
         if (intersects[intersectionLayer].object.parent.name.includes('claim-button')
             || intersects[intersectionLayer].object.parent.name.includes('claim-button-text')) {
           console.log('claim button clicked')

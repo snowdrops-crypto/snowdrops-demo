@@ -16,6 +16,8 @@ import snowdropsLogoRedBgWhite1024 from '../../assets/snowdrops-logo-1024-bg-whi
 import snowdropsLogo1024 from '../../assets/snowdrops-logo-1024.png'
 import basicHeart from '../../assets/basic-heart-1024.png'
 
+import arweaveImageLinks from '../../assets/arweave-img-links'
+
 import '../../scss/create-card.scss'
 import { setSize } from 'mathjs'
 
@@ -170,7 +172,6 @@ const CreateCard = () => {
   }
 
   const handleSelectImage = e => {
-    // console.log(e.target)
     if (selectAsset === '') {
       setSelectAsset(e.target.name)
       setPrevSelectAsset(e.target)
@@ -185,7 +186,6 @@ const CreateCard = () => {
       prevSelectAsset === '' ? prevSelectAsset.className = 'selected-img' : prevSelectAsset.className = ''
       setPrevSelectAsset(e.target)
     }
-
   }
 
   const assetRow = () => {
@@ -321,7 +321,7 @@ const CreateCard = () => {
         {dev ?
           <div id='three-control-buttons'>
             <button className='enable-input three-control-button' onClick={() => document.body.dispatchEvent(new Event('toggle-animation'))}>toggle animation</button>
-            <i className="fas fa-meteor"></i>
+            <img src={arweaveImageLinks['star-1024']} width='100px' height='100px' />
           </div> : ''
         }
       </div>

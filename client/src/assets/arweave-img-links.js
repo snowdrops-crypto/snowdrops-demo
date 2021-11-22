@@ -7,3 +7,5 @@ const arweaveImageLinks = {
   'clover-1024': 'https://arweave.net/Zbre9L723-QqsQ5LK_M2Gqs_nuntXKhERu9ZFWQ9f_U',
   'spade-1024.png': 'https://arweave.net/cmLJucUgFHon7xIQPGHqtjI7u42K09AxIX-gHXm8EKg'
 }
+
+export default arweaveImageLinks
