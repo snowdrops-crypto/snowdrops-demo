@@ -14,7 +14,8 @@ const DefaultCardInfo = {
       framesActive: true,
       greeting: {
         name: 'greeting',
-        message: 'Happy Birthday!'
+        message: 'Happy Birthday!',
+        scale: 0.3
       },
       frames: {
         left: {

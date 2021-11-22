@@ -26,6 +26,7 @@ const CreateCard = () => {
   const dev = true
 
   const [message, setMessage] = useState('')
+  const [messageScale, setMessageScale] = useState(0.5)
   const [leftInColor, setLeftInColor] = useState({
     'left-in-left-frame': '55ff55',
     'left-in-right-frame': 'ff5555',
@@ -60,13 +61,11 @@ const CreateCard = () => {
     appState({...rstate.main, status: 'create-card'})
     const evt = new Event('update-three-redux')
     document.body.dispatchEvent(evt)
-    console.log('reset')
   }, [])
   
   const handleUpdateMessage = () => {
-    const evt = new CustomEvent('handle-card-message', {detail: {msg: message}})
+    const evt = new CustomEvent('handle-card-message', {detail: {msg: message, scale: messageScale}})
     document.body.dispatchEvent(evt)
-    console.log(message)
   }
   const handleUpdateFrame = () => {
     const cardInfo = {
@@ -126,6 +125,10 @@ const CreateCard = () => {
 
   const handleMessage = e => {
     setMessage(e.target.value)
+  }
+
+  const handleMessageScale = e => {
+    setMessageScale(e.target.value)
   }
 
   const handleFrameAdd = (e) => {
@@ -207,7 +210,8 @@ const CreateCard = () => {
       <div id='create-card-main'>
         <div id='create-card-content' className='enable-input'>
           <div className='create-card-title'>Message</div>
-          <textarea value={message} className='card-message-input enable-input' onChange={handleMessage} />
+          <textarea onChange={handleMessage} value={message} className='card-message-input enable-input' />
+          Scale <input onChange={handleMessageScale} step='0.05' value={messageScale} className='card-message-scale-input' type='number' name='card-message-scale-input' />
           <button onClick={handleUpdateMessage}>Update Message</button>
           
           <hr />
@@ -317,6 +321,7 @@ const CreateCard = () => {
         {dev ?
           <div id='three-control-buttons'>
             <button className='enable-input three-control-button' onClick={() => document.body.dispatchEvent(new Event('toggle-animation'))}>toggle animation</button>
+            <i className="fas fa-meteor"></i>
           </div> : ''
         }
       </div>

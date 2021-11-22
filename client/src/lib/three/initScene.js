@@ -40,9 +40,10 @@ export default class InitScene {
   constructor() {
     this.loopCount
     this.animationOn = true
-    this.selectedAsset = ''
-    this.mouseDownLastPosition = null
-    this.mouseDownTriggered = false
+    this.mouseDownOn = false
+    this.draggable = null
+    this.draggableName = null
+    this.editItem = false
 
     console.log(store.getState())
     // store.dispatch({type: 'main', payload: {...state}})
@@ -65,8 +66,8 @@ export default class InitScene {
     this.scene.background = new THREE.Color('#222222')
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
     this.camera.position.z = 10
-    // this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    // this.controls.target.set(0, 0, 0)
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+    this.controls.target.set(0, 0, 0)
     // this.controls.maxDistance = 10
     // this.controls.minDistance = 5
     // Horizontal Angle
@@ -78,6 +79,7 @@ export default class InitScene {
     this.mouse = new THREE.Vector2()
     this.raycaster = new THREE.Raycaster()
     this.raycaster.params.Line.threshold = 0.1
+    this.mouseDrag = new THREE.Vector3()
     this.GLTFloader = new GLTFLoader()
     this.fonter = new Font(font_caviar)
     this.TextureLoader = new THREE.TextureLoader()
@@ -106,12 +108,17 @@ export default class InitScene {
     document.body.addEventListener('handle-card-message', e => {
       if (this.cardInfo.left.in.greeting.message !== e.detail.msg) {
         this.cardInfo.left.in.greeting.message = e.detail.msg
+        this.cardInfo.left.in.greeting.scale = e.detail.scale
 
         const saveRotation = this.scene.getObjectByName('greeting').rotation.y
         this.scene.remove(this.scene.getObjectByName('greeting'))
+        
+        console.log(this.cardInfo.left.in.greeting.message)
+        console.log(this.cardInfo.left.in.greeting.scale)
+
         offsetRotateTextObject(
           this.scene, this.fonter, this.cardInfo.left.in.greeting.name, 0x000000, this.cardInfo.left.in.greeting.message,
-          0.35, this.cardInfo.basePosition, {x: -7.5, y: 4, z: this.cardInfo.itemSpacingIn + 0.1}, 0.5
+          this.cardInfo.left.in.greeting.scale, this.cardInfo.basePosition, {x: -7.5, y: 4, z: this.cardInfo.itemSpacingIn + 0.1}, 0.5
         )
         this.scene.getObjectByName('greeting').rotation.y = saveRotation
       }
@@ -179,7 +186,7 @@ export default class InitScene {
       const composedAssetName = `${e.detail.side}-${e.detail.assetName}`
       console.log(composedAssetName)
       await offsetRotateTextureObject(this.scene, this.TextureLoader, basicHeart,
-        {x: 1, y: 1}, this.cardInfo.basePosition, assetPosition, rotationDirection, composedAssetName, 0xffffff
+        {x: 1, y: 1}, this.cardInfo.basePosition, assetPosition, rotationDirection, composedAssetName, 0xffffff, true
       )
       this.cardInfo.left.in.other.push(composedAssetName)
     })
@@ -219,21 +226,7 @@ export default class InitScene {
     // await LoadGLTFs(this.GLTFloader, this.scene, ['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado], {x: 2, y: 2, z: 2})
     // await floatingParticles(this.scene, this.TextureLoader, basicHeart)
 
-
-    let controlText = new THREE.Mesh(
-      new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Click outside the item to cancel.', 0.25)),
-      new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide })
-    )
-    controlText.name = 'click-instructions'
-    controlText.geometry.computeBoundingBox()
-    const max = controlText.geometry.boundingBox
-    console.log(max)
-    controlText.position.set(-2.65, -2.95, 4)
-    controlText.rotation.x = - Math.PI / 2
-
-    this.scene.add(controlText)
     /** CARD **/
-
     /* CARD LEFT */
     offsetRotateBoxObject(
       this.scene, this.cardInfo.left.name, 0xeffeef,
@@ -254,14 +247,14 @@ export default class InitScene {
     // LOGO on CARD
     await offsetRotateTextureObject(this.scene, this.TextureLoader, snowdropsLogo1,
       {x: 1, y: 1}, this.cardInfo.basePosition, {x: -1, y: -2.25, z: this.cardInfo.itemSpacingIn}, 0,
-      `left-in-snowdrops-logo`, 0xffffff
+      `left-in-snowdrops-logo`, 0xffffff, true
     )
     this.cardInfo.left.in.other.push(`left-in-snowdrops-logo`)
 
     // MESSAGE on CARD
     offsetRotateTextObject(
       this.scene, this.fonter, this.cardInfo.left.in.greeting.name, 0x000000, this.cardInfo.left.in.greeting.message,
-      0.35, this.cardInfo.basePosition, {x: -7.5, y: 4, z: this.cardInfo.itemSpacingIn + 0.1}, 0.5
+      this.cardInfo.left.in.greeting.scale, this.cardInfo.basePosition, {x: -7.5, y: 4, z: this.cardInfo.itemSpacingIn + 0.1}, 0.5
     )
 
     // CLAIM Message
@@ -309,6 +302,8 @@ export default class InitScene {
           handleObjectRotations(this.scene, this.cardInfo, rotation_factor)
         }
 
+        this.dragObject()
+
         const intersects = this.raycaster.intersectObjects(this.scene.children)
         if (intersects.length > 0) {
           
@@ -335,24 +330,12 @@ export default class InitScene {
     })
   }
   mouseMove(e) {
-    console.log('mousemove')
     this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     this.raycaster.setFromCamera(this.mouse, this.camera)
-
-    if (this.mouseDownTriggered && this.selectedAsset !== '') {
-      // console.log('mouse move selected asset')
-      console.log(this.mouse.x - this.mouseDownLastPosition.x, this.mouse.y - this.mouseDownLastPosition.y)
-      const moveObject = this.scene.getObjectByName(this.selectedAsset)
-      moveObject.children[0].position.x += (this.mouse.x - this.mouseDownLastPosition.x) / 10
-      moveObject.children[0].position.y += (this.mouse.y - this.mouseDownLastPosition.y) / 10
-    }
   }
   mouseDown(e) {
-    console.log('mousedown')
-    this.mouseDownTriggered = true
-    this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-    this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    this.mouseDownOn = true
     this.raycaster.setFromCamera(this.mouse, this.camera)
 
     const intersects = this.raycaster.intersectObjects(this.scene.children)
@@ -364,47 +347,90 @@ export default class InitScene {
       }
 
       if (typeof intersects[intersectionLayer].object !== 'undefined') {
+        console.log(intersects[intersectionLayer])
         if (intersects[intersectionLayer].object.parent.name.includes('claim-button')
             || intersects[intersectionLayer].object.parent.name.includes('claim-button-text')) {
           console.log('claim button clicked')
         }
 
-        if (intersects[intersectionLayer].object.parent.name.includes('right-in-asset-0')) {
-          console.log(this.scene.getObjectByName('right-in-asset-0').children[0].position)
-          this.mouseDownLastPosition = new THREE.Vector2()
-          this.mouseDownLastPosition.x = this.mouse.x
-          this.mouseDownLastPosition.y = this.mouse.y
-          this.selectedAsset = 'right-in-asset-0'
+        if (intersects[intersectionLayer].object.parent.userData.draggable) {
+          this.draggable = intersects[intersectionLayer]
+          this.draggableName = intersects[intersectionLayer].object.parent.name
+          this.editItem = true
+          this.controls.enabled = false
 
-          // let text = new THREE.Mesh(
-          //   new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Click outside the item to canacel.', 1)),
-          //   new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide })
-          // )
-          // text.name = 'click-instructions'
-          // text.position.set(-2, -2.95, 3)
-          // text.rotation.x = Math.PI / 2
-          // text.rotation.z = Math.PI / 2
-          // text.rotation.y = Math.PI / 4
-          // this.scene.add(text)
+          // done button
+          this.doneButton = new THREE.Object3D()
+          this.doneButton.name = 'done-button'
+          const doneMesh = new THREE.Mesh(
+            new THREE.BoxBufferGeometry(2, 1, 0.1),
+            new THREE.MeshBasicMaterial({ color: '#00FF00' })
+          )
+          const doneTextMesh = new THREE.Mesh(
+            new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Done', 0.5)),
+            new THREE.MeshBasicMaterial({ color: '#000000', side: THREE.DoubleSide })
+          )
+          doneTextMesh.position.set(-0.75, -0.25, 0.1)
+          this.doneButton.add(doneMesh.clone())
+          this.doneButton.add(doneTextMesh.clone())
+          this.doneButton.position.set(-1, -2.95, 3)
+          this.doneButton.rotation.x = - Math.PI / 2
+          this.scene.add(this.doneButton)
+
+          // delete button
+          this.deleteButton = new THREE.Object3D()
+          this.deleteButton.name = 'delete-button'
+          const deleteMesh = new THREE.Mesh(
+            new THREE.BoxBufferGeometry(2.2, 1, 0.1),
+            new THREE.MeshBasicMaterial({color: '#FF0000'})
+          )
+          const deleteTextMesh = new THREE.Mesh(
+            new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Delete', 0.5)),
+            new THREE.MeshBasicMaterial({ color: '#000000', side: THREE.DoubleSide })
+          )
+          deleteTextMesh.position.set(-1, -0.25, 0.1)
+          this.deleteButton.add(deleteMesh.clone())
+          this.deleteButton.add(deleteTextMesh.clone())
+          this.deleteButton.position.set(1.2, -2.95, 3)
+          this.deleteButton.rotation.x = - Math.PI / 2
+          this.scene.add(this.deleteButton)
+        }
+
+        // Done button
+        if (intersects[intersectionLayer].object.parent.name === 'done-button') {
+          this.editItem = false
+          this.draggable = null
+          this.controls.enabled = true
+          this.scene.remove(this.scene.getObjectByName('done-button'))
+          this.scene.remove(this.scene.getObjectByName('delete-button'))
+        }
+
+        // Delete Button
+        if (intersects[intersectionLayer].object.parent.name === 'delete-button') {
+          this.editItem = false
+          this.controls.enabled = true
+
+          this.scene.remove(this.scene.getObjectByName(this.draggableName))
+          this.draggable = null
+          this.draggableName = null
+          this.scene.remove(this.scene.getObjectByName('done-button'))
+          this.scene.remove(this.scene.getObjectByName('delete-button'))
         }
       }
     }
   }
   mouseUp(e) {
-    console.log('mouseup')
-    this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-    this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-    
-    if (this.mouseDownLastPosition !== null) {
-      this.mouseDownLastPosition = null
-    }
+    this.mouseDownOn = false
+  }
 
-    if (this.mouseDownTriggered) {
-      this.mouseDownTriggered = false
-      this.selectedAsset = ''
-
-      if (typeof this.scene.getObjectByName('click-instructions') !== 'undefined') {
-        this.scene.remove(this.scene.getObjectByName('click-instructions'))
+  dragObject() {
+    if (this.draggable != null && this.mouseDownOn) {
+      this.raycaster.setFromCamera(this.mouse, this.camera)
+      const leftCard = this.scene.getObjectByName('left-card')
+      const card_int = this.raycaster.intersectObjects(leftCard.children)
+      if (typeof card_int[0] !== 'undefined') {
+        this.draggable.object.position.x = card_int[0].point.x
+        this.draggable.object.position.y = card_int[0].point.y
       }
     }
   }
