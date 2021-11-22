@@ -1,0 +1,38 @@
+The First Presentation Snowdrops 2021
+
+Slide 1: Name of the company and tagline
+- Talk about who I am.
+- I am a software engineer with several years of professional experience. After leaving my position as Software Engineer at Cerner I dedicated all my time to learning how to develop decentralized applications.
+- With that I bring you...
+
+Slide 2: What is Snowdrops
+- Simply put, Snowdrops are NFT greeting cards.
+- There are several features that these greeting cards bring to the table that I have not observed in the market thus far.
+- Compare NFTs and their marketplaces
+- Snowdrops incentivize users to express their creativity.
+
+Slide 3: Features
+- Marketplace for NFT and Items
+- NFT Card Creator
+- Items and Purchasing packs
+- Royalty System
+- Sending and receiving
+
+Slide 4: Community Driven
+- Marketplace visibility
+- Adding new items through voting
+
+Slide 5: Go to market / Economics Model
+- Develop an initial base of crypto enthusiasts interested in a new paradigm on NFT
+- Signing up for the application will reward users with enough SWDP tokens purchase a pack and mint a card
+- A bonding curve will be used to allows users to buy and sell SWDP tokens
+- Keep the price of greeting cards low
+
+Slide 6: Development status
+- Card editor's preliminary functionality nearly complete.
+:: Features of card editor
+  - Edit the message on the card
+  - Edit the frames on the card
+  - Add images to a selected side of a card
+- Templated Aavegotchi's codebase
+- Created contract and deployment process for SWDP tokens

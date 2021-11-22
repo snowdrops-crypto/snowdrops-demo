@@ -41,7 +41,7 @@ export default class InitScene {
     this.loopCount
     this.animationOn = true
     this.selectedAsset = ''
-    this.mouseDownLastPosition = new THREE.Vector2()
+    this.mouseDownLastPosition = null
     this.mouseDownTriggered = false
 
     console.log(store.getState())
@@ -65,8 +65,8 @@ export default class InitScene {
     this.scene.background = new THREE.Color('#222222')
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
     this.camera.position.z = 10
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    this.controls.target.set(0, 0, 0)
+    // this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+    // this.controls.target.set(0, 0, 0)
     // this.controls.maxDistance = 10
     // this.controls.minDistance = 5
     // Horizontal Angle
@@ -228,7 +228,7 @@ export default class InitScene {
     controlText.geometry.computeBoundingBox()
     const max = controlText.geometry.boundingBox
     console.log(max)
-    controlText.position.set(-1 * max.x / 2, -2.95, 3)
+    controlText.position.set(-2.65, -2.95, 4)
     controlText.rotation.x = - Math.PI / 2
 
     this.scene.add(controlText)
@@ -303,11 +303,6 @@ export default class InitScene {
   animate() {
     this.renderer.setAnimationLoop(() => {
       if (this.animationOn) {
-        if (this.mouseDownTriggered && this.selectedAsset !== '') {
-          this.controls.enabled = false
-        } else {
-          this.controls.enabled = true
-        }
         // Animatated 360 degree rotation
         const rotation_factor = 512
         if (1 > 2) {
@@ -339,44 +334,28 @@ export default class InitScene {
       }
     })
   }
-
-  stopAnimate() {
-    this.renderer.setAnimationLoop(null)
-  }
-
-  keydown(e) {
-    if (e.key === 'p') {
-      this.stopAnimate()
-    }
-    if (e.key === 's') {
-      this.animate()
-    }
-  }
-
   mouseMove(e) {
+    console.log('mousemove')
     this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     this.raycaster.setFromCamera(this.mouse, this.camera)
 
-    console.log(this.selectedAsset)
-    if (this.selectedAsset !== '') {
-      console.log('mouse move selected asset')
+    if (this.mouseDownTriggered && this.selectedAsset !== '') {
+      // console.log('mouse move selected asset')
+      console.log(this.mouse.x - this.mouseDownLastPosition.x, this.mouse.y - this.mouseDownLastPosition.y)
       const moveObject = this.scene.getObjectByName(this.selectedAsset)
-      console.log(moveObject)
+      moveObject.children[0].position.x += (this.mouse.x - this.mouseDownLastPosition.x) / 10
+      moveObject.children[0].position.y += (this.mouse.y - this.mouseDownLastPosition.y) / 10
     }
   }
   mouseDown(e) {
+    console.log('mousedown')
     this.mouseDownTriggered = true
     this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     this.raycaster.setFromCamera(this.mouse, this.camera)
 
     const intersects = this.raycaster.intersectObjects(this.scene.children)
-
-    if (this.selectedAsset !== '') {
-
-    }
-
     if (intersects.length > 0) {
       // Ignore Raycasting of Particles
       let intersectionLayer = 0
@@ -392,32 +371,37 @@ export default class InitScene {
 
         if (intersects[intersectionLayer].object.parent.name.includes('right-in-asset-0')) {
           console.log(this.scene.getObjectByName('right-in-asset-0').children[0].position)
-          console.log(this.mouse)
-          this.mouseDownLastPosition = this.mouse
-          console.log('in right in asset 0')
+          this.mouseDownLastPosition = new THREE.Vector2()
+          this.mouseDownLastPosition.x = this.mouse.x
+          this.mouseDownLastPosition.y = this.mouse.y
           this.selectedAsset = 'right-in-asset-0'
 
-          let text = new THREE.Mesh(
-            new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Click outside the item to canacel.', 1)),
-            new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide })
-          )
-          text.name = 'click-instructions'
-          text.position.set(-2, -2.95, 3)
-          text.rotation.x = Math.PI / 2
-          text.rotation.z = Math.PI / 2
-          text.rotation.y = Math.PI / 4
-          this.scene.add(text)
+          // let text = new THREE.Mesh(
+          //   new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Click outside the item to canacel.', 1)),
+          //   new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide })
+          // )
+          // text.name = 'click-instructions'
+          // text.position.set(-2, -2.95, 3)
+          // text.rotation.x = Math.PI / 2
+          // text.rotation.z = Math.PI / 2
+          // text.rotation.y = Math.PI / 4
+          // this.scene.add(text)
         }
       }
     }
   }
   mouseUp(e) {
     console.log('mouseup')
+    this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     
+    if (this.mouseDownLastPosition !== null) {
+      this.mouseDownLastPosition = null
+    }
+
     if (this.mouseDownTriggered) {
       this.mouseDownTriggered = false
       this.selectedAsset = ''
-      // this.controls.enabled = true
 
       if (typeof this.scene.getObjectByName('click-instructions') !== 'undefined') {
         this.scene.remove(this.scene.getObjectByName('click-instructions'))
@@ -425,6 +409,18 @@ export default class InitScene {
     }
   }
 
+  stopAnimate() {
+    this.renderer.setAnimationLoop(null)
+  }
+
+  keydown(e) {
+    if (e.key === 'p') {
+      this.stopAnimate()
+    }
+    if (e.key === 's') {
+      this.animate()
+    }
+  }
   wheelScroll(e) {
     if (e.deltaY > 0) {
       this.camera.z += 1
