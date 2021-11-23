@@ -189,17 +189,33 @@ const CreateCard = () => {
   }
 
   const assetRow = () => {
+    const imgTags = []
     const rows = []
     const dim = '80px'
-    for(let i = 0; i < 3; i++) {
-      rows.push(
-        <div key={`assetrow-${i}`} className='asset-row'>
-          <img key={`asset-${i*3 + 0}`} name={`asset-${i*3 + 0}`} onClick={handleSelectImage} src={snowdropsLogoRedBgWhite1024} width={dim} height={dim} />
-          <img key={`asset-${i*3 + 1}`} name={`asset-${i*3 + 0}`} onClick={handleSelectImage} src={snowdropsLogo1024} width={dim} height={dim} />
-          <img key={`asset-${i*3 + 2}`} name={`asset-${i*3 + 0}`} onClick={handleSelectImage} src={basicHeart} width={dim} height={dim} />
-        </div>
-      )
+    let assetRowCount = 0
+
+    Object.keys(arweaveImageLinks).forEach(imgName => {
+      imgTags.push(<img key={`asset-${imgName}`} name={`asset-${imgName}`} onClick={handleSelectImage} src={arweaveImageLinks[imgName]} width={dim} height={dim} />)
+    })
+
+    let imgTagsThree = []
+    for (let i = 0; i < imgTags.length; i++) {
+      
+      if (i === imgTags.length - 1 || i % 3 === 0 && i !== 0) {
+        if (i === imgTags.length - 1) {
+          imgTagsThree.push(imgTags[i])
+        }
+        rows.push(
+          <div key={`assetrow-${assetRowCount}`} className='asset-row'>
+            {imgTagsThree}
+          </div>
+        )
+        imgTagsThree = []
+        assetRowCount++
+      }
+      imgTagsThree.push(imgTags[i])
     }
+
     return rows
   }
 
@@ -321,7 +337,6 @@ const CreateCard = () => {
         {dev ?
           <div id='three-control-buttons'>
             <button className='enable-input three-control-button' onClick={() => document.body.dispatchEvent(new Event('toggle-animation'))}>toggle animation</button>
-            <img src={arweaveImageLinks['star-1024']} width='100px' height='100px' />
           </div> : ''
         }
       </div>

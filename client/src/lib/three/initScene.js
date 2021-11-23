@@ -14,7 +14,7 @@ import LoadGLTFs from './methods/loadGLTF'
 import loadLights from './methods/loadLights'
 
 import DefaultCardInfo from '../DefaultCardInfo'
-import { cardIterator } from '../utils'
+import { cardIterator, randomHexColor } from '../utils'
 
 import toggleAnimation from './three-events/toggleAnimation'
 
@@ -38,7 +38,7 @@ import basicHeart from '../../assets/basic-heart-1024.png'
 
 export default class InitScene {
   constructor() {
-    this.loopCount
+    this.loopCount = 0
     this.animationOn = true
     this.mouseDownOn = false
     this.draggable = null
@@ -290,6 +290,23 @@ export default class InitScene {
     const rotation_factor = 8
     handleObjectRotations(this.scene, this.cardInfo, rotation_factor)
 
+    this.mintButton = new THREE.Object3D()
+    this.mintButton.name = 'mint-button'
+    const mintMesh = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(1.8, 1, 0.1),
+      new THREE.MeshBasicMaterial({color: '#55FF55'})
+    )
+    const mintTextMesh = new THREE.Mesh(
+      new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Mint', 0.5)),
+      new THREE.MeshBasicMaterial({ color: '#000000', side: THREE.DoubleSide })
+    )
+    mintTextMesh.position.set(-0.75, -0.25, 0.1)
+    this.mintButton.add(mintMesh.clone())
+    this.mintButton.add(mintTextMesh.clone())
+    this.mintButton.position.set(0, 4, 0)
+    // this.mintButton.rotation.x = - Math.PI / 2
+    this.scene.add(this.mintButton)
+
     this.animate()
   }
 
@@ -318,12 +335,18 @@ export default class InitScene {
                 || intersects[intersectionLayer].object.parent.name.includes('claim-button-text')) {
               this.scene.getObjectByName('claim-button').children[0].material.color.set(`#66FF66`)
               document.body.style.cursor = 'pointer'
+            } else if (intersects[intersectionLayer].object.parent.name === 'mint-button') {
+              if (this.loopCount % 20 === 0) this.scene.getObjectByName('mint-button').children[0].material.color.set(`#${randomHexColor()}`)
+              document.body.style.cursor = 'pointer'
             } else {
               this.scene.getObjectByName('claim-button').children[0].material.color.set(`#00FF00`)
+              this.scene.getObjectByName('mint-button').children[0].material.color.set(`#55FF55`)
               document.body.style.cursor = 'default'
             }
           }
         }
+
+        this.loopCount > 60 ? this.loopCount = 0 : this.loopCount++
 
         this.renderer.render(this.scene, this.camera)
       }
@@ -415,6 +438,18 @@ export default class InitScene {
           this.draggableName = null
           this.scene.remove(this.scene.getObjectByName('done-button'))
           this.scene.remove(this.scene.getObjectByName('delete-button'))
+        }
+
+        // Mint Button
+        if (intersects[intersectionLayer].object.parent.name === 'mint-button') {
+          console.log('Mint!')
+          const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.cardInfo))
+          const downloadAnchorNode = document.createElement('a')
+          downloadAnchorNode.setAttribute('href', dataStr)
+          downloadAnchorNode.setAttribute('download', 'rtrt' + '.json')
+          document.body.appendChild(downloadAnchorNode)
+          downloadAnchorNode.click()
+          downloadAnchorNode.remove()
         }
       }
     }
