@@ -36,6 +36,8 @@ import font_marg from '../../assets/fonts/MargatroidGrotesque.json'
 import snowdropsLogo1 from '../../assets/snowdrops-logo-1.png'
 import basicHeart from '../../assets/basic-heart-1024.png'
 
+import arweaveImageLinks from '../../assets/arweave-img-links'
+
 export default class InitScene {
   constructor() {
     this.loopCount = 0
@@ -106,7 +108,9 @@ export default class InitScene {
       console.log(this.animationOn)
     })
     document.body.addEventListener('handle-card-message', e => {
-      if (this.cardInfo.left.in.greeting.message !== e.detail.msg) {
+      console.log(typeof e.detail.scale)
+      console.log(typeof this.cardInfo.left.in.greeting.scale)
+      if (this.cardInfo.left.in.greeting.message !== e.detail.msg || this.cardInfo.left.in.greeting.scale !== e.detail.scale) {
         this.cardInfo.left.in.greeting.message = e.detail.msg
         this.cardInfo.left.in.greeting.scale = e.detail.scale
 
@@ -185,8 +189,8 @@ export default class InitScene {
       }
       const composedAssetName = `${e.detail.side}-${e.detail.assetName}`
       console.log(composedAssetName)
-      await offsetRotateTextureObject(this.scene, this.TextureLoader, basicHeart,
-        {x: 1, y: 1}, this.cardInfo.basePosition, assetPosition, rotationDirection, composedAssetName, 0xffffff, true
+      await offsetRotateTextureObject(this.scene, this.TextureLoader, arweaveImageLinks[e.detail.assetName],
+        {x: 1, y: 1}, this.cardInfo.basePosition, assetPosition, rotationDirection, composedAssetName, e.detail.side, 0xffffff, true
       )
       this.cardInfo.left.in.other.push(composedAssetName)
     })
@@ -247,7 +251,7 @@ export default class InitScene {
     // LOGO on CARD
     await offsetRotateTextureObject(this.scene, this.TextureLoader, snowdropsLogo1,
       {x: 1, y: 1}, this.cardInfo.basePosition, {x: -1, y: -2.25, z: this.cardInfo.itemSpacingIn}, 0,
-      `left-in-snowdrops-logo`, 0xffffff, true
+      `left-in-snowdrops-logo`, 'left-in', 0xffffff, true
     )
     this.cardInfo.left.in.other.push(`left-in-snowdrops-logo`)
 
@@ -358,111 +362,170 @@ export default class InitScene {
     this.raycaster.setFromCamera(this.mouse, this.camera)
   }
   mouseDown(e) {
-    this.mouseDownOn = true
-    this.raycaster.setFromCamera(this.mouse, this.camera)
+    if (e.which === 1) {
+      this.mouseDownOn = true
+      this.raycaster.setFromCamera(this.mouse, this.camera)
 
-    const intersects = this.raycaster.intersectObjects(this.scene.children)
-    if (intersects.length > 0) {
-      // Ignore Raycasting of Particles
-      let intersectionLayer = 0
-      while (intersects[intersectionLayer].object.name === 'particles' && intersects.length > intersectionLayer + 1) {
-        intersectionLayer++
-      }
-
-      if (typeof intersects[intersectionLayer].object !== 'undefined') {
-        // console.log(intersects[intersectionLayer])
-        if (intersects[intersectionLayer].object.parent.name.includes('claim-button')
-            || intersects[intersectionLayer].object.parent.name.includes('claim-button-text')) {
-          console.log('claim button clicked')
+      const intersects = this.raycaster.intersectObjects(this.scene.children)
+      if (intersects.length > 0) {
+        // Ignore Raycasting of Particles
+        let intersectionLayer = 0
+        while (intersects[intersectionLayer].object.name === 'particles' && intersects.length > intersectionLayer + 1) {
+          intersectionLayer++
         }
 
-        if (intersects[intersectionLayer].object.parent.userData.draggable) {
-          this.draggable = intersects[intersectionLayer]
-          this.draggableName = intersects[intersectionLayer].object.parent.name
-          this.editItem = true
-          this.controls.enabled = false
+        if (typeof intersects[intersectionLayer].object !== 'undefined') {
+          // console.log(intersects[intersectionLayer])
+          if (intersects[intersectionLayer].object.parent.name.includes('claim-button')
+              || intersects[intersectionLayer].object.parent.name.includes('claim-button-text')) {
+            console.log('claim button clicked')
+          }
 
-          // done button
-          this.doneButton = new THREE.Object3D()
-          this.doneButton.name = 'done-button'
-          const doneMesh = new THREE.Mesh(
-            new THREE.BoxBufferGeometry(2, 1, 0.1),
-            new THREE.MeshBasicMaterial({ color: '#00FF00' })
-          )
-          const doneTextMesh = new THREE.Mesh(
-            new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Done', 0.5)),
-            new THREE.MeshBasicMaterial({ color: '#000000', side: THREE.DoubleSide })
-          )
-          doneTextMesh.position.set(-0.75, -0.25, 0.1)
-          this.doneButton.add(doneMesh.clone())
-          this.doneButton.add(doneTextMesh.clone())
-          this.doneButton.position.set(-1, -2.95, 3)
-          this.doneButton.rotation.x = - Math.PI / 2
-          this.scene.add(this.doneButton)
+          if (intersects[intersectionLayer].object.parent.userData.draggable) {
+            this.draggable = intersects[intersectionLayer]
+            this.draggableName = intersects[intersectionLayer].object.parent.name
 
-          // delete button
-          this.deleteButton = new THREE.Object3D()
-          this.deleteButton.name = 'delete-button'
-          const deleteMesh = new THREE.Mesh(
-            new THREE.BoxBufferGeometry(2.2, 1, 0.1),
-            new THREE.MeshBasicMaterial({color: '#FF0000'})
-          )
-          const deleteTextMesh = new THREE.Mesh(
-            new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Delete', 0.5)),
-            new THREE.MeshBasicMaterial({ color: '#000000', side: THREE.DoubleSide })
-          )
-          deleteTextMesh.position.set(-1, -0.25, 0.1)
-          this.deleteButton.add(deleteMesh.clone())
-          this.deleteButton.add(deleteTextMesh.clone())
-          this.deleteButton.position.set(1.2, -2.95, 3)
-          this.deleteButton.rotation.x = - Math.PI / 2
-          this.scene.add(this.deleteButton)
-        }
+            this.editItem = true
+            this.controls.enabled = false
 
-        // Done button
-        if (intersects[intersectionLayer].object.parent.name === 'done-button') {
-          this.editItem = false
-          this.draggable = null
-          this.controls.enabled = true
-          this.scene.remove(this.scene.getObjectByName('done-button'))
-          this.scene.remove(this.scene.getObjectByName('delete-button'))
-        }
+            // done button
+            if (typeof this.scene.getObjectByName('done-button') === 'undefined') {
+              this.doneButton = new THREE.Object3D()
+              this.doneButton.name = 'done-button'
+              const doneMesh = new THREE.Mesh(
+                new THREE.BoxBufferGeometry(2, 1, 0.1),
+                new THREE.MeshBasicMaterial({ color: '#00FF00' })
+              )
+              const doneTextMesh = new THREE.Mesh(
+                new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Done', 0.5)),
+                new THREE.MeshBasicMaterial({ color: '#000000', side: THREE.DoubleSide })
+              )
+              doneTextMesh.position.set(-0.75, -0.25, 0.1)
+              this.doneButton.add(doneMesh.clone())
+              this.doneButton.add(doneTextMesh.clone())
+              this.doneButton.position.set(-1, -2.95, 3)
+              this.doneButton.rotation.x = - Math.PI / 4
+              this.scene.add(this.doneButton)
+            }
+            // delete button
+            if (typeof this.scene.getObjectByName('delete-button') === 'undefined') {
+              this.deleteButton = new THREE.Object3D()
+              this.deleteButton.name = 'delete-button'
+              const deleteMesh = new THREE.Mesh(
+                new THREE.BoxBufferGeometry(2.2, 1, 0.1),
+                new THREE.MeshBasicMaterial({color: '#FF0000'})
+              )
+              const deleteTextMesh = new THREE.Mesh(
+                new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Delete', 0.5)),
+                new THREE.MeshBasicMaterial({ color: '#000000', side: THREE.DoubleSide })
+              )
+              deleteTextMesh.position.set(-1, -0.25, 0.1)
+              this.deleteButton.add(deleteMesh.clone())
+              this.deleteButton.add(deleteTextMesh.clone())
+              this.deleteButton.position.set(1.2, -2.95, 3)
+              this.deleteButton.rotation.x = - Math.PI / 4
+              this.scene.add(this.deleteButton)
+            }
 
-        // Delete Button
-        if (intersects[intersectionLayer].object.parent.name === 'delete-button') {
-          this.editItem = false
-          this.controls.enabled = true
+            // scale
+            if (typeof this.scene.getObjectByName('scale-item') === 'undefined') {
+              this.scaleItem = new THREE.Object3D()
+              this.scaleItem.name = 'scale-item'
 
-          this.scene.remove(this.scene.getObjectByName(this.draggableName))
-          this.draggable = null
-          this.draggableName = null
-          this.scene.remove(this.scene.getObjectByName('done-button'))
-          this.scene.remove(this.scene.getObjectByName('delete-button'))
-        }
+              const scaleItemMesh = new THREE.Mesh(
+                new THREE.BoxBufferGeometry(0.1, 0.1, 0.1),
+                new THREE.MeshBasicMaterial({color: '#0000FF'})
+              )
+              const scaleItemTextMesh = new THREE.Mesh(
+                new THREE.ShapeBufferGeometry(this.fonter.generateShapes('Scale', 0.35)),
+                new THREE.MeshBasicMaterial({ color: '#000000', side: THREE.DoubleSide })
+              )
 
-        // Mint Button
-        if (intersects[intersectionLayer].object.parent.name === 'mint-button') {
-          console.log('Mint!')
-          const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.cardInfo))
-          const downloadAnchorNode = document.createElement('a')
-          downloadAnchorNode.setAttribute('href', dataStr)
-          downloadAnchorNode.setAttribute('download', 'rtrt' + '.json')
-          document.body.appendChild(downloadAnchorNode)
-          downloadAnchorNode.click()
-          downloadAnchorNode.remove()
+              this.scaleItem.add(scaleItemTextMesh.clone())
+              this.scaleItem.add(scaleItemMesh.clone())
+              
+              this.scaleItem.position.set(-1.5, -2.95, 5)
+              this.scaleItem.rotation.x = - Math.PI / 4
+              this.scene.add(this.scaleItem)
+            }
+
+            // rotate
+            if (typeof this.scene.getObjectByName('rotate-item') === 'undefined') {
+              this.rotateItem = new THREE.Mesh(
+                new THREE.BoxBufferGeometry(0.1, 0.1, 0.1),
+                new THREE.MeshBasicMaterial({color: '#FF0000'})
+              )
+              this.rotateItem.name = 'rotate-item'
+              this.rotateItem.position.set()
+              this.scene.add(this.rotateItem)
+            }
+          }
+
+          // Done button
+          if (intersects[intersectionLayer].object.parent.name === 'done-button') {
+            this.editItem = false
+            this.draggable = null
+            this.controls.enabled = true
+            this.scene.remove(this.scene.getObjectByName('done-button'))
+            this.scene.remove(this.scene.getObjectByName('delete-button'))
+            this.scene.remove(this.scene.getObjectByName('scale-item'))
+            this.scene.remove(this.scene.getObjectByName('rotate-itme'))
+          }
+
+          // Delete Button
+          if (intersects[intersectionLayer].object.parent.name === 'delete-button') {
+            this.editItem = false
+            this.controls.enabled = true
+
+            this.scene.remove(this.scene.getObjectByName(this.draggableName))
+            this.draggable = null
+            this.draggableName = null
+            this.scene.remove(this.scene.getObjectByName('done-button'))
+            this.scene.remove(this.scene.getObjectByName('delete-button'))
+            this.scene.remove(this.scene.getObjectByName('scale-item'))
+            this.scene.remove(this.scene.getObjectByName('rotate-itme'))
+          }
+
+          if (intersects[intersectionLayer].object.parent.name === 'scale-item') {
+            this.scaleItemOn = true
+
+          }
+
+          if (intersects[intersectionLayer].object.parent.name === 'rotate-item') {
+            this.rotateItemOn = true
+          }
+
+          // Mint Button
+          if (intersects[intersectionLayer].object.parent.name === 'mint-button') {
+            const jsonData = JSON.stringify(this.cardInfo)
+            console.log(JSON.parse(jsonData))
+            const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(jsonData)
+            const downloadAnchorNode = document.createElement('a')
+            downloadAnchorNode.setAttribute('href', dataStr)
+            downloadAnchorNode.setAttribute('download', 'CardInfo' + '.json')
+            document.body.appendChild(downloadAnchorNode)
+            downloadAnchorNode.click()
+            downloadAnchorNode.remove()
+          }
         }
       }
     }
   }
   mouseUp(e) {
     this.mouseDownOn = false
+    if (this.scaleItemOn) this.scaleItemOn = false
+    if (this.rotateItemOn) this.rotateItemOn = false
   }
 
   dragObject() {
     if (this.draggable != null && this.mouseDownOn) {
       this.raycaster.setFromCamera(this.mouse, this.camera)
-      const leftCard = this.scene.getObjectByName('left-card')
-      const card_int = this.raycaster.intersectObjects(leftCard.children)
+
+      const cardSurface = this.draggable.object.parent.userData.side
+      const cardSurfaceName = `${cardSurface.substr(0, cardSurface.indexOf('-'))}-card`
+
+      const cardSide = this.scene.getObjectByName(cardSurfaceName)
+      const card_int = this.raycaster.intersectObjects(cardSide.children)
       if (typeof card_int[0] !== 'undefined') {
         this.draggable.object.position.x = card_int[0].point.x
         this.draggable.object.position.y = card_int[0].point.y

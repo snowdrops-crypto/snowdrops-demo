@@ -1,6 +1,6 @@
 'use strict'
 import React, { useEffect, useState, useCallback } from 'react'
-import Arweave from 'arweave'
+import arweaveImageLinks from '../../assets/arweave-img-links'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -9,17 +9,8 @@ import * as actions from '../../store/actions'
 import Header from '../layouts/Header'
 import Footer from '../layouts/Footer'
 
-import DefaultCardInfo from '../../lib/DefaultCardInfo'
 import { cardIterator } from '../../lib/utils'
-
-import snowdropsLogoRedBgWhite1024 from '../../assets/snowdrops-logo-1024-bg-white.png'
-import snowdropsLogo1024 from '../../assets/snowdrops-logo-1024.png'
-import basicHeart from '../../assets/basic-heart-1024.png'
-
-import arweaveImageLinks from '../../assets/arweave-img-links'
-
 import '../../scss/create-card.scss'
-import { setSize } from 'mathjs'
 
 const CreateCard = () => {
   const rstate = useSelector((rstate) => rstate)
@@ -53,7 +44,9 @@ const CreateCard = () => {
     'right-out-top-frame': '5555ff',
     'right-out-bottom-frame': 'ff55ff'
   })
-  const [addFrames, setAddFrames] = useState({'left-in-frames': true, 'right-in-frames': true, 'left-out-frames': true, 'right-out-frames': true})
+  const [addFrames, setAddFrames] = useState({
+    'left-in-frames': true, 'right-in-frames': true, 'left-out-frames': true, 'right-out-frames': true
+  })
   const [selectAsset, setSelectAsset] = useState('')
   const [prevSelectAsset, setPrevSelectAsset] = useState('')
   const [assetCardSideSelect, setAssetCardSideSelect] = useState('')
@@ -156,7 +149,6 @@ const CreateCard = () => {
   }
 
   const handleAssetSideSelect = e => {
-    console.log(e.target.value)
     setAssetCardSideSelect(e.target.value)
   }
 
@@ -173,19 +165,34 @@ const CreateCard = () => {
 
   const handleSelectImage = e => {
     if (selectAsset === '') {
+      console.log(e.target)
       setSelectAsset(e.target.name)
       setPrevSelectAsset(e.target)
       e.target.className === '' ? e.target.className = 'selected-img' : e.target.className = ''
-      console.log('one')
     } else {
       console.log(prevSelectAsset.className)
-      setSelectAsset(e.target.name)
+      if (e.target.name === selectAsset) {
+        e.target.className = ''
+        setSelectAsset('')
+      } else {
+        setSelectAsset(e.target.name)
       
-      e.target.className === '' ? e.target.className = 'selected-img' : e.target.className = ''
-      
-      prevSelectAsset === '' ? prevSelectAsset.className = 'selected-img' : prevSelectAsset.className = ''
-      setPrevSelectAsset(e.target)
+        e.target.className === '' ? e.target.className = 'selected-img' : e.target.className = ''
+        prevSelectAsset === '' ? prevSelectAsset.className = 'selected-img' : prevSelectAsset.className = ''
+        setPrevSelectAsset(e.target)
+      }
     }
+  }
+
+  const handleFileUpload = async e => {
+    console.log(e.target.files[0])
+    const fileReader = new FileReader()
+    
+    fileReader.onload = e => {
+      console.log(e.target.result)
+      console.log(JSON.parse(e.target.result))
+    }
+    await fileReader.readAsText(e.target.files[0], 'utf-8')
   }
 
   const assetRow = () => {
@@ -195,7 +202,7 @@ const CreateCard = () => {
     let assetRowCount = 0
 
     Object.keys(arweaveImageLinks).forEach(imgName => {
-      imgTags.push(<img key={`asset-${imgName}`} name={`asset-${imgName}`} onClick={handleSelectImage} src={arweaveImageLinks[imgName]} width={dim} height={dim} />)
+      imgTags.push(<img key={`asset-${imgName}`} name={`${imgName}`} onClick={handleSelectImage} src={arweaveImageLinks[imgName]} width={dim} height={dim} />)
     })
 
     let imgTagsThree = []
@@ -332,6 +339,9 @@ const CreateCard = () => {
             </div>
             <button onClick={handleButtonAddAsset}>Add</button>
             {assetRow()}
+          </div>
+          <div id='upload-card-info'>
+            <input onChange={handleFileUpload} type='file' name='uploaded-card-info' accept='.json' required />
           </div>
         </div>
         {dev ?

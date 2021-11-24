@@ -28,8 +28,8 @@ The SWDP token has been separated from the Snowdrops implementation in order to 
 - [ArGo](https://argoapp.net/)
 
 ## Contact and Social Media
-[<img width='50px' src="./assets/icons8-twitter-500.png">](https://twitter.com/SnowdropsCrypto)
-[<img width='50px' src="./assets/icons8-reddit-500.png">](https://www.reddit.com/r/SnowdropsCrypto/)
+[<img width='50px' src="./assets/icons8-twitter-480.png">](https://twitter.com/SnowdropsCrypto)
+[<img width='50px' src="./assets/icons8-reddit-480.png">](https://www.reddit.com/r/SnowdropsCrypto/)
 [<img width='50px' src="./assets/icons8-mail-500.png">](snowdrops-crypto@protonmail.com)
 
-<a target="_blank" href="https://icons8.com/icon/12623/mail">Mail</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+All icons by <a target="_blank" href="https://icons8.com">Icons8</a>

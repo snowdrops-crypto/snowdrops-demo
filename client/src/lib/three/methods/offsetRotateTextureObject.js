@@ -13,7 +13,10 @@ import * as THREE from 'three'
  * @param {*} name 
  * @param {*} color 
  */
-const offsetRotateBoxObject = async (scene, TextureLoader, texture, dim, pos, offset, rotation = 0, name = 'texture-object', color = '#FFFFFF', draggable = false) => {
+const offsetRotateBoxObject = async (
+  scene, TextureLoader, texture, dim, pos, offset, rotation = 0, name = 'texture-object',
+  side = 'left-in', color = '#FFFFFF', draggable = false
+) => {
   const loadedTexture = await TextureLoader.load(texture)
   const textureMesh = new THREE.Mesh(
     new THREE.PlaneGeometry(dim.x, dim.y),
@@ -28,7 +31,8 @@ const offsetRotateBoxObject = async (scene, TextureLoader, texture, dim, pos, of
   textureObject.position.set(pos.x, pos.y, pos.z)
   textureObject.rotation.y = rotation
   textureObject.userData.draggable = draggable
-  console.log(textureObject.name)
+  textureObject.userData.side = side
+
   scene.add(textureObject)
 }
 
