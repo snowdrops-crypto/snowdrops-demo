@@ -5,7 +5,8 @@ const arweaveImageLinks = {
   'star-1024': 'https://arweave.net/H2hyzAiwP0XKWRcFewSzNeMuDWRDBxImidTIIx7-r2w',
   'basic-heart-1024': 'https://arweave.net/qgQzicpWuKgrx6OMr_Vts0jMOXP87Z1dk2XaiOn0g5s',
   'clover-1024': 'https://arweave.net/Zbre9L723-QqsQ5LK_M2Gqs_nuntXKhERu9ZFWQ9f_U',
-  // 'spade-1024': 'https://arweave.net/cmLJucUgFHon7xIQPGHqtjI7u42K09AxIX-gHXm8EKg'
+  'spade-1024': 'https://arweave.net/cmLJucUgFHon7xIQPGHqtjI7u42K09AxIX-gHXm8EKg',
+  // 'snowdrops-logo-revised': 'https://arweave.net/TGvp5ruZGaQmfG0Ch8MR4ilfsRLdY4GXYF4GbIUlJxA'
 }
 
 export default arweaveImageLinks

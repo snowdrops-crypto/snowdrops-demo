@@ -18,6 +18,10 @@ const CreateCard = () => {
   const { appState } = bindActionCreators(actions, dispatch)
   const dev = true
 
+  const [frameControlVisibility, setFrameControlVisibility] = useState({
+    'left-in': true, 'right-in': true, 'left-out': true, 'right-out': true
+  })
+
   const [message, setMessage] = useState('')
   const [messageScale, setMessageScale] = useState(0.5)
   const [leftInColor, setLeftInColor] = useState({
@@ -58,6 +62,14 @@ const CreateCard = () => {
     document.body.dispatchEvent(evt)
   }, [])
   
+
+  const handleFrameControlVisibility = e => {
+    const name = e.target.name
+    console.log(name)
+    setFrameControlVisibility(prevState => ({...prevState, [name]: frameControlVisibility[name] ? false : true}))
+    console.log(frameControlVisibility)
+  }
+
   const handleUpdateMessage = () => {
     const evt = new CustomEvent('handle-card-message', {detail: {msg: message, scale: messageScale}})
     document.body.dispatchEvent(evt)
@@ -241,88 +253,108 @@ const CreateCard = () => {
 
           <div id='frame-container'>
             <div className='create-card-title'>Update Card Frame</div>
-            <div><input type='checkbox' checked={addFrames['left-in-frames']} name='left-in-frames' onChange={handleFrameAdd} />Left Card Inside</div>
-            <div className='color-container'>
-              <div className='color-field'>
-                left color
-                <input max='6' type='text' className='frame-color-input' name='left-in-left-frame' value={leftInColor['left-in-left-frame']} onChange={(e) => handleColors(e, 'leftIn')}/>
-              </div>
-              <div className='color-field'>
-                right color
-                <input max='6' type='text' className='frame-color-input' name='left-in-right-frame' value={leftInColor['left-in-right-frame']} onChange={(e) => handleColors(e, 'leftIn')}/>
-              </div>
-              <div className='color-field'>
-                top color
-                <input max='6' type='text' className='frame-color-input' name='left-in-top-frame' value={leftInColor['left-in-top-frame']} onChange={(e) => handleColors(e, 'leftIn')}/>
-              </div>
-              <div className='color-field'>
-                bottom color
-                <input max='6' type='text' className='frame-color-input' name='left-in-bottom-frame' value={leftInColor['left-in-bottom-frame']} onChange={(e) => handleColors(e, 'leftIn')}/>
-              </div>
+            <div>
+              <input type='checkbox' checked={addFrames['left-in-frames']} name='left-in-frames' onChange={handleFrameAdd} />
+              Left Card Inside
+              <button onClick={handleFrameControlVisibility} name='left-in' style={{float: 'right'}}>V</button>
             </div>
+            {frameControlVisibility['left-in'] ? 
+              <div className='color-container' id='color-container-left-in'>
+                <div className='color-field'>
+                  left color
+                  <input max='6' type='text' className='frame-color-input' name='left-in-left-frame' value={leftInColor['left-in-left-frame']} onChange={(e) => handleColors(e, 'leftIn')}/>
+                </div>
+                <div className='color-field'>
+                  right color
+                  <input max='6' type='text' className='frame-color-input' name='left-in-right-frame' value={leftInColor['left-in-right-frame']} onChange={(e) => handleColors(e, 'leftIn')}/>
+                </div>
+                <div className='color-field'>
+                  top color
+                  <input max='6' type='text' className='frame-color-input' name='left-in-top-frame' value={leftInColor['left-in-top-frame']} onChange={(e) => handleColors(e, 'leftIn')}/>
+                </div>
+                <div className='color-field'>
+                  bottom color
+                  <input max='6' type='text' className='frame-color-input' name='left-in-bottom-frame' value={leftInColor['left-in-bottom-frame']} onChange={(e) => handleColors(e, 'leftIn')}/>
+                </div>
+              </div> : '' }
 
             <hr className='color-frame-hr'/>
-            <div><input type='checkbox' checked={addFrames['right-in-frames']} name='right-in-frames' onChange={handleFrameAdd} />Right Card Inside</div>
-            <div className='color-container'>
-              <div className='color-field'>
-                left color
-                <input max='6' type='text' className='frame-color-input' name='right-in-left-frame' value={rightInColor['right-in-left-frame']} onChange={(e) => handleColors(e, 'rightIn')}/>
-              </div>
-              <div className='color-field'>
-                right color
-                <input max='6' type='text' className='frame-color-input' name='right-in-right-frame' value={rightInColor['right-in-right-frame']} onChange={(e) => handleColors(e, 'rightIn')}/>
-              </div>
-              <div className='color-field'>
-                top color
-                <input max='6' type='text' className='frame-color-input' name='right-in-top-frame' value={rightInColor['right-in-top-frame']} onChange={(e) => handleColors(e, 'rightIn')}/>
-              </div>
-              <div className='color-field'>
-                bottom color
-                <input max='6' type='text' className='frame-color-input' name='right-in-bottom-frame' value={rightInColor['right-in-bottom-frame']} onChange={(e) => handleColors(e, 'rightIn')}/>
-              </div>
+            <div>
+              <input type='checkbox' checked={addFrames['right-in-frames']} name='right-in-frames' onChange={handleFrameAdd} />
+              Right Card Inside
+              <button onClick={handleFrameControlVisibility} name='right-in' style={{float: 'right'}}>V</button>
             </div>
+            {frameControlVisibility['right-in'] ?
+              <div className='color-container' id='color-container-right-in'>
+                <div className='color-field'>
+                  left color
+                  <input max='6' type='text' className='frame-color-input' name='right-in-left-frame' value={rightInColor['right-in-left-frame']} onChange={(e) => handleColors(e, 'rightIn')}/>
+                </div>
+                <div className='color-field'>
+                  right color
+                  <input max='6' type='text' className='frame-color-input' name='right-in-right-frame' value={rightInColor['right-in-right-frame']} onChange={(e) => handleColors(e, 'rightIn')}/>
+                </div>
+                <div className='color-field'>
+                  top color
+                  <input max='6' type='text' className='frame-color-input' name='right-in-top-frame' value={rightInColor['right-in-top-frame']} onChange={(e) => handleColors(e, 'rightIn')}/>
+                </div>
+                <div className='color-field'>
+                  bottom color
+                  <input max='6' type='text' className='frame-color-input' name='right-in-bottom-frame' value={rightInColor['right-in-bottom-frame']} onChange={(e) => handleColors(e, 'rightIn')}/>
+                </div>
+              </div> : '' }
 
             <hr className='color-frame-hr'/>
-            <div><input type='checkbox' checked={addFrames['left-out-frames']} name='left-out-frames' onChange={handleFrameAdd} />Left Card Outside</div>
-            <div className='color-container'>
-              <div className='color-field'>
-                left color
-                <input max='6' type='text' className='frame-color-input' name='left-out-left-frame' value={leftOutColor['left-out-left-frame']} onChange={(e) => handleColors(e, 'leftOut')}/>
-              </div>
-              <div className='color-field'>
-                right color
-                <input max='6' type='text' className='frame-color-input' name='left-out-right-frame' value={leftOutColor['left-out-right-frame']} onChange={(e) => handleColors(e, 'leftOut')}/>
-              </div>
-              <div className='color-field'>
-                top color
-                <input max='6' type='text' className='frame-color-input' name='left-out-top-frame' value={leftOutColor['left-out-top-frame']} onChange={(e) => handleColors(e, 'leftOut')}/>
-              </div>
-              <div className='color-field'>
-                bottom color
-                <input max='6' type='text' className='frame-color-input' name='left-out-bottom-frame' value={leftOutColor['left-out-bottom-frame']} onChange={(e) => handleColors(e, 'leftOut')}/>
-              </div>
+            <div>
+              <input type='checkbox' checked={addFrames['left-out-frames']} name='left-out-frames' onChange={handleFrameAdd} />
+              Left Card Outside
+              <button onClick={handleFrameControlVisibility} name='left-out' style={{float: 'right'}}>V</button>
             </div>
+            {frameControlVisibility['left-out'] ?
+              <div className='color-container' id='color-container-left-out'>
+                <div className='color-field'>
+                  left color
+                  <input max='6' type='text' className='frame-color-input' name='left-out-left-frame' value={leftOutColor['left-out-left-frame']} onChange={(e) => handleColors(e, 'leftOut')}/>
+                </div>
+                <div className='color-field'>
+                  right color
+                  <input max='6' type='text' className='frame-color-input' name='left-out-right-frame' value={leftOutColor['left-out-right-frame']} onChange={(e) => handleColors(e, 'leftOut')}/>
+                </div>
+                <div className='color-field'>
+                  top color
+                  <input max='6' type='text' className='frame-color-input' name='left-out-top-frame' value={leftOutColor['left-out-top-frame']} onChange={(e) => handleColors(e, 'leftOut')}/>
+                </div>
+                <div className='color-field'>
+                  bottom color
+                  <input max='6' type='text' className='frame-color-input' name='left-out-bottom-frame' value={leftOutColor['left-out-bottom-frame']} onChange={(e) => handleColors(e, 'leftOut')}/>
+                </div>
+              </div> : '' }
 
             <hr className='color-frame-hr'/>
-            <div><input type='checkbox' checked={addFrames['right-out-frames']} name='right-out-frames' onChange={handleFrameAdd} />Right Card Outside</div>
-            <div className='color-container'>
-              <div className='color-field'>
-                left color
-                <input max='6' type='text' className='frame-color-input' name='right-out-left-frame' value={rightOutColor['right-out-left-frame']} onChange={(e) => handleColors(e, 'rightOut')}/>
-              </div>
-              <div className='color-field'>
-                right color
-                <input max='6' type='text' className='frame-color-input' name='right-out-right-frame' value={rightOutColor['right-out-right-frame']} onChange={(e) => handleColors(e, 'rightOut')}/>
-              </div>
-              <div className='color-field'>
-                top color
-                <input max='6' type='text' className='frame-color-input' name='right-out-top-frame' value={rightOutColor['right-out-top-frame']} onChange={(e) => handleColors(e, 'rightOut')}/>
-              </div>
-              <div className='color-field'>
-                bottom color
-                <input max='6' type='text' className='frame-color-input' name='right-out-bottom-frame' value={rightOutColor['right-out-bottom-frame']} onChange={(e) => handleColors(e, 'rightOut')}/>
-              </div>
+            <div>
+              <input type='checkbox' checked={addFrames['right-out-frames']} name='right-out-frames' onChange={handleFrameAdd} />
+              Right Card Outside
+              <button onClick={handleFrameControlVisibility} name='right-out' style={{float: 'right'}}>V</button>
             </div>
+            {frameControlVisibility['right-out'] ?
+              <div className='color-container' id='color-container-right-out'>
+                <div className='color-field'>
+                  left color
+                  <input max='6' type='text' className='frame-color-input' name='right-out-left-frame' value={rightOutColor['right-out-left-frame']} onChange={(e) => handleColors(e, 'rightOut')}/>
+                </div>
+                <div className='color-field'>
+                  right color
+                  <input max='6' type='text' className='frame-color-input' name='right-out-right-frame' value={rightOutColor['right-out-right-frame']} onChange={(e) => handleColors(e, 'rightOut')}/>
+                </div>
+                <div className='color-field'>
+                  top color
+                  <input max='6' type='text' className='frame-color-input' name='right-out-top-frame' value={rightOutColor['right-out-top-frame']} onChange={(e) => handleColors(e, 'rightOut')}/>
+                </div>
+                <div className='color-field'>
+                  bottom color
+                  <input max='6' type='text' className='frame-color-input' name='right-out-bottom-frame' value={rightOutColor['right-out-bottom-frame']} onChange={(e) => handleColors(e, 'rightOut')}/>
+                </div>
+              </div> : '' }
 
             <button onClick={handleUpdateFrame}>Update</button>
           </div>
@@ -347,8 +379,15 @@ const CreateCard = () => {
         {dev ?
           <div id='three-control-buttons'>
             <button className='enable-input three-control-button' onClick={() => document.body.dispatchEvent(new Event('toggle-animation'))}>toggle animation</button>
-          </div> : ''
-        }
+          </div> : '' }
+        <div id='item-controls' className='enable-input'>
+          <div>scale <input type='number' min='0.1' max='3' step='0.1' /> <button onClick={()=>{}}>update scale</button></div>
+          <div>rotate <input type='number' min='0' max='360' step='5' /><button onClick={()=>{}}>update rotation</button></div>
+          <div className='item-control'>
+            <button name='item-controls-done-button' onClick={() =>{}}>done</button>
+            <button name='item-controls-delete-button' onClick={()=> {}}>delete</button>
+          </div>
+        </div>
       </div>
       <Footer />
     </div>

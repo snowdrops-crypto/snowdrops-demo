@@ -92,7 +92,7 @@ export default class InitScene {
     this.greetingDimensions = {x: -7.5, y: 4, z: 0.2}
 
     this.cardInfo = DefaultCardInfo
-    this.cardInfo.left.in.greeting.message = 'Happy Birthday!\n\nMay this be the day,\nHappy Birthday today!\nAnd if today is not that day,\nmay this card make it that\nway.\n\nSincerely,\nSnowdrops'
+    this.cardInfo.left.in.greeting.message = 'Hello Arweave!\n\n\nGreetings to all and\nto all a happy open spotlight!\n\n\nSincerely,\nSnowdrops'
 
     document.body.addEventListener('update-three-redux', () => {
       console.log(store.getState())
@@ -194,6 +194,9 @@ export default class InitScene {
       )
       this.cardInfo.left.in.other.push(composedAssetName)
     })
+    document.body.addEventListener('handle-asset-update', e => {
+      console.log(e.detail)
+    })
 
     window.addEventListener('resize', throttle(() => windowResize(this.camera, this.renderer), 100))
     window.addEventListener('keydown', (e) => this.keydown(e), 10)
@@ -208,7 +211,7 @@ export default class InitScene {
     loadLights(this.scene)
     // const axesHelper = new THREE.AxesHelper(5)
     // this.scene.add(axesHelper)
-    this.SkySphere = new THREE.Mesh(new THREE.SphereBufferGeometry(20, 32, 32), new THREE.MeshBasicMaterial({color: '#CCBBFF', side: THREE.DoubleSide, transparent: true, opacity: 0.5}))
+    this.SkySphere = new THREE.Mesh(new THREE.SphereBufferGeometry(20, 32, 32), new THREE.MeshBasicMaterial({color: '#CCBBFF', side: THREE.DoubleSide, transparent: true, opacity: 1}))
     this.SkySphere.name = 'sky-sphere'
     this.scene.add(this.SkySphere)
     this.Floor = new THREE.Mesh(new THREE.BoxBufferGeometry(40, 40, 1), new THREE.MeshBasicMaterial({color: '#EEFFFF'}))
@@ -228,7 +231,7 @@ export default class InitScene {
     this.scene.remove(this.scene.getObjectByName('loading'))
     // await this.loadObjects(['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado])
     // await LoadGLTFs(this.GLTFloader, this.scene, ['https://s3-us-west-2.amazonaws.com/s.cdpn.io/39255/ladybug.gltf', avocado], {x: 2, y: 2, z: 2})
-    // await floatingParticles(this.scene, this.TextureLoader, basicHeart)
+    await floatingParticles(this.scene, this.TextureLoader, arweaveImageLinks['star-1024'])
 
     /** CARD **/
     /* CARD LEFT */
@@ -276,19 +279,19 @@ export default class InitScene {
       0.2, this.cardInfo.basePosition, {x: 1.6, y: -0.1, z: 0.20}
     )
 
-    /* CARD FRONT Objects */
-    offsetRotateBoxObject(
-      this.scene, `left-out-object`, 0xff55ff,
-      {x: 2, y: 2, z: 0.1}, this.cardInfo.basePosition, {x: -2, y: 1, z: this.cardInfo.itemSpacingOut}
-    )
-    this.cardInfo.left.out.other.push(`left-out-object`)
+    // /* CARD FRONT Objects */
+    // offsetRotateBoxObject(
+    //   this.scene, `left-out-object`, 0xff55ff,
+    //   {x: 2, y: 2, z: 0.1}, this.cardInfo.basePosition, {x: -2, y: 1, z: this.cardInfo.itemSpacingOut}
+    // )
+    // this.cardInfo.left.out.other.push(`left-out-object`)
 
-    /* BACK CARD Objects */
-    offsetRotateBoxObject(
-      this.scene, `right-out-object`, 0xff5533,
-      {x: 2, y: 2, z: 0.1}, this.cardInfo.basePosition, {x: 2, y: 1, z: this.cardInfo.itemSpacingOut}
-    )
-    this.cardInfo.right.out.other.push('right-out-object')
+    // /* BACK CARD Objects */
+    // offsetRotateBoxObject(
+    //   this.scene, `right-out-object`, 0xff5533,
+    //   {x: 2, y: 2, z: 0.1}, this.cardInfo.basePosition, {x: 2, y: 1, z: this.cardInfo.itemSpacingOut}
+    // )
+    // this.cardInfo.right.out.other.push('right-out-object')
 
     /* ROTATIONS */
     const rotation_factor = 8
@@ -306,7 +309,7 @@ export default class InitScene {
     )
     mintTextMesh.position.set(-0.75, -0.25, 0.1)
     this.mintButton.add(mintMesh.clone())
-    this.mintButton.add(mintTextMesh.clone())
+    this.mintButton.add(mintTextMesh.clone())     
     this.mintButton.position.set(0, 4, 0)
     // this.mintButton.rotation.x = - Math.PI / 2
     this.scene.add(this.mintButton)
