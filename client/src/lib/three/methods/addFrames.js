@@ -100,7 +100,7 @@ const addFrames = (scene, cardInfo, side = '', rotation = 0) => {
           scene, cardInfo.right.in.frames[frame].name, `#${cardInfo.right.in.frames[frame].color}`,
           frameDimesions, cardInfo.basePosition, offsetPosition
         )
-        scene.getObjectByName(cardInfo.left.in.frames[frame].name).rotation.y = rotation
+        scene.getObjectByName(cardInfo.right.in.frames[frame].name).rotation.y = rotation
       }
     })
   }
@@ -149,7 +149,8 @@ const addFrames = (scene, cardInfo, side = '', rotation = 0) => {
           scene, cardInfo.left.out.frames[frame].name, `#${cardInfo.left.out.frames[frame].color}`,
           frameDimesions, cardInfo.basePosition, offsetPosition
         )
-        scene.getObjectByName(cardInfo.left.in.frames[frame].name).rotation.y = rotation
+        console.log(cardInfo.left.out.frames[frame].name)
+        scene.getObjectByName(cardInfo.left.out.frames[frame].name).rotation.y = rotation
       }
     })
   }
@@ -198,7 +199,7 @@ const addFrames = (scene, cardInfo, side = '', rotation = 0) => {
           scene, cardInfo.right.out.frames[frame].name, `#${cardInfo.right.out.frames[frame].color}`,
           frameDimesions, cardInfo.basePosition, offsetPosition
         )
-        scene.getObjectByName(cardInfo.left.in.frames[frame].name).rotation.y = rotation
+        scene.getObjectByName(cardInfo.right.out.frames[frame].name).rotation.y = rotation
       }
     })
   }

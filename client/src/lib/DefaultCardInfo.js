@@ -11,7 +11,7 @@ const DefaultCardInfo = {
     rotation: 0,
     color: 'eeffeef',
     in: {
-      framesActive: true,
+      framesActive: false,
       greeting: {
         name: 'greeting',
         message: 'Happy Birthday!',
@@ -39,7 +39,7 @@ const DefaultCardInfo = {
       items: {}
     },
     out: {
-      framesActive: true,
+      framesActive: false,
       frames: {
         left: {
           name: 'left-out-left-frame',
@@ -67,7 +67,7 @@ const DefaultCardInfo = {
     rotation: 0,
     color: 'eeffeef',
     in: {
-      framesActive: true,
+      framesActive: false,
       frames: {
         left: {
           name: 'right-in-left-frame',
@@ -103,7 +103,7 @@ const DefaultCardInfo = {
       items: {}
     },
     out: {
-      framesActive: true,
+      framesActive: false,
       frames: {
         left: {
           name: 'right-out-left-frame',

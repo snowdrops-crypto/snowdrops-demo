@@ -1,0 +1,5 @@
+Hello world! This is the first Medium post with development updates on Snowdrops. The name Snowdrops came from a special kind of flower. It has something special to it, it can grow out of snow. In the places that it does grow it acts as a ground hound, signifying the end of winter and the start of Spring. Much like the Snowdrops flower greeting Spring these greeting cards will brighten up the peoples' lives as they are created and gifted to friends and family.
+
+Development is currently geared towards completing the card editor. With the card editor, anyone will be able to write a message, change the frames around each page, attach assets such as images, gifs or videos. The first release of the greeting card editor will not be linked to the smart contract code. Instead it will allow users to create a card and save it for when the solidity code is fully developed.
+
+Prior to the focus on creating the card editor, a lot of work as been done on developing a template for the smart contract. Thanks to Nick Mudgen and the team at Aavegotchi, a working example of much of the functionality I'd like to utilize has been proven to work.

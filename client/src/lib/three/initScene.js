@@ -310,8 +310,8 @@ export default class InitScene {
     mintTextMesh.position.set(-0.75, -0.25, 0.1)
     this.mintButton.add(mintMesh.clone())
     this.mintButton.add(mintTextMesh.clone())     
-    this.mintButton.position.set(0, 4, 0)
-    // this.mintButton.rotation.x = - Math.PI / 2
+    this.mintButton.position.set(6, -2.95, 0)
+    this.mintButton.rotation.x = -Math.PI / 2
     this.scene.add(this.mintButton)
 
     this.animate()
@@ -366,6 +366,7 @@ export default class InitScene {
   }
   mouseDown(e) {
     if (e.which === 1) {
+      console.log(this.camera)
       this.mouseDownOn = true
       this.raycaster.setFromCamera(this.mouse, this.camera)
 

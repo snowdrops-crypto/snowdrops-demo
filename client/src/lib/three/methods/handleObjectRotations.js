@@ -5,18 +5,26 @@ const handleObjectRotations = (scene, cardObjectNames, rotation_factor) => {
   scene.getObjectByName(cardObjectNames.right.name).rotation.y -= Math.PI / rotation_factor
 
   // Frames
-  Object.keys(cardObjectNames.left.in.frames).forEach(frame => {
-    scene.getObjectByName(cardObjectNames.left.in.frames[frame].name).rotation.y += Math.PI / rotation_factor
-  })
-  Object.keys(cardObjectNames.right.in.frames).forEach(frame => {
-    scene.getObjectByName(cardObjectNames.right.in.frames[frame].name).rotation.y -= Math.PI / rotation_factor
-  })
-  Object.keys(cardObjectNames.left.out.frames).forEach(frame => {
-    scene.getObjectByName(cardObjectNames.left.out.frames[frame].name).rotation.y += Math.PI / rotation_factor
-  })
-  Object.keys(cardObjectNames.right.out.frames).forEach(frame => {
-    scene.getObjectByName(cardObjectNames.right.out.frames[frame].name).rotation.y -= Math.PI / rotation_factor
-  })
+  if (cardObjectNames.left.in.framesActive) {
+    Object.keys(cardObjectNames.left.in.frames).forEach(frame => {
+      scene.getObjectByName(cardObjectNames.left.in.frames[frame].name).rotation.y += Math.PI / rotation_factor
+    })
+  }
+  if (cardObjectNames.right.in.framesActive) {
+    Object.keys(cardObjectNames.right.in.frames).forEach(frame => {
+      scene.getObjectByName(cardObjectNames.right.in.frames[frame].name).rotation.y -= Math.PI / rotation_factor
+    })
+  }
+  if (cardObjectNames.left.out.framesActive) {
+    Object.keys(cardObjectNames.left.out.frames).forEach(frame => {
+      scene.getObjectByName(cardObjectNames.left.out.frames[frame].name).rotation.y += Math.PI / rotation_factor
+    })
+  }
+  if (cardObjectNames.right.out.framesActive) {
+    Object.keys(cardObjectNames.right.out.frames).forEach(frame => {
+      scene.getObjectByName(cardObjectNames.right.out.frames[frame].name).rotation.y -= Math.PI / rotation_factor
+    })
+  }
 
   // Other
   cardObjectNames.left.in.other.forEach(name => {

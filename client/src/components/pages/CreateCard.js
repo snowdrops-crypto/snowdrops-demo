@@ -9,6 +9,7 @@ import * as actions from '../../store/actions'
 import Header from '../layouts/Header'
 import Footer from '../layouts/Footer'
 
+import DefaultCardInfo from '../../lib/DefaultCardInfo'
 import { cardIterator } from '../../lib/utils'
 import '../../scss/create-card.scss'
 
@@ -19,37 +20,43 @@ const CreateCard = () => {
   const dev = true
 
   const [frameControlVisibility, setFrameControlVisibility] = useState({
-    'left-in': true, 'right-in': true, 'left-out': true, 'right-out': true
+    'left-in': DefaultCardInfo.left.in.framesActive,
+    'right-in': DefaultCardInfo.right.in.framesActive,
+    'left-out': DefaultCardInfo.left.out.framesActive,
+    'right-out': DefaultCardInfo.right.out.framesActive
   })
 
   const [message, setMessage] = useState('')
-  const [messageScale, setMessageScale] = useState(0.5)
+  const [messageScale, setMessageScale] = useState(0.35)
   const [leftInColor, setLeftInColor] = useState({
-    'left-in-left-frame': '55ff55',
-    'left-in-right-frame': 'ff5555',
-    'left-in-top-frame': '5555ff', 
-    'left-in-bottom-frame': 'ff55ff'
+    'left-in-left-frame': DefaultCardInfo.left.in.frames.left.color,
+    'left-in-right-frame': DefaultCardInfo.left.in.frames.right.color,
+    'left-in-top-frame': DefaultCardInfo.left.in.frames.top.color, 
+    'left-in-bottom-frame': DefaultCardInfo.left.in.frames.bottom.color
   })
   const [rightInColor, setRightInColor] = useState({
-    'right-in-left-frame': '55ff55',
-    'right-in-right-frame': 'ff5555',
-    'right-in-top-frame': '5555ff',
-    'right-in-bottom-frame': 'ff55ff'
+    'right-in-left-frame': DefaultCardInfo.right.in.frames.left.color,
+    'right-in-right-frame': DefaultCardInfo.right.in.frames.right.color,
+    'right-in-top-frame': DefaultCardInfo.right.in.frames.top.color,
+    'right-in-bottom-frame': DefaultCardInfo.right.in.frames.bottom.color
   })
   const [leftOutColor, setLeftOutColor] = useState({
-    'left-out-left-frame': '55ff55',
-    'left-out-right-frame': 'ff5555', 
-    'left-out-top-frame': '5555ff',
-    'left-out-bottom-frame': 'ff55ff'
+    'left-out-left-frame': DefaultCardInfo.left.out.frames.left.color,
+    'left-out-right-frame': DefaultCardInfo.left.out.frames.right.color, 
+    'left-out-top-frame': DefaultCardInfo.left.out.frames.top.color,
+    'left-out-bottom-frame': DefaultCardInfo.left.out.frames.bottom.color
   })
   const [rightOutColor, setRightOutColor] = useState({
-    'right-out-left-frame': '55ff55',
-    'right-out-right-frame': 'ff5555',
-    'right-out-top-frame': '5555ff',
-    'right-out-bottom-frame': 'ff55ff'
+    'right-out-left-frame': DefaultCardInfo.right.out.frames.left.color,
+    'right-out-right-frame': DefaultCardInfo.right.out.frames.right.color,
+    'right-out-top-frame': DefaultCardInfo.right.out.frames.top.color,
+    'right-out-bottom-frame': DefaultCardInfo.right.out.frames.bottom.color
   })
   const [addFrames, setAddFrames] = useState({
-    'left-in-frames': true, 'right-in-frames': true, 'left-out-frames': true, 'right-out-frames': true
+    'left-in-frames': DefaultCardInfo.left.in.framesActive,
+    'right-in-frames': DefaultCardInfo.right.in.framesActive,
+    'left-out-frames': DefaultCardInfo.left.out.framesActive,
+    'right-out-frames': DefaultCardInfo.right.out.framesActive
   })
   const [selectAsset, setSelectAsset] = useState('')
   const [prevSelectAsset, setPrevSelectAsset] = useState('')
